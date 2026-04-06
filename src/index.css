@@ -1,0 +1,129 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@900&family=Space+Mono:wght@400;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-onyx: #0C0F14;
+  --color-sidebar: #0A0D12;
+  --color-card: rgba(255, 255, 255, 0.04);
+  --color-card-alt: rgba(255, 255, 255, 0.07);
+  --color-primary: #3F6A24;
+  --color-accent-mid: #5A8A3A;
+  --color-accent-light: #A8C69F;
+  --color-text-primary: #F0F0F2;
+  --color-text-secondary: #D4D4D8;
+  --color-text-muted: #A1A1AA;
+  --color-border-dark: rgba(255, 255, 255, 0.08);
+  --color-surface: rgba(255, 255, 255, 0.03);
+
+  --font-heading: "Montserrat", sans-serif;
+  --font-mono: "Space Mono", monospace;
+  --font-sans: "Inter", sans-serif;
+}
+
+body {
+  background-color: var(--color-onyx);
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(63, 106, 36, 0.06) 0%, transparent 60%),
+    radial-gradient(circle at 50% 0%, #161a21 0%, transparent 70%);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  /* Mobile: prevent double-tap zoom, enable smooth scroll */
+  touch-action: manipulation;
+  overscroll-behavior: none;
+}
+
+/* Smooth momentum scroll on all scrollable containers */
+.scroll-touch {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+/* Minimum 44px tap targets for accessibility (Android HIG) */
+.tap-target {
+  min-height: 44px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Safe area padding for Android bottom nav bar */
+.pb-safe {
+  padding-bottom: max(70px, env(safe-area-inset-bottom));
+}
+
+/* Horizontal scroll snap for Kanban columns */
+.snap-scroll-x {
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.snap-child {
+  scroll-snap-align: start;
+}
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Hide scrollbar visually but keep scroll functionality */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Page transitions */
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Drag-and-drop styles */
+.drag-over {
+  border-color: var(--color-primary) !important;
+  background-color: rgba(63, 106, 36, 0.08) !important;
+}
+
+.dragging {
+  opacity: 0.5;
+  transform: scale(0.98);
+}
+
+/* Select dropdown styling for dark theme */
+select option {
+  background-color: #141820;
+  color: var(--color-text-primary);
+}
