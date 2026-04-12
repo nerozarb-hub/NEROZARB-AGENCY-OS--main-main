@@ -29,72 +29,69 @@ const STAGES: PostStage[] = [
 export default function PostPipelineView({ posts, clients, onPostClick }: PostPipelineViewProps) {
     if (posts.length === 0) {
         return (
-            <div className="flex-1 flex flex-col items-center justify-center min-h-[400px] border border-dashed border-border-dark/50 rounded-sm bg-card-alt/20">
-                <div className="w-16 h-16 rounded-full bg-surface  flex items-center justify-center mb-4">
-                    <KanbanSquare className="text-text-muted opacity-50" size={24} />
+            <div className="flex-1 flex flex-col items-center justify-center min-h-[400px] border border-white/[0.04] rounded-none bg-white/[0.01]">
+                <div className="w-12 h-12 rounded-none bg-white/5 border border-white/5 flex items-center justify-center mb-6">
+                    <KanbanSquare className="text-text-muted opacity-40" size={20} />
                 </div>
-                <h3 className="font-heading font-black text-lg text-text-primary tracking-tight uppercase mb-2">Empty Pipeline</h3>
-                <p className="font-mono text-[10px] text-text-muted uppercase tracking-widest max-w-sm text-center">
-                    No posts matched. Try adjusting filters or creating new content.
+                <h3 className="editorial-title text-2xl text-text-primary italic mb-3">No Active Pipelines</h3>
+                <p className="font-sans text-[10px] font-bold text-text-muted uppercase tracking-[0.2em] max-w-sm text-center">
+                    System scanning complete. No deployments identified in the current context.
                 </p>
             </div>
         );
     }
 
+
     return (
-        <motion.div variants={itemVariants} className="flex-1 flex gap-4 h-[calc(100vh-200px)] overflow-x-auto pb-4">
+        <motion.div variants={itemVariants} className="flex-1 flex gap-6 h-[calc(100vh-220px)] overflow-x-auto pb-4 custom-scrollbar">
+
             {STAGES.map((stage) => {
                 const stagePosts = posts.filter(p => p.status === stage);
 
                 return (
-                    <div key={stage} className="flex flex-col min-w-[300px] max-w-[300px] bg-background  rounded-sm">
-
+                    <div key={stage} className="flex flex-col min-w-[320px] max-w-[320px] bg-white/[0.01] border-x border-white/[0.03]">
                         {/* Column Header */}
-                        <div className="p-3 border-b border-border-dark flex justify-between items-center bg-card sticky top-0 z-10">
-                            <h3 className="font-mono text-xs tracking-widest text-text-primary uppercase flex items-center gap-2">
-                                <div className={`w-2 h-2 rounded-full ${getStageColorDot(stage)}`} />
+                        <div className="p-4 border-b border-border-dark flex justify-between items-center sticky top-0 z-10 bg-onyx">
+                            <h3 className="font-sans text-[10px] font-black tracking-[0.2em] text-text-primary uppercase flex items-center gap-3">
+                                <div className={`w-1.5 h-1.5 rounded-none rotate-45 ${getStageColorDot(stage)}`} />
                                 {stage}
                             </h3>
-                            <Badge variant="outline">{stagePosts.length}</Badge>
+                            <Badge status="none" className="bg-white/5 border-white/10 text-text-muted tracking-widest">{stagePosts.length}</Badge>
                         </div>
 
+
                         {/* Column Body */}
-                        <div className="flex-1 overflow-y-auto p-3 space-y-3 custom-scrollbar">
+                        <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
                             {stagePosts.map((post) => {
                                 const client = clients.find(c => c.id === post.clientId);
                                 return (
-                                    <Card
+                                    <div
                                         key={post.id}
-                                        className="cursor-pointer hover:border-primary/50 transition-colors"
+                                        className="bg-white/[0.02] border border-white/[0.05] hover:border-text-muted/30 transition-all duration-500 cursor-pointer p-5 space-y-4 group"
                                         onClick={() => onPostClick(post)}
                                     >
-                                        <CardHeader className="pb-2">
-                                            <div className="flex justify-between items-start mb-2 gap-2">
-                                                <span className="text-[10px] uppercase font-mono tracking-widest text-text-muted bg-card-alt px-1.5 py-0.5  rounded-sm capitalize">
-                                                    {post.platforms[0] || 'MULTI'}
-                                                </span>
-                                                <span className="text-[10px] text-primary font-mono shrink-0">{post.scheduledDate}</span>
+                                        <div className="flex justify-between items-start gap-3">
+                                            <span className="font-sans text-[10px] font-bold uppercase tracking-[0.15em] text-[#555] bg-white/5 border border-white/5 px-2 py-0.5 group-hover:bg-primary group-hover:text-text-primary transition-all duration-500 truncate">
+                                                {post.platforms.join(' + ')}
+                                            </span>
+                                            <span className="editorial-title text-[11px] italic text-[#555] group-hover:text-primary transition-colors shrink-0">{post.scheduledDate}</span>
+                                        </div>
+                                        <h4 className="editorial-title text-base italic text-text-primary leading-tight">
+                                            {post.hook || <span className="text-[#555]">No intelligence hook defined</span>}
+                                        </h4>
+                                        <div className="flex justify-between items-end pt-4 border-t border-white/[0.04]">
+                                            <div className="space-y-1">
+                                                <p className="font-sans text-[10px] font-bold uppercase tracking-widest text-primary/80">{client?.name || 'External Account'}</p>
+                                                <p className="font-sans text-[9px] font-bold uppercase tracking-[0.1em] text-[#555]">{post.postType}</p>
                                             </div>
-                                            <CardTitle className="text-sm leading-tight text-text-primary">
-                                                {post.hook || <span className="italic text-text-muted text-xs">No hook defined</span>}
-                                            </CardTitle>
-                                        </CardHeader>
-                                        <CardContent>
-                                            <div className="flex justify-between items-end mt-2 pt-3 border-t border-border-dark/30">
-                                                <div className="text-[10px] text-text-muted flex flex-col gap-0.5">
-                                                    <span>{post.postType}</span>
-                                                    {client && (
-                                                        <span className="text-primary/60">{client.name}</span>
-                                                    )}
-                                                </div>
-                                                <div className="px-2 py-1 rounded-sm bg-card-alt  text-[10px] font-mono text-text-primary uppercase tracking-wider">
-                                                    {post.assignedTo}
-                                                </div>
+                                            <div className="font-sans text-[9px] font-black uppercase tracking-widest text-text-muted bg-white/5 border border-white/5 px-2 py-1">
+                                                {post.assignedTo?.split(' ')[0]}
                                             </div>
-                                        </CardContent>
-                                    </Card>
+                                        </div>
+                                    </div>
                                 );
                             })}
+
 
                             {stagePosts.length === 0 && (
                                 <div className="p-4 text-center border border-dashed border-border-dark/40 rounded-sm text-xs text-text-muted/40">

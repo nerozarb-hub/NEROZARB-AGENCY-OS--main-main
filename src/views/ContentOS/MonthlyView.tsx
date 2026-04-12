@@ -58,45 +58,60 @@ export default function MonthlyView({ posts, clients, onPostClick, onAddPost }: 
     };
 
     return (
-        <motion.div variants={itemVariants} className="bg-card  rounded-sm flex-1 flex flex-col min-h-0 overflow-hidden">
+        <motion.div variants={itemVariants} className="bg-transparent flex-1 flex flex-col min-h-0 overflow-hidden">
+
             {/* Header row */}
-            <div className="flex justify-between items-center p-4 border-b border-border-dark flex-shrink-0">
-                <div className="flex items-center gap-4">
+            <div className="flex justify-between items-center py-6 border-b border-white/[0.04]">
+                <div className="flex items-center gap-6">
                     <button
                         onClick={prevMonth}
-                        className="p-1.5 text-text-muted hover:text-text-primary transition-colors  rounded-sm hover:border-text-muted/30"
+                        className="p-1.5 text-[#555] hover:text-text-primary transition-all duration-300 border border-white/5 hover:border-text-muted"
                     >
-                        <ChevronLeft size={16} />
+                        <ChevronLeft size={14} />
                     </button>
-                    <h3 className="font-heading text-xl text-text-primary tracking-tight w-56 text-center">{monthLabel}</h3>
+                    <h3 className="editorial-title text-3xl text-text-primary tracking-tight italic min-w-[300px] text-center">{monthLabel}</h3>
                     <button
                         onClick={nextMonth}
-                        className="p-1.5 text-text-muted hover:text-text-primary transition-colors  rounded-sm hover:border-text-muted/30"
+                        className="p-1.5 text-[#555] hover:text-text-primary transition-all duration-300 border border-white/5 hover:border-text-muted"
                     >
-                        <ChevronRight size={16} />
+                        <ChevronRight size={14} />
                     </button>
                 </div>
 
                 {/* Legend */}
-                <div className="flex flex-wrap justify-end gap-2 text-[10px] font-mono uppercase tracking-widest text-text-muted mt-2 md:mt-0">
-                    <span className="flex items-center gap-1.5 px-2 py-1 bg-border-dark/20 text-text-secondary border border-border-dark rounded-sm"><div className="w-2 h-2 rounded-full bg-border-dark" /> Planned</span>
-                    <span className="flex items-center gap-1.5 px-2 py-1 bg-blue-500/10 text-blue-500 border border-blue-500/20 rounded-sm"><div className="w-2 h-2 rounded-full bg-blue-500" /> Production</span>
-                    <span className="flex items-center gap-1.5 px-2 py-1 bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 rounded-sm"><div className="w-2 h-2 rounded-full bg-yellow-500" /> Review</span>
-                    <span className="flex items-center gap-1.5 px-2 py-1 bg-orange-500/10 text-orange-500 border border-orange-500/20 rounded-sm"><div className="w-2 h-2 rounded-full bg-orange-500" /> CEO Appr</span>
-                    <span className="flex items-center gap-1.5 px-2 py-1 bg-purple-500/10 text-purple-500 border border-purple-500/20 rounded-sm"><div className="w-2 h-2 rounded-full bg-purple-500" /> Scheduled</span>
-                    <span className="flex items-center gap-1.5 px-2 py-1 bg-green-500/10 text-green-500 border border-green-500/20 rounded-sm"><div className="w-2 h-2 rounded-full bg-green-500" /> Published</span>
+                <div className="flex flex-wrap justify-end gap-3 text-[10px] font-sans font-bold uppercase tracking-[0.2em] text-[#555]">
+                    <span className="flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/5 text-[#555]">
+                      <div className="w-1.5 h-1.5 rounded-none rotate-45 bg-border-dark" /> PLANNED
+                    </span>
+                    <span className="flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/5 text-[#555]">
+                      <div className="w-1.5 h-1.5 rounded-none rotate-45 bg-blue-500" /> PRODUCTION
+                    </span>
+                    <span className="flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/5 text-[#555]">
+                      <div className="w-1.5 h-1.5 rounded-none rotate-45 bg-yellow-500" /> REVIEW
+                    </span>
+                    <span className="flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/5 text-[#555]">
+                      <div className="w-1.5 h-1.5 rounded-none rotate-45 bg-orange-500" /> CEO APPR
+                    </span>
+                    <span className="flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/5 text-[#555]">
+                      <div className="w-1.5 h-1.5 rounded-none rotate-45 bg-purple-500" /> SCHEDULED
+                    </span>
+                    <span className="flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/5 text-[#555]">
+                       <div className="w-1.5 h-1.5 rounded-none rotate-45 bg-green-500" /> PUBLISHED
+                    </span>
                 </div>
             </div>
 
+
             {/* Grid Header */}
-            <div className="grid grid-cols-[40px_repeat(7,1fr)] border-b border-border-dark flex-shrink-0">
-                <div className="p-2 border-r border-border-dark/50" /> {/* Week col header */}
+            <div className="grid grid-cols-[40px_repeat(7,1fr)] border-b border-white/[0.04]">
+                <div className="p-2 border-r border-white/[0.04]" /> {/* Week col header */}
                 {weekDays.map(day => (
-                    <div key={day} className="p-3 text-center text-xs font-mono tracking-widest text-text-muted border-r border-border-dark/50 last:border-r-0">
+                    <div key={day} className="py-4 text-center font-sans text-[10px] font-black uppercase tracking-[0.2em] text-[#555] border-r border-white/[0.04] last:border-r-0">
                         {day}
                     </div>
                 ))}
             </div>
+
 
             {/* Grid Cells */}
             <div className="flex-1 overflow-y-auto">
@@ -133,16 +148,17 @@ export default function MonthlyView({ posts, clients, onPostClick, onAddPost }: 
                                 return (
                                     <div
                                         key={dateStr}
-                                        className={`p-2 border-r border-b border-border-dark/50 last:border-r-0 hover:bg-card-alt/30 transition-colors group flex flex-col relative cursor-default ${isToday ? 'bg-primary/5 ring-1 ring-inset ring-primary/20' : ''} ${isPast ? 'opacity-60' : ''}`}
+                                        className={`p-3 border-r border-b border-white/[0.04] last:border-r-0 hover:bg-white/[0.02] transition-colors group flex flex-col relative cursor-default ${isToday ? 'bg-primary/5' : ''} ${isPast ? 'opacity-40' : ''}`}
                                     >
-                                        <div className="flex justify-between items-start mb-1 relative z-10">
-                                            <span className={`text-sm font-mono leading-none ${isToday ? 'text-primary font-bold' : 'text-text-muted'}`}>
+                                        <div className="flex justify-between items-start mb-2 relative z-10">
+                                            <span className={`editorial-title text-base italic leading-none ${isToday ? 'text-primary' : 'text-text-muted'}`}>
                                                 {dateObj.getDate()}
                                             </span>
                                             {dayPosts.length > 0 && (
-                                                <span className="text-[9px] font-mono text-text-muted/50">{dayPosts.length}</span>
+                                                <span className="font-sans text-[10px] font-bold text-[#555]">{dayPosts.length}</span>
                                             )}
                                         </div>
+
 
                                         {/* Hover Add Button */}
                                         <div
@@ -161,15 +177,16 @@ export default function MonthlyView({ posts, clients, onPostClick, onAddPost }: 
                                                     <div
                                                         key={post.id}
                                                         onClick={(e) => { e.stopPropagation(); onPostClick(post); }}
-                                                        className={`text-xs p-1 rounded-sm bg-card-alt flex items-center gap-1.5 cursor-pointer transition-colors pointer-events-auto truncate ${isOverdueItem ? 'border border-red-500/50 bg-red-500/5 hover:border-red-500' : 'hover:border-text-muted/40'}`}
+                                                        className={`p-1.5 bg-white/5 border border-white/[0.02] flex items-center gap-2 cursor-pointer transition-all duration-300 pointer-events-auto truncate hover:border-text-muted/30 ${isOverdueItem ? 'border-red-500/30' : ''}`}
                                                         title={post.hook || post.postType}
                                                     >
-                                                        <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${getStatusColor(post.status)}`} />
-                                                        <span className={`truncate text-[10px] capitalize ${isOverdueItem ? 'text-red-400 font-bold' : 'text-text-primary'}`}>{post.platforms[0]}</span>
+                                                        <div className={`w-1.5 h-1.5 rounded-none rotate-45 shrink-0 ${getStatusColor(post.status)}`} />
+                                                        <span className={`truncate font-sans text-[9px] font-bold uppercase tracking-widest ${isOverdueItem ? 'text-red-400' : 'text-text-primary'}`}>{post.platforms[0] || 'POST'}</span>
                                                         {client && (
-                                                            <span className="truncate text-[10px] text-primary/70 ml-auto shrink-0">{client.name.split(' ')[0]}</span>
+                                                            <span className="truncate font-sans text-[8px] font-bold text-primary/60 ml-auto shrink-0 uppercase tracking-tighter">{client.name.split(' ')[0]}</span>
                                                         )}
                                                     </div>
+
                                                 )
                                             })}
                                             {dayPosts.length > 3 && (

@@ -178,209 +178,209 @@ export function ProtocolEditorModal({ isOpen, onClose, editProtocol }: ProtocolE
             isOpen={isOpen}
             onClose={onClose}
             title={
-                <div>
-                    <h2 className="font-heading text-xl text-text-primary uppercase tracking-wider">
-                        {editProtocol ? 'Edit Protocol' : 'New Protocol'}
+                <div className="space-y-1">
+                    <p className="font-sans text-[10px] font-bold uppercase tracking-[0.2em] text-primary/80">Contextual Ingestion</p>
+                    <h2 className="editorial-title text-3xl text-text-primary italic">
+                        {editProtocol ? 'Modify Protocol Logic' : 'Inject New Intelligence'}
                     </h2>
-                    <p className="font-mono text-[10px] text-text-muted mt-0.5 tracking-widest uppercase">
-                        Knowledge Vault Entry
-                    </p>
                 </div>
             }
+
             width={950}
             footer={
-                <div className="p-1 border-t border-border-dark flex flex-col sm:flex-row justify-end gap-3 items-center w-full">
+                <div className="p-4 border-t border-white/[0.04] flex flex-col sm:flex-row justify-end gap-6 items-center w-full">
                     {saved && (
                         <motion.span
                             initial={{ opacity: 0, x: 10 }}
                             animate={{ opacity: 1, x: 0 }}
-                            className="text-primary font-mono text-[10px] uppercase tracking-widest mr-auto"
+                            className="text-primary font-sans text-[9px] font-black uppercase tracking-[0.3em] mr-auto italic"
                         >
-                            [ TERMINAL_SUCCESS: PROTOCOL_SAVED ]
+                            [ PROTOCOL_LOCALIZED ]
                         </motion.span>
                     )}
-                    <Button variant="ghost" onClick={onClose} disabled={isSaving || saved} className="font-mono text-xs uppercase tracking-widest w-full sm:w-auto">
-                        Cancel
+                    <Button variant="ghost" onClick={onClose} disabled={isSaving || saved} className="font-sans text-[9px] font-black uppercase tracking-widest text-[#444] hover:text-text-primary">
+                        Abort
                     </Button>
-                    <Button onClick={handleSave} disabled={isSaving || saved} className="font-mono text-xs uppercase tracking-widest min-w-[200px] w-full sm:w-auto bg-primary hover:bg-accent-mid text-text-primary">
+                    <Button onClick={handleSave} disabled={isSaving || saved} className="bg-primary hover:bg-accent-mid text-text-primary px-12 h-12 font-sans text-[9px] font-black uppercase tracking-[0.2em]">
                         {isSaving ? (
                             <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1 }}>
                                 <Bot className="w-4 h-4" />
                             </motion.div>
                         ) : (
                             <>
-                                <Save className="w-4 h-4 mr-2" />
-                                {editProtocol ? 'Update Protocol' : 'Save Protocol'}
+                                <Save className="w-4 h-4 mr-3" />
+                                {editProtocol ? 'UPDATE LOGIC' : 'EXECUTE INJECTION'}
                             </>
                         )}
                     </Button>
                 </div>
             }
+
         >
-            <div className="space-y-10 py-2">
+            <div className="space-y-12 py-2">
                 {/* Section 1: Classification */}
-                <div className="space-y-6">
-                    <h3 className="font-mono text-[10px] uppercase tracking-widest text-text-muted flex items-center gap-2 border-b border-border-dark pb-2">
-                        <Tag className="w-3 h-3 text-primary" />
-                        SECTION 1: CLASSIFICATION
+                <div className="space-y-8">
+                    <h3 className="font-sans text-[9px] font-black tracking-[0.3em] text-[#444] uppercase border-b border-white/[0.04] pb-6 italic">
+                        Node Classification
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-1.5 md:col-span-2">
-                            <label className="font-mono text-[10px] uppercase text-text-muted tracking-widest pl-1">Protocol Title *</label>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-3 md:col-span-2">
+                            <label className="font-sans text-[8px] font-black text-[#333] uppercase tracking-[0.2em] pl-1">Protocol Identifier *</label>
                             <Input
-                                label="Protocol Title"
-                                className="font-heading text-lg"
-                                placeholder="E.g. Automated Onboarding Sequence"
+                                className="bg-white/[0.01] border-white/5 rounded-none font-sans text-lg font-bold tracking-tight px-6 py-8"
+                                placeholder="E.g. CONTEXTUAL_CORE_V1"
                                 value={formData.title}
                                 onChange={e => setFormData({ ...formData, title: e.target.value })}
                                 autoFocus
                             />
                         </div>
-                        <div className="space-y-1.5">
-                            <label className="font-mono text-[10px] uppercase text-text-muted tracking-widest pl-1">Category</label>
+
+                        <div className="space-y-3">
+                            <label className="font-sans text-[8px] font-black text-[#333] uppercase tracking-[0.2em] pl-1">Category Vector</label>
                             <select
-                                className="w-full bg-background rounded-sm px-3 py-3 text-sm font-mono text-text-primary focus:outline-none focus:border-primary transition-colors appearance-none border border-border-dark"
+                                className="w-full bg-white/[0.01] rounded-none px-5 h-12 text-[10px] font-bold font-sans text-text-primary focus:outline-none focus:border-white/20 transition-all appearance-none border border-white/5 uppercase tracking-widest"
                                 value={formData.category}
                                 onChange={e => setFormData({ ...formData, category: e.target.value as ProtocolCategory })}
                             >
-                                {CATEGORIES.map(c => <option key={c} value={c}>{c.toUpperCase().replace(/-/g, ' ')}</option>)}
+                                {CATEGORIES.map(c => <option key={c} value={c} className="bg-[#0C0F14]">{c.replace(/-/g, ' ')}</option>)}
                             </select>
                         </div>
-                        <div className="space-y-1.5">
-                            <label className="font-mono text-[10px] uppercase text-text-muted tracking-widest pl-1">Pillar</label>
+                        <div className="space-y-3">
+                            <label className="font-sans text-[8px] font-black text-[#333] uppercase tracking-[0.2em] pl-1">Operational Pillar</label>
                             <select
-                                className="w-full bg-background rounded-sm px-3 py-3 text-sm font-mono text-text-primary focus:outline-none focus:border-primary transition-colors appearance-none border border-border-dark"
+                                className="w-full bg-white/[0.01] rounded-none px-5 h-12 text-[10px] font-bold font-sans text-text-primary focus:outline-none focus:border-white/20 transition-all appearance-none border border-white/5 uppercase tracking-widest"
                                 value={formData.pillar}
                                 onChange={e => setFormData({ ...formData, pillar: e.target.value as PillarType })}
                             >
-                                {PILLARS.map(p => <option key={p} value={p}>{p.toUpperCase()}</option>)}
+                                {PILLARS.map(p => <option key={p} value={p} className="bg-[#0C0F14]">{p}</option>)}
                             </select>
                         </div>
-                        <div className="space-y-1.5">
-                            <label className="font-mono text-[10px] uppercase text-text-muted tracking-widest pl-1">Status</label>
+                        <div className="space-y-3">
+                            <label className="font-sans text-[8px] font-black text-[#333] uppercase tracking-[0.2em] pl-1">System State</label>
                             <select
-                                className="w-full bg-background rounded-sm px-3 py-3 text-sm font-mono text-text-primary focus:outline-none focus:border-primary transition-colors appearance-none border border-border-dark"
+                                className="w-full bg-white/[0.01] rounded-none px-5 h-12 text-[10px] font-bold font-sans text-text-primary focus:outline-none focus:border-white/20 transition-all appearance-none border border-white/5 uppercase tracking-widest"
                                 value={formData.status}
                                 onChange={e => setFormData({ ...formData, status: e.target.value as ProtocolStatus })}
                             >
-                                {STATUSES.map(s => <option key={s} value={s}>{s.toUpperCase()}</option>)}
+                                {STATUSES.map(s => <option key={s} value={s} className="bg-[#0C0F14]">{s}</option>)}
                             </select>
                         </div>
                         {formData.category === 'ai-prompt' && (
-                            <div className="space-y-1.5">
-                                <label className="font-mono text-[10px] uppercase text-text-muted tracking-widest pl-1 flex items-center gap-2">
-                                    <Bot className="w-3 h-3 text-primary" /> Target Tool
-                                </label>
+                            <div className="space-y-3">
+                                <label className="font-sans text-[8px] font-black text-[#333] uppercase tracking-[0.2em] pl-1">Target Engine</label>
                                 <select
-                                    className="w-full bg-background rounded-sm px-3 py-3 text-sm font-mono text-text-primary focus:outline-none focus:border-primary transition-colors appearance-none border border-border-dark"
+                                    className="w-full bg-white/[0.01] rounded-none px-5 h-12 text-[10px] font-bold font-sans text-text-primary focus:outline-none focus:border-white/20 transition-all appearance-none border border-white/5 uppercase tracking-widest"
                                     value={formData.promptTool || 'both'}
                                     onChange={e => setFormData({ ...formData, promptTool: e.target.value as any })}
                                 >
-                                    <option value="both">AGNOSTIC (BOTH)</option>
-                                    <option value="claude">CLAUDE ONLY</option>
-                                    <option value="gemini">GEMINI ONLY</option>
+                                    <option value="both" className="bg-[#0C0F14]">AGNOSTIC (BOTH)</option>
+                                    <option value="claude" className="bg-[#0C0F14]">CLAUDE_ONLY</option>
+                                    <option value="gemini" className="bg-[#0C0F14]">GEMINI_ONLY</option>
                                 </select>
                             </div>
                         )}
                     </div>
                 </div>
 
+
                 {/* Section 2: Content */}
-                <div className="space-y-6">
-                    <h3 className="font-mono text-[10px] uppercase tracking-widest text-text-muted flex items-center gap-2 border-b border-border-dark pb-2">
-                        <Type className="w-3 h-3 text-primary" />
-                        SECTION 2: CONTENT DEFINITION
+                <div className="space-y-8">
+                    <h3 className="font-sans text-[9px] font-black tracking-[0.3em] text-[#444] uppercase border-b border-white/[0.04] pb-6 italic">
+                        Contextual Core Definition
                     </h3>
-                    <div className="rounded-sm overflow-hidden flex flex-col bg-background relative border border-border-dark">
+
+                    <div className="rounded-none overflow-hidden flex flex-col bg-[#0C0F14] border border-white/5">
                         {/* Toolbar */}
-                        <div className="h-10 bg-card border-b border-border-dark flex items-center px-2 gap-1 overflow-x-auto scrollbar-none">
+                        <div className="h-12 bg-white/[0.02] border-b border-white/5 flex items-center px-4 gap-2">
                             <button
                                 type="button"
                                 onClick={() => insertMarkdown('# ', '')}
-                                className="p-1 px-1.5 text-[10px] font-mono text-text-muted hover:text-primary hover:bg-primary/10 rounded-sm transition-colors border border-transparent hover:border-primary/20 flex items-center gap-1"
+                                className="p-2 px-3 text-[8px] font-sans font-black text-[#555] hover:text-primary transition-all border border-white/5 hover:border-primary/20 uppercase tracking-widest"
                             >
-                                <Heading1 size={12} /> H1
+                                H1
                             </button>
                             <button
                                 type="button"
                                 onClick={() => insertMarkdown('## ', '')}
-                                className="p-1 px-1.5 text-[10px] font-mono text-text-muted hover:text-primary hover:bg-primary/10 rounded-sm transition-colors border border-transparent hover:border-primary/20 flex items-center gap-1"
+                                className="p-2 px-3 text-[8px] font-sans font-black text-[#555] hover:text-primary transition-all border border-white/5 hover:border-primary/20 uppercase tracking-widest"
                             >
-                                <Heading2 size={12} /> H2
+                                H2
                             </button>
-                            <div className="w-px h-4 bg-border-dark mx-1" />
+                            <div className="w-px h-5 bg-white/5 mx-2" />
                             <button
                                 type="button"
                                 onClick={() => insertMarkdown('**', '**')}
-                                className="p-1 px-1.5 text-[10px] font-mono text-text-muted hover:text-primary hover:bg-primary/10 rounded-sm transition-colors border border-transparent hover:border-primary/20 flex items-center gap-1"
+                                className="p-2 px-3 text-[#555] hover:text-primary transition-all"
                             >
                                 <Bold size={12} />
                             </button>
                             <button
                                 type="button"
                                 onClick={() => insertMarkdown('*', '*')}
-                                className="p-1 px-1.5 text-[10px] font-mono text-text-muted hover:text-primary hover:bg-primary/10 rounded-sm transition-colors border border-transparent hover:border-primary/20 flex items-center gap-1"
+                                className="p-2 px-3 text-[#555] hover:text-primary transition-all"
                             >
                                 <Italic size={12} />
                             </button>
-                            <div className="w-px h-4 bg-border-dark mx-1" />
+                            <div className="w-px h-5 bg-white/5 mx-2" />
                             <button
                                 type="button"
                                 onClick={() => insertMarkdown('`', '`')}
-                                className="p-1 px-1.5 text-[10px] font-mono text-text-muted hover:text-primary hover:bg-primary/10 rounded-sm transition-colors border border-transparent hover:border-primary/20 flex items-center gap-1"
+                                className="p-2 px-3 text-[#555] hover:text-primary transition-all"
                             >
                                 <Code size={12} />
                             </button>
                             <button
                                 type="button"
                                 onClick={() => insertMarkdown('[', '](url)')}
-                                className="p-1 px-1.5 text-[10px] font-mono text-text-muted hover:text-primary hover:bg-primary/10 rounded-sm transition-colors border border-transparent hover:border-primary/20 flex items-center gap-1"
+                                className="p-2 px-3 text-[#555] hover:text-primary transition-all"
                             >
                                 <LinkIcon size={12} />
                             </button>
                         </div>
                         <textarea
                             ref={textareaRef}
-                            className="w-full bg-transparent p-4 text-sm font-mono text-text-primary focus:outline-none leading-relaxed resize-none custom-scrollbar min-h-[300px]"
-                            placeholder={formData.category === 'ai-prompt' ? "Enter your prompt template here. Use [[VARIABLE_NAME]] for dynamic inputs." : "Write your SOP in Markdown here..."}
+                            className="w-full bg-transparent p-8 text-sm font-sans font-medium text-text-primary focus:outline-none leading-relaxed resize-none custom-scrollbar min-h-[400px] uppercase tracking-wide placeholder:text-[#222]"
+                            placeholder={formData.category === 'ai-prompt' ? "INJECT PROMPT LOGIC. USE [[VAR_NAME]] FOR DYNAMIC PARAMETERS." : "CONSTRUCT PROTOCOL ARCHITECTURE USING TACTICAL MARKDOWN..."}
                             value={formData.content}
                             onChange={e => setFormData({ ...formData, content: e.target.value })}
                         />
                     </div>
                 </div>
 
+
                 {/* Section 3: Metadata */}
-                <div className="space-y-6">
-                    <h3 className="font-mono text-[10px] uppercase tracking-widest text-text-muted flex items-center gap-2 border-b border-border-dark pb-2">
-                        <LinkIcon className="w-3 h-3 text-primary" />
-                        SECTION 3: REFERENCES & METADATA
+                <div className="space-y-8">
+                    <h3 className="font-sans text-[9px] font-black tracking-[0.3em] text-[#444] uppercase border-b border-white/[0.04] pb-6 italic">
+                        Tactical Meta & References
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-1.5">
-                            <label className="font-mono text-[10px] uppercase text-text-muted tracking-widest pl-1">Tags (Enter to add)</label>
-                            <div className="min-h-[48px] p-2 flex flex-wrap gap-2 bg-background rounded-sm border border-border-dark focus-within:border-primary transition-colors">
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                        <div className="space-y-3">
+                            <label className="font-sans text-[8px] font-black text-[#333] uppercase tracking-[0.2em] pl-1">Tactical Identifiers (Space/Enter)</label>
+                            <div className="min-h-[56px] p-3 flex flex-wrap gap-2 bg-white/[0.01] rounded-none border border-white/5 focus-within:border-white/20 transition-all">
                                 {formData.tags.map(tag => (
                                     <span
                                         key={tag}
-                                        className="flex items-center gap-1.5 bg-primary/20 text-primary font-mono text-[10px] uppercase px-2 py-1 rounded-sm border border-primary/30 group"
+                                        className="flex items-center gap-2 bg-primary/5 text-primary font-sans text-[8px] font-black uppercase px-3 py-1.5 rounded-none border border-primary/20 group"
                                     >
                                         {tag}
                                         <button
                                             type="button"
                                             onClick={() => removeTag(tag)}
-                                            className="hover:text-text-primary transition-colors"
+                                            className="text-[#333] hover:text-text-primary transition-colors"
                                         >
                                             <X size={10} />
                                         </button>
                                     </span>
                                 ))}
                                 <input
-                                    className="bg-transparent border-none outline-none text-sm font-mono text-text-primary flex-1 min-w-[120px]"
-                                    placeholder={formData.tags.length === 0 ? "e.g. sales, strategy" : ""}
+                                    className="bg-transparent border-none outline-none text-[10px] font-sans font-bold text-text-primary flex-1 min-w-[150px] uppercase tracking-widest placeholder:text-[#222]"
+                                    placeholder={formData.tags.length === 0 ? "E.G. SCALING, STRATEGY" : ""}
                                     value={formData.tagInput}
                                     onChange={e => setFormData({ ...formData, tagInput: e.target.value })}
                                     onKeyDown={e => {
-                                        if (e.key === 'Enter') {
+                                        if (e.key === 'Enter' || e.key === ' ') {
                                             e.preventDefault();
                                             addTag();
                                         } else if (e.key === 'Backspace' && !formData.tagInput && formData.tags.length > 0) {
@@ -390,17 +390,18 @@ export function ProtocolEditorModal({ isOpen, onClose, editProtocol }: ProtocolE
                                 />
                             </div>
                         </div>
-                        <div className="space-y-1.5">
-                            <label className="font-mono text-[10px] uppercase text-text-muted tracking-widest pl-1">External Links (URLs, Comma Sep)</label>
+                        <div className="space-y-3">
+                            <label className="font-sans text-[8px] font-black text-[#333] uppercase tracking-[0.2em] pl-1">External Signal Anchors (URLs)</label>
                             <Input
-                                label="External Links"
-                                placeholder="https://docs.link, https://figma.."
+                                className="bg-white/[0.01] border-white/5 rounded-none h-14 px-5 font-sans text-[10px] font-bold tracking-widest uppercase placeholder:text-[#222]"
+                                placeholder="HTTPS://KNOWLEDGE.CLOUD, HTTPS://SIGNAL.HUB.."
                                 value={formData.externalRefsStr}
                                 onChange={e => setFormData({ ...formData, externalRefsStr: e.target.value })}
                             />
                         </div>
                     </div>
                 </div>
+
             </div>
         </Modal>
     );

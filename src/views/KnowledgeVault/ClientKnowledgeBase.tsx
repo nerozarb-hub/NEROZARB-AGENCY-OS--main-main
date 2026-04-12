@@ -21,11 +21,12 @@ export function ClientKnowledgeBase({ clientId }: { clientId: number }) {
 
     if (!client) {
         return (
-            <div className="h-full flex items-center justify-center text-text-muted font-mono uppercase tracking-widest text-sm">
-                Client profile not found.
+            <div className="h-full flex items-center justify-center text-[#333] font-sans font-black uppercase tracking-[0.3em] text-[10px]">
+                Profile Error: Intelligence Sync Failed
             </div>
         );
     }
+
 
     const brandProtocols = data.protocols.filter(p => p.linkedClientId === clientId && p.category === 'brand-standard');
     const researchProtocols = data.protocols.filter(p => p.linkedClientId === clientId && p.category === 'client-knowledge-base');
@@ -34,71 +35,74 @@ export function ClientKnowledgeBase({ clientId }: { clientId: number }) {
         switch (activeTab) {
             case 'audience':
                 return (
-                    <div className="space-y-8 animate-fade-in">
+                    <div className="space-y-10 animate-fade-in">
                         <div>
-                            <h3 className="font-heading text-lg text-primary uppercase tracking-wider border-b border-border-dark pb-2 mb-4">Shadow Avatar</h3>
-                            <div className="bg-card p-6  rounded-sm">
-                                <p className="text-sm font-mono leading-relaxed text-text-primary whitespace-pre-wrap">
-                                    {client.shadowAvatar || 'No shadow avatar defined.'}
+                            <h3 className="font-sans text-[9px] font-black tracking-[0.3em] text-primary uppercase border-b border-white/[0.04] pb-5 italic mb-6">Subject Shadow Avatar</h3>
+                            <div className="bg-white/[0.01] border border-white/5 p-8 rounded-none">
+                                <p className="font-sans text-[13px] text-[#888] leading-relaxed tracking-wide whitespace-pre-wrap uppercase">
+                                    {client.shadowAvatar || 'SYSTEM ERROR: AVATAR_NOT_FOUND.'}
                                 </p>
                             </div>
                         </div>
                         <div>
-                            <h3 className="font-heading text-lg text-[#F24E1E] uppercase tracking-wider border-b border-border-dark pb-2 mb-4">Bleeding Neck Problem</h3>
-                            <div className="bg-card p-6  rounded-sm">
-                                <p className="text-sm font-mono leading-relaxed text-text-primary whitespace-pre-wrap">
-                                    {client.bleedingNeck || 'No bleeding neck problem defined.'}
+                            <h3 className="font-sans text-[9px] font-black tracking-[0.3em] text-red-500 uppercase border-b border-white/[0.04] pb-5 italic mb-6">P0: Bleeding Neck Conflict</h3>
+                            <div className="bg-white/[0.01] border border-white/5 p-8 rounded-none">
+                                <p className="font-sans text-[13px] text-[#888] leading-relaxed tracking-wide whitespace-pre-wrap uppercase">
+                                    {client.bleedingNeck || 'SYSTEM ERROR: CONFLICT_NOT_RESOLVED.'}
                                 </p>
                             </div>
                         </div>
                     </div>
                 );
+
             case 'brand-voice':
                 return (
-                    <div className="space-y-6 animate-fade-in">
+                    <div className="space-y-8 animate-fade-in">
                         {brandProtocols.length === 0 ? (
-                            <div className="text-center p-12 border border-dashed border-border-dark rounded-sm text-text-muted">
-                                <Shield className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                                <p className="font-mono text-sm uppercase tracking-widest">No brand protocols linked to this client.</p>
+                            <div className="text-center py-24 border border-dashed border-white/5 rounded-none text-[#333]">
+                                <Shield className="w-10 h-10 mx-auto mb-6 opacity-20" />
+                                <p className="font-sans text-[9px] font-black uppercase tracking-[0.3em]">No brand protocols localized.</p>
                             </div>
                         ) : (
                             brandProtocols.map(p => (
-                                <div key={p.id} className="bg-card  rounded-sm overflow-hidden">
-                                    <div className="p-4 bg-black/40 border-b border-border-dark">
-                                        <h3 className="font-heading text-lg text-text-primary uppercase">{p.title}</h3>
+                                <div key={p.id} className="bg-white/[0.01] border border-white/5 rounded-none overflow-hidden hover:border-white/10 transition-all duration-300">
+                                    <div className="px-8 py-5 bg-white/[0.02] border-b border-white/5">
+                                        <h3 className="font-sans text-[11px] font-black text-text-primary uppercase tracking-widest">{p.title}</h3>
                                     </div>
-                                    <div className="p-6">
-                                        <pre className="font-mono text-sm text-text-secondary leading-relaxed whitespace-pre-wrap">{p.content}</pre>
+                                    <div className="p-8">
+                                        <pre className="font-sans text-[12px] text-[#888] leading-relaxed tracking-wide whitespace-pre-wrap uppercase">{p.content}</pre>
                                     </div>
                                 </div>
                             ))
                         )}
                     </div>
                 );
+
             case 'what-works':
                 return (
-                    <div className="space-y-6 animate-fade-in">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div className="bg-card p-4  rounded-sm">
-                                <div className="text-[10px] font-mono uppercase tracking-widest text-text-muted mb-2">Top Format</div>
-                                <div className="font-heading text-xl text-primary">Carousel / Slider</div>
+                    <div className="space-y-8 animate-fade-in">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div className="bg-white/[0.01] border border-white/5 p-6 rounded-none">
+                                <div className="text-[8px] font-black font-sans uppercase tracking-[0.3em] text-[#444] mb-3 italic">Alpha Format</div>
+                                <div className="font-sans text-xs font-bold text-primary tracking-widest uppercase italic">Carousel / Flux</div>
                             </div>
-                            <div className="bg-card p-4  rounded-sm">
-                                <div className="text-[10px] font-mono uppercase tracking-widest text-text-muted mb-2">Peak Engagement Time</div>
-                                <div className="font-heading text-xl text-primary">8:00 PM EST</div>
+                            <div className="bg-white/[0.01] border border-white/5 p-6 rounded-none">
+                                <div className="text-[8px] font-black font-sans uppercase tracking-[0.3em] text-[#444] mb-3 italic">Temporal Node</div>
+                                <div className="font-sans text-xs font-bold text-primary tracking-widest uppercase italic">20:00 EST</div>
                             </div>
-                            <div className="bg-card p-4  rounded-sm">
-                                <div className="text-[10px] font-mono uppercase tracking-widest text-text-muted mb-2">Best Performing Hook</div>
-                                <div className="font-heading text-xl text-primary">"The hidden reason..."</div>
+                            <div className="bg-white/[0.01] border border-white/5 p-6 rounded-none">
+                                <div className="text-[8px] font-black font-sans uppercase tracking-[0.3em] text-[#444] mb-3 italic">Apex Hook</div>
+                                <div className="font-sans text-xs font-bold text-primary tracking-widest uppercase italic">"THE SECRET STREAM..."</div>
                             </div>
                         </div>
-                        <div className="text-center p-12 border border-dashed border-border-dark rounded-sm text-text-muted mt-6">
-                            <TrendingUp className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                            <p className="font-mono text-sm uppercase tracking-widest mb-2">Performance Logs Awaiting Integration</p>
-                            <p className="text-xs">Aggregated Save/Share metrics from Content OS will appear here.</p>
+                        <div className="text-center py-24 border border-dashed border-white/5 rounded-none text-[#333] mt-10">
+                            <TrendingUp className="w-10 h-10 mx-auto mb-6 opacity-20" />
+                            <p className="font-sans text-[9px] font-black uppercase tracking-[0.3em] mb-3">Neural Logs Syncing...</p>
+                            <p className="font-sans text-[8px] tracking-widest uppercase opacity-40">Dynamic metrics from CONTENT OS pending deployment.</p>
                         </div>
                     </div>
                 );
+
             case 'research':
                 return (
                     <div className="space-y-4 animate-fade-in">
@@ -122,21 +126,17 @@ export function ClientKnowledgeBase({ clientId }: { clientId: number }) {
                 );
             case 'history':
                 return (
-                    <div className="space-y-4 animate-fade-in pl-4">
+                    <div className="space-y-10 animate-fade-in pl-6 relative">
                         {client.timeline.length === 0 ? (
-                            <div className="text-text-muted font-mono text-xs uppercase tracking-widest">No historical items.</div>
+                            <div className="font-sans text-[9px] font-black uppercase tracking-[0.3em] text-[#333]">No historical stream found.</div>
                         ) : (
-                            <div className="space-y-8 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-border-dark before:to-transparent">
+                            <div className="space-y-12 relative before:absolute before:left-0 before:top-0 before:bottom-0 before:w-px before:bg-white/[0.04]">
                                 {client.timeline.map((event, index) => (
-                                    <div key={index} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                                        <div className="flex items-center justify-center w-10 h-10 rounded-full  bg-[#0A0A0A] group-[.is-active]:bg-primary/10 group-[.is-active]:border-primary/50 text-text-muted group-[.is-active]:text-primary shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10 transition-colors">
-                                            <Clock className="w-4 h-4" />
-                                        </div>
-                                        <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-card  p-4 rounded-sm shadow">
-                                            <div className="flex items-center justify-between mb-1">
-                                                <div className="font-mono text-xs text-text-secondary">{new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</div>
-                                            </div>
-                                            <div className="font-mono text-sm text-text-primary">{event.description}</div>
+                                    <div key={index} className="relative pl-10 group">
+                                        <div className="absolute left-[-4.5px] top-1.5 w-2 h-2 rotate-45 border border-white/20 bg-[#0C0F14] group-hover:bg-primary group-hover:border-primary transition-all duration-500" />
+                                        <div className="space-y-3">
+                                            <div className="font-sans text-[8px] font-black text-[#444] uppercase tracking-widest italic">{new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase()}</div>
+                                            <div className="font-sans text-[11px] font-bold text-text-primary uppercase tracking-widest leading-relaxed">{event.description}</div>
                                         </div>
                                     </div>
                                 ))}
@@ -144,33 +144,35 @@ export function ClientKnowledgeBase({ clientId }: { clientId: number }) {
                         )}
                     </div>
                 );
+
             case 'assets':
                 return (
-                    <div className="animate-fade-in">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="bg-card  p-4 rounded-sm flex items-center justify-between group cursor-pointer hover:border-border-dark/80 transition-colors">
-                                <div className="flex items-center gap-3">
-                                    <div className="p-2 bg-white/5 rounded-sm"><LinkIcon className="w-4 h-4 text-text-secondary" /></div>
-                                    <div>
-                                        <div className="font-mono text-xs uppercase tracking-wider text-text-primary">Master Brand Folder</div>
-                                        <div className="font-mono text-[10px] text-text-muted mt-1">Google Drive</div>
+                    <div className="animate-fade-in space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="bg-white/[0.01] border border-white/5 p-6 rounded-none flex items-center justify-between group cursor-pointer hover:border-white/10 transition-all duration-300">
+                                <div className="flex items-center gap-5">
+                                    <div className="p-3 bg-white/[0.02] border border-white/5"><LinkIcon className="w-3.5 h-3.5 text-[#444] group-hover:text-primary transition-colors" /></div>
+                                    <div className="space-y-1">
+                                        <div className="font-sans text-[10px] font-black uppercase tracking-widest text-text-primary">Master Brand Archive</div>
+                                        <div className="font-sans text-[8px] font-black text-[#333] tracking-widest uppercase italic">Internal Node / Drive</div>
                                     </div>
                                 </div>
-                                <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity">Open</Button>
+                                <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity font-sans text-[8px] font-black uppercase tracking-widest text-primary">SCAN</Button>
                             </div>
-                            <div className="bg-card  p-4 rounded-sm flex items-center justify-between group cursor-pointer hover:border-border-dark/80 transition-colors">
-                                <div className="flex items-center gap-3">
-                                    <div className="p-2 bg-white/5 rounded-sm"><LinkIcon className="w-4 h-4 text-text-secondary" /></div>
-                                    <div>
-                                        <div className="font-mono text-xs uppercase tracking-wider text-text-primary">Figma UI Kit</div>
-                                        <div className="font-mono text-[10px] text-text-muted mt-1">Figma</div>
+                            <div className="bg-white/[0.01] border border-white/5 p-6 rounded-none flex items-center justify-between group cursor-pointer hover:border-white/10 transition-all duration-300">
+                                <div className="flex items-center gap-5">
+                                    <div className="p-3 bg-white/[0.02] border border-white/5"><LinkIcon className="w-3.5 h-3.5 text-[#444] group-hover:text-primary transition-colors" /></div>
+                                    <div className="space-y-1">
+                                        <div className="font-sans text-[10px] font-black uppercase tracking-widest text-text-primary">Operational Map (Figma)</div>
+                                        <div className="font-sans text-[8px] font-black text-[#333] tracking-widest uppercase italic">Visual Sync / Canvas</div>
                                     </div>
                                 </div>
-                                <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity">Open</Button>
+                                <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity font-sans text-[8px] font-black uppercase tracking-widest text-primary">SCAN</Button>
                             </div>
                         </div>
                     </div>
                 );
+
             default:
                 return null;
         }
@@ -179,21 +181,22 @@ export function ClientKnowledgeBase({ clientId }: { clientId: number }) {
     return (
         <div className="flex flex-col h-full bg-transparent overflow-hidden">
             {/* Inner Tabs */}
-            <div className="flex space-x-2 mb-6 overflow-x-auto custom-scrollbar pb-2">
+            <div className="flex space-x-3 mb-10 overflow-x-auto custom-scrollbar pb-3">
                 {TABS.map(tab => (
                     <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-sm text-[10px] font-mono uppercase tracking-widest transition-colors whitespace-nowrap ${activeTab === tab.id
-                            ? 'bg-primary/10 text-primary border border-primary/50'
-                            : 'bg-card  text-text-secondary hover:text-text-primary hover:border-text-secondary'
+                        className={`flex items-center gap-3 px-6 py-3 rounded-none text-[9px] font-black font-sans uppercase tracking-[0.2em] transition-all border whitespace-nowrap ${activeTab === tab.id
+                            ? 'bg-primary/5 text-primary border-primary/20'
+                            : 'bg-white/[0.01] border-white/5 text-[#555] hover:text-[#888] hover:border-white/10'
                             }`}
                     >
-                        {tab.icon}
+                        <div className="opacity-40">{tab.icon}</div>
                         {tab.label}
                     </button>
                 ))}
             </div>
+
 
             {/* Tab Content */}
             <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 pb-10">

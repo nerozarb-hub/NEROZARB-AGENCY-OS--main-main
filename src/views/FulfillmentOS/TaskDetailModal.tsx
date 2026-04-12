@@ -52,101 +52,93 @@ export default function TaskDetailModal({ isOpen, onClose, task: modalTask, onNa
       onClose={onClose}
       width={1000}
       title={
-        <div className="flex flex-col gap-1.5 min-w-0">
-          <div className="flex items-center gap-2 overflow-hidden">
-            <span className="font-mono text-[9px] text-text-muted tracking-widest uppercase">TSK-{task.id}</span>
-            <span className="text-border-dark font-mono text-[9px]">//</span>
-            <button
-              onClick={() => {
-                if (onNavigate) {
-                  onNavigate('client', task.clientId.toString());
-                  onClose();
-                }
-              }}
-              className="font-mono text-[9px] text-primary hover:text-accent-light tracking-widest uppercase truncate border-b border-primary/20"
-            >
-              {clientName}
-            </button>
-          </div>
+        <div className="space-y-3">
           <div className="flex items-center gap-3">
-            <h2 className="font-heading text-xl text-text-primary uppercase tracking-wider truncate">
+            <p className="font-sans text-[9px] font-black tracking-[0.4em] text-primary uppercase italic">Operational ARC</p>
+            <div className="h-px w-8 bg-white/10" />
+            <span className="font-sans text-[9px] font-black text-[#444] tracking-[0.3em] uppercase">ARC-{task.id}</span>
+          </div>
+          <div className="flex items-end gap-5">
+            <h2 className="editorial-title text-4xl text-text-primary italic">
               {task.name}
             </h2>
-            <Badge status={task.priority === 'critical' ? 'critical' : task.priority === 'high' ? 'at-risk' : 'healthy'}>
+            <div className={`mb-2 px-3 py-1 border font-sans text-[8px] font-black tracking-widest uppercase ${task.priority === 'critical' ? 'border-red-500/40 text-red-500 bg-red-500/5' : 'border-white/10 text-[#666]'}`}>
               {task.priority.toUpperCase()}
-            </Badge>
+            </div>
           </div>
         </div>
       }
+
       footer={
         <div className="flex flex-col sm:flex-row justify-between items-center w-full gap-4">
-          <div className="flex items-center gap-3 w-full sm:w-auto">
+          <div className="flex items-center gap-4 w-full sm:w-auto">
             {task.sopReference && (
               <Button
-                variant="outline"
+                variant="ghost"
                 onClick={() => {
                   if (onNavigate) {
                     onNavigate('vault', task.clientId.toString());
                     onClose();
                   }
                 }}
-                className="font-mono text-[10px] uppercase h-11 px-6 border-primary/30 text-primary hover:bg-primary/10"
+                className="font-sans text-[9px] font-black uppercase tracking-widest h-10 px-6 text-[#555] hover:text-primary transition-all"
               >
-                <BookOpen className="w-4 h-4 mr-2" />
-                OPEN PROTOCOL
+                <BookOpen className="w-3.5 h-3.5 mr-2" />
+                PROTOCOL REF
               </Button>
             )}
             {authLevel === 'ceo' && task.currentStage !== 'DEPLOYED' && (
-              <Button variant="ghost" className="font-mono text-[10px] uppercase text-red-500 hover:text-red-400 hover:bg-red-500/10 h-11">
-                BLOCK MISSION
+              <Button variant="ghost" className="font-sans text-[9px] font-black uppercase tracking-widest text-[#333] hover:text-red-500 transition-all h-10">
+                ABORT MISSION
               </Button>
             )}
           </div>
 
-          <div className="flex items-center gap-3 w-full sm:w-auto">
-            <Button variant="ghost" onClick={onClose} className="text-text-muted hover:text-text-primary text-[10px] uppercase font-mono">
-              CLOSE
+
+          <div className="flex items-center gap-4 w-full sm:w-auto">
+            <Button variant="ghost" onClick={onClose} className="text-[#333] hover:text-text-primary text-[9px] font-black tracking-widest uppercase">
+              DISMISS
             </Button>
             {nextStage ? (
               <Button
                 onClick={handleAdvanceStage}
                 disabled={!canAdvance}
-                className="flex-1 sm:flex-initial min-w-[220px] h-11 font-mono text-[10px] uppercase tracking-widest bg-primary hover:bg-accent-mid text-text-primary"
+                className="bg-primary hover:bg-accent-mid text-text-primary min-w-[240px] h-12 font-sans text-[9px] font-black uppercase tracking-[0.2em] transition-all"
               >
-                DEPLOY PHASE: {nextStage} <ChevronRight className="w-4 h-4 ml-2" />
+                DEPLOY PHASE: {nextStage}
               </Button>
             ) : (
-              <div className="flex items-center gap-2 px-6 h-11 bg-primary/20 text-primary font-mono text-[10px] uppercase tracking-widest border border-primary/30 rounded-sm">
-                <CheckCircle2 className="w-4 h-4" /> MISSION_COMPLETE
+              <div className="flex items-center gap-3 px-8 h-12 bg-primary/20 text-primary font-sans text-[9px] font-black uppercase tracking-[0.3em] border border-primary/20">
+                <CheckCircle2 className="w-3.5 h-3.5" /> MISSION COMPLETE
               </div>
             )}
           </div>
+
         </div>
       }
     >
       <div className="space-y-10 py-2">
         {/* Pipeline Architecture */}
-        <section className="space-y-6">
-          <h3 className="font-mono text-[10px] uppercase tracking-widest text-text-muted flex items-center gap-2 border-b border-border-dark pb-2">
-            <Activity className="w-3 h-3 text-primary" />
-            DEPLOYMENT PIPELINE Architecture
+        <section className="space-y-8">
+          <h3 className="font-sans text-[9px] font-black tracking-[0.3em] text-[#555] uppercase border-b border-white/[0.04] pb-5 italic">
+            Deployment Architecture
           </h3>
-          <div className="relative pt-2 pb-8 px-4">
-            <div className="absolute top-[calc(1.5rem-2px)] left-0 right-0 h-[1px] bg-border-dark z-0 mx-8" />
-            <div className="relative z-10 flex justify-between gap-2 overflow-x-auto pb-4 scrollbar-none">
+          <div className="relative pt-2 pb-10 px-4">
+            <div className="absolute top-[calc(1.5rem-1px)] left-0 right-0 h-[1px] bg-white/5 z-0 mx-10" />
+            <div className="relative z-10 flex justify-between gap-4 overflow-x-auto pb-4 scrollbar-none">
               {PIPELINE_STEPS.map((step, index) => {
                 const isCompleted = index < currentStepIndex;
                 const isCurrent = index === currentStepIndex;
 
                 return (
-                  <div key={step} className="flex flex-col items-center gap-3 min-w-[80px] sm:min-w-0">
-                    <div className={`w-3.5 h-3.5 rounded-full border-2 transition-all duration-500 ${isCompleted ? 'bg-primary border-primary shadow-[0_0_10px_rgba(var(--primary-rgb),0.5)]' :
-                      isCurrent ? 'bg-background border-primary ring-4 ring-primary/20 scale-125 shadow-[0_0_15px_rgba(var(--primary-rgb),0.3)]' :
-                        'bg-background border-border-dark grayscale'
+                  <div key={step} className="flex flex-col items-center gap-5 min-w-[90px] sm:min-w-0">
+                    <div className={`w-3 h-3 rotate-45 border transition-all duration-700 ${isCompleted ? 'bg-primary border-primary shadow-[0_0_20px_rgba(63,106,36,0.3)]' :
+                      isCurrent ? 'bg-[#0C0F14] border-primary ring-4 ring-primary/10 scale-125 shadow-[0_0_25px_rgba(63,106,36,0.2)]' :
+                        'bg-white/5 border-white/5'
                       }`} />
-                    <span className={`font-mono text-[8px] sm:text-[9px] text-center tracking-widest uppercase ${isCurrent ? 'text-primary' :
-                      isCompleted ? 'text-text-secondary' :
-                        'text-text-muted'
+                    <span className={`font-sans text-[8px] font-black text-center tracking-widest uppercase transition-all duration-500 ${isCurrent ? 'text-primary' :
+                      isCompleted ? 'text-[#888]' :
+                        'text-[#333]'
                       }`}>
                       {step}
                     </span>
@@ -156,6 +148,7 @@ export default function TaskDetailModal({ isOpen, onClose, task: modalTask, onNa
             </div>
           </div>
         </section>
+
 
         {/* Intelligence Split */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
@@ -186,17 +179,18 @@ export default function TaskDetailModal({ isOpen, onClose, task: modalTask, onNa
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 10 }}
-                  className="space-y-4"
+                  className="space-y-6"
                 >
-                  <h4 className="font-mono text-[10px] uppercase tracking-widest text-text-muted flex items-center gap-2">
-                    <Paperclip className="w-3 h-3 text-primary" />
-                    STRATEGIC MISSION BRIEF
+                  <h4 className="font-sans text-[9px] font-black tracking-[0.3em] text-[#555] uppercase italic flex items-center gap-3">
+                    <Paperclip className="w-3.5 h-3.5 text-primary" />
+                    Strategic Mission Brief
                   </h4>
-                  <div className="bg-[#0c0e12] border border-border-dark p-6 rounded-sm whitespace-pre-wrap font-sans text-sm text-text-secondary leading-relaxed shadow-inner">
-                    {task.brief || 'SYSTEM ERROR: BRIEF_NOT_FOUND. Please initialize mission context.'}
+                  <div className="bg-white/[0.01] border border-white/5 p-8 rounded-none whitespace-pre-wrap font-sans text-[13px] text-[#888] leading-relaxed tracking-wide shadow-inner">
+                    {task.brief || 'SYSTEM ERROR: NO MISSION CONTEXT LOADED.'}
                   </div>
                 </motion.div>
               )}
+
 
               {/* Activity Encryption Log */}
               {(activeTab === 'activity' || window.innerWidth >= 1024) && (
@@ -204,112 +198,119 @@ export default function TaskDetailModal({ isOpen, onClose, task: modalTask, onNa
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 10 }}
-                  className="space-y-4 pt-4 border-t border-border-dark lg:border-none lg:pt-0"
+                  className="space-y-6 pt-10 border-t border-white/[0.04] lg:border-none lg:pt-0"
                 >
-                  <h4 className="font-mono text-[10px] uppercase tracking-widest text-text-muted flex items-center gap-2">
-                    <MessageSquare className="w-3 h-3 text-primary" />
-                    OPERATIONAL ENCRYPTION LOG
+                  <h4 className="font-sans text-[9px] font-black tracking-[0.3em] text-[#555] uppercase italic flex items-center gap-3">
+                    <Activity className="w-3.5 h-3.5 text-primary" />
+                    Operational Flux Log
                   </h4>
 
-                  <div className="space-y-4 max-h-[400px] overflow-y-auto custom-scrollbar pr-4 -mr-4">
+
+                  <div className="space-y-6 max-h-[400px] overflow-y-auto custom-scrollbar pr-4 -mr-4">
                     {[...task.activityLog].reverse().map((log, idx) => (
-                      <div key={idx} className="flex gap-4 group">
-                        <div className={`w-9 h-9 rounded-sm shrink-0 flex items-center justify-center font-mono text-[10px] border border-border-dark ${log.author === 'ceo' ? 'bg-primary/20 text-primary border-primary/30' : 'bg-background text-text-muted'
+                      <div key={idx} className="flex gap-6 group">
+                        <div className={`w-8 h-8 rotate-45 shrink-0 flex items-center justify-center border transition-all duration-300 ${log.author === 'ceo' ? 'bg-primary/20 border-primary/40' : 'bg-white/5 border-white/10'
                           }`}>
-                          {log.author === 'ceo' ? 'H' : 'TM'}
+                          <span className="font-sans text-[8px] font-black -rotate-45 text-text-primary uppercase tracking-tighter">
+                            {log.author === 'ceo' ? 'HAM' : 'NOD'}
+                          </span>
                         </div>
-                        <div className="flex-1 space-y-1">
+                        <div className="flex-1 space-y-2">
                           <div className="flex items-baseline justify-between">
-                            <span className={`text-[11px] font-heading uppercase tracking-wider ${log.author === 'ceo' ? 'text-primary' : 'text-text-primary'}`}>
-                              {log.author === 'ceo' ? 'Director Hamsa' : 'Operational Node'}
+                            <span className={`font-sans text-[10px] font-bold uppercase tracking-widest ${log.author === 'ceo' ? 'text-primary' : 'text-[#666]'}`}>
+                              {log.author === 'ceo' ? 'DIRECTOR HAMSA' : 'OPERATIONAL NODE'}
                             </span>
-                            <span className="font-mono text-[8px] text-text-muted uppercase tracking-tighter">
-                              {new Date(log.timestamp).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                            <span className="font-sans text-[8px] font-black text-[#333] uppercase tracking-widest">
+                              {new Date(log.timestamp).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }).toUpperCase()}
                             </span>
                           </div>
-                          <div className="text-xs text-text-muted leading-relaxed font-mono">
+                          <div className="font-sans text-[11px] text-[#777] leading-relaxed tracking-wide">
                             {log.type === 'stage_advance' ? (
-                              <div className="flex items-center gap-2 py-1 px-2 mt-1 bg-primary/5 border border-primary/10 rounded-sm w-fit">
-                                <span className="uppercase text-[9px] opacity-60">{log.from}</span>
-                                <ChevronRight className="w-3 h-3 text-primary opacity-40" />
-                                <span className="uppercase text-[9px] text-primary">{log.to}</span>
+                              <div className="flex items-center gap-3 py-2 px-3 mt-1 bg-primary/5 border border-primary/10 w-fit">
+                                <span className="uppercase text-[8px] font-black opacity-40">{log.from}</span>
+                                <ChevronRight className="w-3 h-3 text-primary opacity-30" />
+                                <span className="uppercase text-[8px] font-black text-primary">{log.to}</span>
                               </div>
                             ) : null}
-                            {log.type === 'note' && <span className="block mt-1 text-text-secondary border-l-2 border-primary/20 pl-3 py-0.5">{log.text}</span>}
-                            {log.type === 'created' && <span className="opacity-40 italic">Initialization complete: {log.text}</span>}
+                            {log.type === 'note' && <span className="block mt-1 text-[#999] border-l border-white/10 pl-4 py-1">{log.text}</span>}
+                            {log.type === 'created' && <span className="text-[#333] italic font-black text-[9px] tracking-widest uppercase">Sector Initialized: {log.text}</span>}
                           </div>
                         </div>
                       </div>
                     ))}
                   </div>
 
+
                   {/* Operational Note Input */}
-                  <div className="flex gap-2 mt-6 p-1 pl-3 bg-background border border-border-dark rounded-sm focus-within:border-primary transition-all">
-                    <PenLine className="w-3.5 h-3.5 text-text-muted mt-2.5 shrink-0" />
+                  <div className="flex gap-4 mt-10 p-2 pl-5 bg-white/[0.02] border border-white/5 focus-within:border-primary/40 transition-all duration-300">
+                    <PenLine className="w-3.5 h-3.5 text-[#333] mt-3 shrink-0" />
                     <input
                       type="text"
                       value={newNote}
                       onChange={e => setNewNote(e.target.value)}
-                      placeholder="Input operational update or note..."
-                      className="flex-1 bg-transparent border-none text-[11px] text-text-primary py-2.5 outline-none placeholder:text-text-muted/40 font-mono tracking-wide"
+                      placeholder="ENTER OPERATIONAL UPDATE..."
+                      className="flex-1 bg-transparent border-none text-[10px] font-black text-text-primary py-3 outline-none placeholder:text-[#333] tracking-[0.2em] uppercase"
                       onKeyDown={e => e.key === 'Enter' && handleAddNote()}
                     />
-                    <Button variant="ghost" className="px-5 h-9 shrink-0 font-mono text-[10px] text-primary hover:bg-primary/10" onClick={handleAddNote}>
+                    <Button variant="ghost" className="px-6 h-10 shrink-0 font-sans text-[9px] font-black tracking-widest text-primary hover:bg-primary/5 rounded-none" onClick={handleAddNote}>
                       POST_UPDATE
                     </Button>
                   </div>
                 </motion.div>
               )}
+
             </AnimatePresence>
           </div>
 
           {/* Operational Metadata (Right 33%) */}
-          <div className="space-y-8 bg-card/30 p-6 rounded-sm border border-border-dark self-start">
-            <h4 className="font-mono text-[10px] uppercase tracking-widest text-text-muted flex items-center gap-2 border-b border-border-dark pb-2">
-              <Info className="w-3 h-3 text-primary" />
-              MISSION PARAMETERS
+          <div className="space-y-10 bg-white/[0.01] p-10 border border-white/5 self-start">
+            <h4 className="font-sans text-[9px] font-black tracking-[0.3em] text-[#555] uppercase italic flex items-center gap-3 border-b border-white/[0.04] pb-5">
+              <Info className="w-3.5 h-3.5 text-primary" />
+              Mission Parameters
             </h4>
 
-            <div className="space-y-6">
-              <div className="group space-y-1.5">
-                <span className="font-mono text-[10px] text-text-muted uppercase tracking-wider flex items-center gap-2">
-                  <User className="w-3 h-3" /> DEPLOYED_NODE
+
+            <div className="space-y-8">
+              <div className="space-y-2">
+                <span className="font-sans text-[8px] font-black text-[#444] uppercase tracking-[0.3em] flex items-center gap-3">
+                  <User className="w-3 h-3 opacity-30" /> Tactical Node
                 </span>
-                <p className="font-heading text-sm text-text-primary pl-5">{task.assignedNode.toUpperCase()}</p>
+                <p className="font-sans text-[11px] font-bold text-text-primary tracking-widest pl-6 uppercase">{task.assignedNode}</p>
               </div>
 
-              <div className="group space-y-1.5">
-                <span className="font-mono text-[10px] text-text-muted uppercase tracking-wider flex items-center gap-2">
-                  <Calendar className="w-3 h-3" /> HARD_DEADLINE
+              <div className="space-y-2">
+                <span className="font-sans text-[8px] font-black text-[#444] uppercase tracking-[0.3em] flex items-center gap-3">
+                  <Calendar className="w-3 h-3 opacity-30" /> Objective Deadline
                 </span>
-                <p className="font-heading text-sm text-text-primary pl-5">{task.deadline || 'TBD - ASYNCHRONOUS'}</p>
+                <p className="font-sans text-[11px] font-bold text-text-primary tracking-widest pl-6 uppercase">{task.deadline || 'ASYNCHRONOUS'}</p>
               </div>
 
-              <div className="group space-y-1.5">
-                <span className="font-mono text-[10px] text-text-muted uppercase tracking-wider flex items-center gap-2">
-                  <Clock className="w-3 h-3" /> QUANTUM_ALLOCATION
+              <div className="space-y-2">
+                <span className="font-sans text-[8px] font-black text-[#444] uppercase tracking-[0.3em] flex items-center gap-3">
+                  <Clock className="w-3 h-3 opacity-30" /> Quantum Allocation
                 </span>
-                <p className="font-mono text-sm text-text-primary pl-5">{task.estimatedHours ? `${task.estimatedHours} HOUR(S)` : 'STOCHASTIC_ESTIMATE'}</p>
+                <p className="font-sans text-[11px] font-bold text-text-primary tracking-widest pl-6 uppercase">{task.estimatedHours ? `${task.estimatedHours} HOUR(S)` : 'STOCHASTIC'}</p>
               </div>
 
-              <div className="group space-y-1.5">
-                <span className="font-mono text-[10px] text-text-muted uppercase tracking-wider flex items-center gap-2">
-                  <Activity className="w-3 h-3" /> CURRENT_STATUS
+              <div className="space-y-3">
+                <span className="font-sans text-[8px] font-black text-[#444] uppercase tracking-[0.3em] flex items-center gap-3">
+                  <Activity className="w-3 h-3 opacity-30" /> Temporal State
                 </span>
-                <div className="pl-5 flex items-center gap-2">
-                  <div className={`w-2 h-2 rounded-full animate-pulse ${task.status === 'active' ? 'bg-primary shadow-[0_0_8px_rgba(var(--primary-rgb),0.6)]' : 'bg-text-muted'}`} />
-                  <span className="font-heading text-sm text-text-primary uppercase tracking-wider">{task.status}</span>
+                <div className="pl-6 flex items-center gap-3">
+                  <div className={`w-1 h-1 rotate-45 animate-pulse ${task.status === 'active' ? 'bg-primary shadow-[0_0_15px_rgba(63,106,36,0.6)]' : 'bg-[#333]'}`} />
+                  <span className="font-sans text-[11px] font-bold text-text-primary uppercase tracking-[0.2em]">{task.status}</span>
                 </div>
               </div>
             </div>
 
-            <div className="pt-6 border-t border-border-dark">
-              <div className="p-4 bg-background border border-dashed border-border-dark rounded-sm">
-                <p className="font-mono text-[9px] text-text-muted leading-relaxed uppercase">
-                  Operational security active. Ensure all deliverables match client-standard protocols.
+            <div className="pt-8 border-t border-white/[0.04]">
+              <div className="p-6 bg-white/[0.02] border border-dashed border-white/10 uppercase">
+                <p className="font-sans text-[8px] font-black text-[#333] leading-relaxed tracking-[0.2em]">
+                  ENCRYPTED STREAM ACTIVE. ENSURE MISSION INTEGRITY AT ALL NODES.
                 </p>
               </div>
             </div>
+
           </div>
 
         </div>

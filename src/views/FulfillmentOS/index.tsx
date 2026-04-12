@@ -26,11 +26,12 @@ const itemVariants = {
 };
 
 export default function FulfillmentOS({ onNavigate }: { onNavigate?: (view: string, id?: string) => void }) {
-  const { data, addTask } = useAppData();
+  const { data } = useAppData();
   const [viewMode, setViewMode] = useState<ViewMode>('kanban');
   const [selectedTask, setSelectedTask] = useState<any | null>(null);
   const [isNewTaskModalOpen, setIsNewTaskModalOpen] = useState(false);
   const [isSprintGeneratorOpen, setIsSprintGeneratorOpen] = useState(false);
+
 
   // Filters
   const [clientFilter, setClientFilter] = useState<number | 'all'>('all');
@@ -55,60 +56,61 @@ export default function FulfillmentOS({ onNavigate }: { onNavigate?: (view: stri
       });
   }, [data.tasks, data.clients, clientFilter, nodeFilter, stageFilter]);
 
-  const handleAddTask = (newTaskData: any) => {
-    // If the modal still sends old shape data, we could map it or ideally update the modal.
-    // Assuming NewTaskModal is updated separately, we just close modal for now.
+  const handleAddTask = () => {
     setIsNewTaskModalOpen(false);
   };
+
 
   return (
     <motion.div
       initial="hidden"
       animate="show"
       variants={containerVariants}
-      className="p-4 md:p-8 w-full max-w-[1800px] mx-auto space-y-4 md:space-y-8 min-h-full flex flex-col"
+      className="p-8 w-full max-w-[1800px] mx-auto space-y-12 min-h-full flex flex-col"
     >
+
       {/* Header & Controls */}
-      <motion.header variants={itemVariants} className="flex flex-col md:flex-row md:justify-between md:items-end gap-3 flex-shrink-0">
-        <div>
-          <h2 className="font-heading text-2xl md:text-3xl tracking-tighter text-text-primary">FULFILLMENT OS</h2>
-          <p className="font-mono text-[10px] md:text-xs tracking-widest text-text-muted mt-1 uppercase">Global Task Pipeline</p>
+      <motion.header variants={itemVariants} className="flex flex-col md:flex-row md:justify-between md:items-end gap-6 flex-shrink-0 border-b border-white/[0.04] pb-10">
+        <div className="space-y-3">
+          <h2 className="editorial-title text-5xl md:text-6xl tracking-tight text-text-primary italic">Fulfillment Engine</h2>
+          <p className="font-sans text-[9px] font-black tracking-[0.4em] text-[#333] uppercase">Operational Flux · Velocity Control</p>
         </div>
 
+
         {/* Controls Row — scrollable on mobile */}
-        <div className="flex flex-wrap items-center gap-2 overflow-x-auto pb-1">
-          <div className="flex bg-card  rounded-sm p-1 gap-1 text-sm">
+        <div className="flex flex-wrap items-center gap-4 overflow-x-auto pb-1">
+          <div className="flex items-center bg-white/[0.02] border border-white/5 p-1 gap-1">
             <select
               value={clientFilter}
               onChange={(e) => setClientFilter(e.target.value === 'all' ? 'all' : Number(e.target.value))}
-              className="bg-transparent text-text-muted border-none outline-none cursor-pointer py-1 px-2 hover:text-text-primary transition-colors"
+              className="bg-transparent text-[9px] font-black text-[#555] tracking-[0.2em] outline-none cursor-pointer py-2 px-3 hover:text-text-primary transition-colors uppercase appearance-none"
             >
-              <option value="all">All Clients</option>
+              <option value="all">ENTITY: GLOBAL</option>
               {data.clients.map(c => (
-                <option key={c.id} value={c.id}>{c.name}</option>
+                <option key={c.id} value={c.id}>{c.name.toUpperCase()}</option>
               ))}
             </select>
-            <div className="w-px bg-border-dark my-1" />
+            <div className="w-px h-3 bg-white/10 mx-1" />
             <select
               value={nodeFilter}
               onChange={(e) => setNodeFilter(e.target.value as any)}
-              className="bg-transparent text-text-muted border-none outline-none cursor-pointer py-1 px-2 hover:text-text-primary transition-colors"
+              className="bg-transparent text-[9px] font-black text-[#555] tracking-[0.2em] outline-none cursor-pointer py-2 px-3 hover:text-text-primary transition-colors uppercase appearance-none"
             >
-              <option value="all">All Nodes</option>
+              <option value="all">NODE: ALL</option>
               <option value="CEO">CEO</option>
-              <option value="Art Director">Art Director</option>
-              <option value="Video Editor">Video Editor</option>
-              <option value="Operations Builder">Operations Builder</option>
-              <option value="Social Media Manager">Social Media Manager</option>
-              <option value="Documentation Manager">Documentation Manager</option>
+              <option value="Art Director">ART DIRECTOR</option>
+              <option value="Video Editor">VIDEO EDITOR</option>
+              <option value="Operations Builder">OPERATIONS BUILDER</option>
+              <option value="Social Media Manager">SMM</option>
+              <option value="Documentation Manager">DOCS</option>
             </select>
-            <div className="w-px bg-border-dark my-1" />
+            <div className="w-px h-3 bg-white/10 mx-1" />
             <select
               value={stageFilter}
               onChange={(e) => setStageFilter(e.target.value as any)}
-              className="bg-transparent text-text-muted border-none outline-none cursor-pointer py-1 px-2 hover:text-text-primary transition-colors"
+              className="bg-transparent text-[9px] font-black text-[#555] tracking-[0.2em] outline-none cursor-pointer py-2 px-3 hover:text-text-primary transition-colors uppercase appearance-none"
             >
-              <option value="all">All Stages</option>
+              <option value="all">STAGE: ALL</option>
               <option value="BRIEFED">BRIEFED</option>
               <option value="IN PRODUCTION">IN PRODUCTION</option>
               <option value="REVIEW">REVIEW</option>
@@ -118,47 +120,57 @@ export default function FulfillmentOS({ onNavigate }: { onNavigate?: (view: stri
             </select>
           </div>
 
+
           {/* View Toggles */}
-          <div className="flex bg-card  rounded-sm p-1">
+          <div className="flex bg-white/[0.02] border border-white/5 p-1">
             <button
               onClick={() => setViewMode('kanban')}
-              className={`p-2 rounded-sm transition-colors ${viewMode === 'kanban' ? 'bg-card-alt text-primary' : 'text-text-muted hover:text-text-primary'}`}
+              className={`p-2 transition-all ${viewMode === 'kanban' ? 'bg-primary/20 text-primary border border-primary/20' : 'text-[#444] hover:text-text-primary'}`}
+              title="Kanban View"
             >
-              <KanbanSquare size={16} />
+              <KanbanSquare size={14} />
             </button>
             <button
               onClick={() => setViewMode('list')}
-              className={`p-2 rounded-sm transition-colors ${viewMode === 'list' ? 'bg-card-alt text-primary' : 'text-text-muted hover:text-text-primary'}`}
+              className={`p-2 transition-all ${viewMode === 'list' ? 'bg-primary/20 text-primary border border-primary/20' : 'text-[#444] hover:text-text-primary'}`}
               title="List View"
             >
-              <List size={16} />
+              <List size={14} />
             </button>
             <button
               onClick={() => setViewMode('timeline')}
-              className={`p-2 rounded-sm transition-colors ${viewMode === 'timeline' ? 'bg-card-alt text-primary' : 'text-text-muted hover:text-text-primary'}`}
+              className={`p-2 transition-all ${viewMode === 'timeline' ? 'bg-primary/20 text-primary border border-primary/20' : 'text-[#444] hover:text-text-primary'}`}
               title="Timeline View"
             >
-              <CalendarDays size={16} />
+              <CalendarDays size={14} />
             </button>
             <button
               onClick={() => setViewMode('my-tasks')}
-              className={`p-2 rounded-sm transition-colors ${viewMode === 'my-tasks' ? 'bg-card-alt text-primary' : 'text-text-muted hover:text-text-primary'}`}
+              className={`p-2 transition-all ${viewMode === 'my-tasks' ? 'bg-primary/20 text-primary border border-primary/20' : 'text-[#444] hover:text-text-primary'}`}
               title="My Tasks"
             >
-              <User size={16} />
+              <User size={14} />
             </button>
           </div>
 
-          <Button variant="ghost" size="sm" onClick={() => setIsSprintGeneratorOpen(true)} className="whitespace-nowrap">
-            <Zap size={14} />
-            <span className="hidden sm:inline">GENERATE SPRINT</span>
-            <span className="sm:hidden">SPRINT</span>
+
+          <Button
+            variant="ghost"
+            onClick={() => setIsSprintGeneratorOpen(true)}
+            className="font-sans text-[9px] font-black tracking-[0.2em] h-10 px-6 text-[#666] hover:text-text-primary"
+          >
+            <Zap size={14} className="mr-2 opacity-50" />
+            <span className="hidden sm:inline">SPRINT GEN</span>
           </Button>
-          <Button size="sm" onClick={() => setIsNewTaskModalOpen(true)} className="whitespace-nowrap">
-            <Plus size={14} />
-            NEW TASK
+          <Button
+            onClick={() => setIsNewTaskModalOpen(true)}
+            className="bg-primary hover:bg-accent-mid text-text-primary font-sans text-[9px] font-black tracking-[0.2em] h-10 px-8"
+          >
+            <Plus size={14} className="mr-2" />
+            TASK PROXY
           </Button>
         </div>
+
       </motion.header>
 
       {/* Main Content Area */}

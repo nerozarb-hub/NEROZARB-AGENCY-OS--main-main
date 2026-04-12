@@ -37,13 +37,14 @@ const statusConfig: Record<string, { color: string, icon: React.FC<any> | null }
 
 export function Badge({ status = 'default', variant, className = '', children, showIcon = true }: BadgeProps) {
   const normStatus = status.toLowerCase();
-  const config = statusConfig[normStatus] || { color: 'bg-card-alt border-border-dark text-text-secondary', icon: null };
+  const config = statusConfig[normStatus] || { color: 'bg-white/5 border-white/10 text-text-muted', icon: null };
   const Icon = config.icon;
 
   return (
-    <span className={`font-mono text-[11px] font-medium px-2 py-0.5 border rounded-sm inline-flex items-center gap-1.5 ${config.color} ${className}`}>
-      {showIcon && Icon && <Icon size={12} />}
+    <span className={`font-sans text-[10px] font-semibold uppercase tracking-[0.06em] px-2.5 py-0.5 border rounded-full inline-flex items-center gap-1.5 transition-colors ${config.color} ${className}`}>
+      {showIcon && Icon && <Icon size={10} strokeWidth={2.5} />}
       <span>{children || status}</span>
     </span>
   );
 }
+

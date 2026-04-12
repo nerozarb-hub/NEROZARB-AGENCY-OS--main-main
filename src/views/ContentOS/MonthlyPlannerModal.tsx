@@ -104,21 +104,21 @@ export default function MonthlyPlannerModal({ isOpen, onClose, clientId, onNavig
             onClose={onClose}
             width={1200}
             title={
-                <div>
-                    <h2 className="font-heading text-xl text-text-primary uppercase tracking-wider flex items-center gap-2">
-                        <ClipboardList className="w-5 h-5 text-primary" />
-                        Monthly Content Planner
-                    </h2>
-                    <p className="font-mono text-[10px] text-text-muted mt-0.5 tracking-widest uppercase">
-                        Protocol For Client: <span className="text-primary font-bold">{client?.name.toUpperCase() || 'NONE SELECTED'}</span>
+                <div className="space-y-1">
+                    <p className="font-sans text-[10px] font-bold uppercase tracking-[0.2em] text-primary/80">Strategy Execution</p>
+                    <h2 className="editorial-title text-3xl text-text-primary italic">Content Planner</h2>
+                    <p className="font-sans text-[10px] text-[#555] font-bold uppercase tracking-widest mt-2">
+                        Target Account: <span className="text-primary">{client?.name.toUpperCase() || 'NONE SELECTED'}</span>
                     </p>
                 </div>
+
             }
             footer={
                 <div className="flex flex-col sm:flex-row justify-between items-center w-full gap-4">
-                    <div className="text-[10px] font-mono text-text-muted uppercase tracking-widest bg-background/50 px-4 py-2 border border-border-dark rounded-sm">
-                        Calculated Batch Load: <span className="text-primary font-bold">{rows.length}</span> Objects
+                    <div className="font-sans text-[9px] font-black text-[#888] uppercase tracking-[0.2em] bg-white/5 px-4 py-2 border border-white/5">
+                        Batch Size: <span className="text-primary">{rows.length}</span> Identified
                     </div>
+
                     <div className="flex gap-3 w-full sm:w-auto">
                         <Button variant="ghost" onClick={onClose} className="font-mono text-[10px] uppercase tracking-widest flex-1 sm:flex-none h-11">
                             Abort
@@ -143,16 +143,19 @@ export default function MonthlyPlannerModal({ isOpen, onClose, clientId, onNavig
                 <div className="overflow-x-auto custom-scrollbar border border-border-dark rounded-sm bg-[#0c0e12]">
                     <table className="w-full text-left border-collapse min-w-[1000px]">
                         <thead>
-                            <tr className="text-[9px] font-mono tracking-widest text-text-muted uppercase border-b border-border-dark bg-card/50">
-                                <th className="p-4 w-12 text-center">ID</th>
-                                <th className="p-4 w-40">Timeline <span className="text-red-500">*</span></th>
-                                <th className="p-4 w-40">Environment</th>
-                                <th className="p-4 w-48">Format Type</th>
-                                <th className="p-4 w-48">Strategy Pillar</th>
-                                <th className="p-4">Mission Hook / Hook Idea <span className="text-red-500">*</span></th>
-                                <th className="p-4 w-48">Assignee Node</th>
-                                <th className="p-4 w-16 text-center">Op</th>
+                        <thead>
+                            <tr className="font-sans text-[9px] font-black tracking-[0.2em] text-[#555] uppercase border-b border-border-dark bg-onyx">
+                                <th className="py-6 px-4 w-12 text-center font-black">Ref</th>
+                                <th className="py-6 px-4 w-40 font-black">Timeline</th>
+                                <th className="py-6 px-4 w-40 font-black">Environment</th>
+                                <th className="py-6 px-4 w-48 font-black">Format</th>
+                                <th className="py-6 px-4 w-48 font-black">Strategy</th>
+                                <th className="py-6 px-4 font-black">Hook Intelligence</th>
+                                <th className="py-6 px-4 w-48 font-black">Operator</th>
+                                <th className="py-6 px-4 w-16 text-center font-black">Status</th>
                             </tr>
+                        </thead>
+
                         </thead>
                         <tbody className="divide-y divide-border-dark/30">
                             {rows.map((row, index) => (
@@ -163,57 +166,63 @@ export default function MonthlyPlannerModal({ isOpen, onClose, clientId, onNavig
                                             type="date"
                                             value={row.date}
                                             onChange={e => updateRow(row.id, 'date', e.target.value)}
-                                            className="w-full bg-transparent border border-transparent focus:border-primary/50 focus:bg-background/50 rounded-sm p-2 text-xs text-text-primary outline-none transition-all font-mono"
+                                            className="w-full bg-transparent border border-transparent focus:border-text-muted/20 focus:bg-white/[0.02] p-3 text-[11px] text-text-primary outline-none transition-all font-sans font-bold uppercase tracking-widest"
                                         />
                                     </td>
+
                                     <td className="p-2">
                                         <select
                                             value={row.platform}
                                             onChange={e => updateRow(row.id, 'platform', e.target.value)}
-                                            className="w-full bg-transparent border border-transparent focus:border-primary/50 focus:bg-background/50 rounded-sm p-2 text-xs text-text-primary outline-none transition-all font-mono uppercase"
+                                            className="w-full bg-transparent border border-transparent focus:border-text-muted/20 focus:bg-white/[0.02] p-3 text-[10px] text-text-primary outline-none transition-all font-sans font-black uppercase tracking-[0.15em] cursor-pointer"
                                         >
                                             {PLATFORMS.map(p => <option key={p} value={p}>{p.toUpperCase()}</option>)}
                                         </select>
                                     </td>
+
                                     <td className="p-2">
                                         <select
                                             value={row.postType}
                                             onChange={e => updateRow(row.id, 'postType', e.target.value)}
-                                            className="w-full bg-transparent border border-transparent focus:border-primary/50 focus:bg-background/50 rounded-sm p-2 text-xs text-text-primary outline-none transition-all font-mono uppercase"
+                                            className="w-full bg-transparent border border-transparent focus:border-text-muted/20 focus:bg-white/[0.02] p-3 text-[10px] text-text-primary outline-none transition-all font-sans font-black uppercase tracking-[0.15em] cursor-pointer"
                                         >
                                             {POST_TYPES.map(p => <option key={p} value={p}>{p.toUpperCase()}</option>)}
                                         </select>
                                     </td>
+
                                     <td className="p-2">
                                         <select
                                             value={row.pillar}
                                             onChange={e => updateRow(row.id, 'pillar', e.target.value)}
-                                            className="w-full bg-transparent border border-transparent focus:border-primary/50 focus:bg-background/50 rounded-sm p-2 text-xs text-text-primary outline-none transition-all font-mono uppercase"
+                                            className="w-full bg-transparent border border-transparent focus:border-text-muted/20 focus:bg-white/[0.02] p-3 text-[10px] text-text-primary outline-none transition-all font-sans font-black uppercase tracking-[0.15em] cursor-pointer"
                                         >
                                             {pillars.map(p => <option key={p} value={p}>{p.toUpperCase()}</option>)}
                                             <option value="Other">OTHER</option>
                                         </select>
                                     </td>
+
                                     <td className="p-2">
                                         <input
                                             type="text"
                                             value={row.hookIdea}
-                                            placeholder="ENTER MISSION HOOK..."
+                                            placeholder="MISSION HOOK..."
                                             onChange={e => updateRow(row.id, 'hookIdea', e.target.value)}
-                                            className="w-full bg-transparent border border-transparent focus:border-primary/50 focus:bg-background/50 rounded-sm p-2 text-xs text-text-primary outline-none transition-all font-mono uppercase placeholder:opacity-20"
+                                            className="w-full bg-transparent border border-transparent focus:border-text-muted/20 focus:bg-white/[0.02] p-3 text-[11px] text-text-primary outline-none transition-all font-sans font-black uppercase tracking-widest placeholder:text-[#333]"
                                         />
                                     </td>
+
                                     <td className="p-2">
                                         <select
                                             value={row.assignedTo}
                                             onChange={e => updateRow(row.id, 'assignedTo', e.target.value)}
-                                            className="w-full bg-transparent border border-transparent focus:border-primary/50 focus:bg-background/50 rounded-sm p-2 text-xs text-text-primary outline-none transition-all font-mono uppercase"
+                                            className="w-full bg-transparent border border-transparent focus:border-text-muted/20 focus:bg-white/[0.02] p-3 text-[10px] text-text-primary outline-none transition-all font-sans font-black uppercase tracking-[0.15em] cursor-pointer"
                                         >
                                             <option value="Art Director">ART_DIRECTOR</option>
                                             <option value="Video Editor">VIDEO_EDITOR</option>
                                             <option value="Social Media Manager">SM_MANAGER</option>
                                         </select>
                                     </td>
+
                                     <td className="p-4 text-center">
                                         <button
                                             onClick={() => removeRow(row.id)}

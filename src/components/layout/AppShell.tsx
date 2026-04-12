@@ -32,7 +32,6 @@ export default function AppShell({
 
   return (
     <div className="min-h-screen bg-onyx flex">
-      {/* Sidebar — fixed left on desktop, fixed bottom on mobile */}
       <Sidebar
         activeView={activeView}
         setActiveView={setActiveView}
@@ -40,23 +39,22 @@ export default function AppShell({
         onLogout={onLogout}
       />
 
-      {/* Main content — shifts right on desktop, no left-shift on mobile */}
       <main className="flex-1 min-h-screen transition-all duration-300 flex flex-col
                        md:ml-[80px] lg:ml-[210px]
                        pb-[70px] md:pb-0">
 
-        {/* Global Context Bar — hidden on mobile (too cramped) */}
-        <header className="hidden md:flex h-[60px] border-b border-border-dark bg-card items-center justify-between px-8 flex-shrink-0 z-40 relative">
-          <div className="flex items-center gap-2 text-text-muted">
-            <Hexagon size={16} />
-            <span className="font-mono text-[13px] font-medium tracking-wide">System Operations</span>
+        {/* Global Context Bar — Editorial Refresh */}
+        <header className="hidden md:flex h-[60px] border-b border-border-dark items-center justify-between px-10 flex-shrink-0 z-40 relative">
+          <div className="flex items-center gap-3">
+            <Hexagon size={14} className="text-primary" />
+            <span className="editorial-title text-base text-text-primary">System Operations</span>
           </div>
 
-          <div className="flex items-center gap-4">
-            <span className="font-mono text-xs font-medium text-text-muted">Active Context:</span>
-            <div className="relative group">
-              <button className="flex items-center gap-2 px-3 py-1.5 bg-card-alt  rounded-sm hover:border-primary transition-colors min-w-[160px] justify-between">
-                <span className="text-sm font-medium text-text-primary">
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-3">
+              <span className="font-sans text-[10px] font-semibold uppercase tracking-widest text-text-muted">Active Context</span>
+              <button className="flex items-center gap-2 px-3 py-1 bg-white/5 border border-border-dark rounded-none hover:border-text-muted transition-all">
+                <span className="text-[11px] font-medium text-text-primary tracking-wide">
                   {selectedClient || 'Global View'}
                 </span>
               </button>
@@ -66,13 +64,14 @@ export default function AppShell({
               variant="ghost"
               size="sm"
               onClick={() => setIsPlannerOpen(true)}
-              className="text-text-muted hover:text-primary"
+              className="text-text-muted hover:text-text-primary font-sans text-[10px] uppercase tracking-widest"
             >
-              <ClipboardList size={16} className="mr-2" />
-              PLAN MONTH
+              <ClipboardList size={14} className="mr-2" />
+              Plan Month
             </Button>
           </div>
         </header>
+
 
         <MonthlyPlannerModal
           isOpen={isPlannerOpen}

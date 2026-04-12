@@ -44,76 +44,82 @@ export default function WeeklyView({ posts, clients, onPostClick }: WeeklyViewPr
     const DAY_LABELS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 
     return (
-        <motion.div variants={itemVariants} className="flex-1 flex gap-3 h-full overflow-x-auto pb-4">
+        <motion.div variants={itemVariants} className="flex-1 flex gap-6 h-full overflow-x-auto pb-6 custom-scrollbar">
+
             {weekDays.map((dayDate, index) => {
                 const dateStr = dayDate.toISOString().split('T')[0];
                 const isToday = dateStr === todayStr;
                 const dayPosts = postsByDate[dateStr] || [];
 
                 return (
+                return (
                     <div
                         key={dateStr}
-                        className={`flex-1 min-w-[240px] flex flex-col rounded-sm border ${isToday ? 'border-primary/30 bg-primary/5' : 'border-border-dark bg-background/50'}`}
+                        className={`flex-1 min-w-[280px] flex flex-col bg-white/[0.01] border-x border-white/[0.03] ${isToday ? 'bg-primary/5' : ''}`}
                     >
+
                         {/* Column Header */}
-                        <div className={`p-3 border-b flex justify-between items-center ${isToday ? 'border-primary/30 bg-card' : 'border-border-dark bg-card'}`}>
+                        <div className={`p-5 border-b border-border-dark flex justify-between items-center bg-onyx sticky top-0 z-10`}>
                             <div>
-                                <span className={`font-mono text-xs tracking-widest uppercase ${isToday ? 'text-primary font-bold' : 'text-text-muted'}`}>
+                                <span className={`font-sans text-[10px] font-black tracking-[0.2em] uppercase ${isToday ? 'text-primary' : 'text-[#555]'}`}>
                                     {DAY_LABELS[index]}
                                 </span>
-                                <div className={`text-2xl font-heading mt-0.5 ${isToday ? 'text-primary' : 'text-text-primary'}`}>
+                                <div className={`editorial-title text-3xl italic mt-1 ${isToday ? 'text-primary' : 'text-text-primary'}`}>
                                     {dayDate.getDate()}
                                 </div>
                             </div>
-                            <span className="text-xs text-text-muted font-mono">
-                                {dayPosts.length > 0 ? `${dayPosts.length} post${dayPosts.length > 1 ? 's' : ''}` : '—'}
+                            <span className="font-sans text-[10px] font-bold text-[#555] uppercase tracking-widest">
+                                {dayPosts.length > 0 ? `${dayPosts.length} Identify` : '—'}
                             </span>
                         </div>
 
+
                         {/* Post Cards */}
-                        <div className="flex-1 p-2 space-y-2 overflow-y-auto custom-scrollbar">
+                        <div className="flex-1 p-4 space-y-4 overflow-y-auto custom-scrollbar">
                             {dayPosts.map(post => {
                                 const client = clients.find(c => c.id === post.clientId);
                                 return (
                                     <div
                                         key={post.id}
                                         onClick={() => onPostClick(post)}
-                                        className="bg-card  p-3 rounded-sm cursor-pointer hover:border-primary/40 transition-colors flex flex-col gap-2"
+                                        className="bg-white/[0.02] border border-white/[0.05] p-5 cursor-pointer hover:border-text-muted/30 transition-all duration-500 flex flex-col gap-4 group"
                                     >
                                         {/* Top row */}
                                         <div className="flex justify-between items-start gap-1">
                                             <Badge status={post.status}>{post.status}</Badge>
-                                            <span className="text-[10px] text-text-muted font-mono shrink-0">{post.scheduledTime}</span>
+                                            <span className="font-sans text-[10px] font-bold text-[#555] tracking-widest uppercase shrink-0">{post.scheduledTime}</span>
                                         </div>
 
                                         {/* Platform + type */}
                                         <div className="flex items-center gap-2">
-                                            <span className="text-[10px] uppercase tracking-wider font-mono text-primary/70">{post.platforms.join(', ')}</span>
-                                            <span className="text-[10px] text-text-muted bg-card-alt px-1.5 py-0.5 rounded-sm">{post.postType}</span>
+                                            <span className="font-sans text-[10px] font-bold uppercase tracking-[0.15em] text-primary/80 truncate">{post.platforms.join(' + ')}</span>
+                                            <div className="h-px w-4 bg-border-dark" />
+                                            <span className="font-sans text-[9px] font-bold text-[#555] uppercase tracking-widest">{post.postType}</span>
                                         </div>
 
                                         {/* Hook */}
-                                        <p className="text-xs text-text-primary line-clamp-2 leading-relaxed">
-                                            {post.hook || <span className="italic text-text-muted">No hook defined</span>}
+                                        <p className="editorial-title text-base italic text-text-primary line-clamp-2 leading-relaxed">
+                                            {post.hook || <span className="text-[#555]">No intelligence hook defined</span>}
                                         </p>
 
                                         {/* Footer */}
-                                        <div className="flex justify-between items-center pt-1.5 border-t border-border-dark/50">
+                                        <div className="flex justify-between items-center pt-4 border-t border-white/[0.04]">
                                             {client && (
-                                                <span className="text-[10px] text-primary/60 font-mono truncate">{client.name}</span>
+                                                <span className="font-sans text-[10px] font-bold text-primary/60 truncate uppercase tracking-tighter">{client.name}</span>
                                             )}
-                                            <span className="text-[10px] text-text-muted/70 uppercase tracking-wider ml-auto">{post.assignedTo}</span>
+                                            <span className="font-sans text-[10px] font-black text-text-muted uppercase tracking-widest ml-auto">{post.assignedTo?.split(' ')[0]}</span>
                                         </div>
                                     </div>
                                 );
                             })}
 
                             {dayPosts.length === 0 && (
-                                <div className="text-xs text-text-muted/40 p-4 text-center border border-dashed border-border-dark/40 rounded-sm mt-2">
-                                    No posts
+                                <div className="font-sans text-[10px] font-bold text-[#555] uppercase tracking-[0.2em] p-10 text-center border border-white/[0.04] rounded-none opacity-40">
+                                    Quiet
                                 </div>
                             )}
                         </div>
+
                     </div>
                 );
             })}

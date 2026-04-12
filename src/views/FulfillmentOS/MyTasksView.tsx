@@ -17,28 +17,29 @@ interface TaskCardProps {
 
 const TaskCard: React.FC<TaskCardProps> = ({ task, isOverdue = false, onClick }) => (
     <Card
-        className={`p-4 cursor-pointer hover:border-primary/50 transition-colors ${isOverdue ? 'bg-red-500/5 border-red-500/30' : ''}`}
+        className={`p-6 cursor-pointer hover:border-white/20 transition-all duration-300 bg-white/[0.01] border-white/5 rounded-none ${isOverdue ? 'bg-red-500/[0.02] border-red-500/20' : ''}`}
         onClick={onClick}
     >
-        <div className="flex justify-between items-start mb-3">
-            <Badge status="default">{task.currentStage}</Badge>
-            <div className={`w-2 h-2 rounded-full shrink-0 ${task.priority === 'critical' ? 'bg-red-500' :
+        <div className="flex justify-between items-start mb-4">
+            <Badge className="font-sans text-[8px] font-bold tracking-widest px-2 py-0.5 rounded-none uppercase border-white/5">{task.currentStage}</Badge>
+            <div className={`w-1.5 h-1.5 rotate-45 shrink-0 ${task.priority === 'critical' ? 'bg-red-500' :
                 task.priority === 'high' ? 'bg-yellow-500' : 'bg-primary'
                 }`} />
         </div>
-        <h4 className={`text-base font-medium mb-1 transition-colors ${isOverdue ? 'text-red-500 group-hover:text-red-400' : 'text-text-primary group-hover:text-primary'}`}>
+        <h4 className={`font-sans text-[11px] font-bold mb-2 uppercase tracking-widest transition-colors ${isOverdue ? 'text-red-500' : 'text-text-muted group-hover:text-text-primary'}`}>
             {task.name}
         </h4>
-        <p className="font-mono text-[10px] text-text-muted mb-4 uppercase tracking-widest">{task.phase} // TSK-{task.id}</p>
+        <p className="font-sans text-[8px] font-black text-[#333] mb-5 uppercase tracking-[0.3em]">{task.phase} · ARC-{task.id}</p>
 
-        <div className="flex items-center justify-between mt-auto pt-3 border-t border-border-dark/50">
-            <span className="font-mono text-[10px] text-text-secondary uppercase">{task.category}</span>
-            <span className={`font-mono text-[10px] uppercase font-bold ${isOverdue ? 'text-red-500' : 'text-text-primary'}`}>
-                {task.deadline || 'No Deadline'}
+        <div className="flex items-center justify-between mt-auto pt-4 border-t border-white/[0.04]">
+            <span className="font-sans text-[8px] font-black text-[#444] tracking-widest uppercase">{task.category}</span>
+            <span className={`font-sans text-[9px] font-black tracking-widest uppercase ${isOverdue ? 'text-red-500' : 'text-primary'}`}>
+                {task.deadline || 'PENDING'}
             </span>
         </div>
     </Card>
 );
+
 
 export default function MyTasksView({ tasks, onTaskClick }: MyTasksViewProps) {
     const currentUserRole = sessionStorage.getItem('nodeRole') || 'Art Director'; // Default for demo
@@ -82,77 +83,86 @@ export default function MyTasksView({ tasks, onTaskClick }: MyTasksViewProps) {
 
     return (
         <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-8 pb-8">
-            <div>
-                <h3 className="font-mono text-xs font-medium text-text-muted mb-4 flex items-center gap-2">
-                    <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-                    OVERDUE ({categorizedTasks.overdue.length})
+            <section className="space-y-6">
+                <h3 className="font-sans text-[9px] font-black tracking-[0.3em] text-[#555] uppercase italic flex items-center gap-3">
+                    <div className="w-1 h-1 bg-red-500 rotate-45" />
+                    Overdue Vectors ({categorizedTasks.overdue.length})
                 </h3>
+
                 {categorizedTasks.overdue.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                         {categorizedTasks.overdue.map(t => <TaskCard key={t.id} task={t} isOverdue={true} onClick={() => onTaskClick(t)} />)}
                     </div>
                 ) : (
-                    <div className="text-sm text-text-muted italic">No overdue tasks. Stay focused.</div>
+                    <div className="font-sans text-[10px] text-[#333] italic uppercase tracking-widest border border-white/[0.04] p-8 bg-white/[0.01]">All systems cleared.</div>
                 )}
-            </div>
+            </section>
 
-            <div>
-                <h3 className="font-mono text-xs font-medium text-text-muted mb-4 flex items-center gap-2">
-                    <span className="w-2 h-2 bg-yellow-500 rounded-full" />
-                    DUE TODAY ({categorizedTasks.dueToday.length})
+
+            <section className="space-y-6">
+                <h3 className="font-sans text-[9px] font-black tracking-[0.3em] text-[#555] uppercase italic flex items-center gap-3">
+                    <div className="w-1 h-1 bg-yellow-500 rotate-45" />
+                    Active Pulse ({categorizedTasks.dueToday.length})
                 </h3>
+
                 {categorizedTasks.dueToday.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                         {categorizedTasks.dueToday.map(t => <TaskCard key={t.id} task={t} onClick={() => onTaskClick(t)} />)}
                     </div>
                 ) : (
-                    <div className="text-sm text-text-muted italic">No tasks due today.</div>
+                    <div className="font-sans text-[10px] text-[#333] italic uppercase tracking-widest border border-white/[0.04] p-8 bg-white/[0.01]">Daily quota maintained.</div>
                 )}
-            </div>
+            </section>
 
-            <div>
-                <h3 className="font-mono text-xs font-medium text-text-muted mb-4 flex items-center gap-2">
-                    <span className="w-2 h-2 bg-primary rounded-full" />
-                    DUE THIS WEEK ({categorizedTasks.dueThisWeek.length})
+
+            <section className="space-y-6">
+                <h3 className="font-sans text-[9px] font-black tracking-[0.3em] text-[#555] uppercase italic flex items-center gap-3">
+                    <div className="w-1 h-1 bg-primary/40 rotate-45" />
+                    Weekly Forecast ({categorizedTasks.dueThisWeek.length})
                 </h3>
+
                 {categorizedTasks.dueThisWeek.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                         {categorizedTasks.dueThisWeek.map(t => <TaskCard key={t.id} task={t} onClick={() => onTaskClick(t)} />)}
                     </div>
                 ) : (
-                    <div className="text-sm text-text-muted italic">No tasks due the rest of this week.</div>
+                    <div className="font-sans text-[10px] text-[#333] italic uppercase tracking-widest border border-white/[0.04] p-8 bg-white/[0.01]">No weekly anomalies.</div>
                 )}
-            </div>
+            </section>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div>
-                    <h3 className="font-mono text-xs font-medium text-text-muted mb-4 flex items-center gap-2">
-                        <span className="w-2 h-2 bg-blue-500 rounded-full" />
-                        UPCOMING ({categorizedTasks.upcoming.length})
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 pt-8 border-t border-white/[0.04]">
+                <section className="space-y-6">
+                    <h3 className="font-sans text-[9px] font-black tracking-[0.3em] text-[#555] uppercase italic flex items-center gap-3">
+                        <div className="w-1 h-1 bg-[#333] rotate-45" />
+                        Upcoming Streams ({categorizedTasks.upcoming.length})
                     </h3>
+
                     {categorizedTasks.upcoming.length > 0 ? (
                         <div className="flex flex-col gap-3">
                             {categorizedTasks.upcoming.map(t => <TaskCard key={t.id} task={t} onClick={() => onTaskClick(t)} />)}
                         </div>
                     ) : (
-                        <div className="text-sm text-text-muted italic">No upcoming tasks scheduled yet.</div>
+                        <div className="font-sans text-[10px] text-[#333] italic uppercase tracking-widest">Future sectors dormant.</div>
                     )}
-                </div>
+                </section>
 
-                <div>
-                    <h3 className="font-mono text-xs font-medium text-text-muted mb-4 flex items-center gap-2">
-                        <span className="w-2 h-2 bg-border-dark rounded-full" />
-                        RECENTLY COMPLETED
+                <section className="space-y-6">
+                    <h3 className="font-sans text-[9px] font-black tracking-[0.3em] text-[#555] uppercase italic flex items-center gap-3">
+                        <div className="w-1 h-1 bg-primary rotate-45" />
+                        Historical Ledger
                     </h3>
+
                     {categorizedTasks.completed.length > 0 ? (
                         <div className="flex flex-col gap-3 opacity-60">
                             {categorizedTasks.completed.map(t => <TaskCard key={t.id} task={t} onClick={() => onTaskClick(t)} />)}
                         </div>
                     ) : (
-                        <div className="text-sm text-text-muted italic">No recently completed tasks.</div>
+                        <div className="font-sans text-[10px] text-[#333] italic uppercase tracking-widest">No recent completions.</div>
                     )}
-                </div>
+                </section>
             </div>
+
         </div>
     );
 }

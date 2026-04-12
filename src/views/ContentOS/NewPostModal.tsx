@@ -139,125 +139,140 @@ export default function NewPostModal({ isOpen, onClose, post, prefilledDate }: N
         <Modal
             isOpen={isOpen}
             onClose={onClose}
-            title="New Post — Content Engine"
-            width={900}
+            title={
+                <div className="space-y-1">
+                    <p className="font-sans text-[10px] font-bold uppercase tracking-[0.2em] text-primary/80">Content Pipeline</p>
+                    <h2 className="editorial-title text-3xl text-text-primary italic">Identify Asset</h2>
+                </div>
+            }
+            width={1000}
+
             footer={
                 <div className="flex justify-between items-center w-full">
-                    <Button variant="ghost" onClick={onClose} className="text-text-muted hover:text-text-primary">
-                        CANCEL
+                    <Button variant="ghost" onClick={onClose} className="font-sans text-[10px] font-black uppercase tracking-widest text-[#555] hover:text-text-primary">
+                        Abort
                     </Button>
-                    <Button onClick={handleSubmit} disabled={clientId === '' || !scheduledDate} className="bg-primary hover:bg-accent-mid text-text-primary px-8">
-                        <Save size={16} className="mr-2" />
-                        CREATE POST
+                    <Button onClick={handleSubmit} disabled={clientId === '' || !scheduledDate} className="bg-primary hover:bg-accent-mid text-text-primary px-10 h-12 font-sans text-[10px] font-black uppercase tracking-[0.2em]">
+                        <Save size={14} className="mr-2" />
+                        Deploy Asset
                     </Button>
                 </div>
+
             }
         >
             <div className="space-y-10 py-2">
                 {/* SECTION 1: IDENTIFICATION */}
-                <section className="space-y-6">
-                    <h4 className="font-mono text-sm tracking-widest text-text-primary border-b border-border-dark pb-2">SECTION 1: IDENTIFICATION</h4>
+                <section className="space-y-8">
+                    <h4 className="font-sans text-[9px] font-black tracking-[0.3em] text-[#555] uppercase border-b border-white/[0.04] pb-4">01 · Identification</h4>
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                            <label className="text-xs font-mono text-text-muted uppercase">Client *</label>
+                        <div className="space-y-3">
+                            <label className="font-sans text-[10px] font-black text-[#666] uppercase tracking-widest">Target Client</label>
                             <select
                                 value={clientId}
                                 onChange={(e) => setClientId(e.target.value === '' ? '' : Number(e.target.value))}
-                                className="w-full bg-background border border-border-dark rounded-sm p-3 text-sm text-text-primary focus:border-primary outline-none"
+                                className="w-full bg-white/[0.02] border border-white/[0.05] p-4 text-xs font-bold font-sans text-text-primary focus:border-text-muted/20 outline-none transition-all uppercase tracking-widest"
                                 required
                             >
-                                <option value="">Select a client...</option>
-                                {clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                                <option value="">SELECT CLIENT...</option>
+                                {clients.map(c => <option key={c.id} value={c.id}>{c.name.toUpperCase()}</option>)}
                             </select>
                         </div>
-                        <div className="space-y-2">
-                            <label className="text-xs font-mono text-text-muted uppercase">Platform(s)</label>
+                        <div className="space-y-3">
+                            <label className="font-sans text-[10px] font-black text-[#666] uppercase tracking-widest">Environment(s)</label>
                             <div className="flex flex-wrap gap-2">
                                 {PLATFORMS.map(p => (
                                     <button
                                         key={p.id}
                                         onClick={() => togglePlatform(p.id)}
-                                        className={`px-3 py-1.5 text-xs rounded-sm border transition-colors ${platforms.includes(p.id) ? 'bg-primary/20 border-primary text-primary font-bold' : 'bg-background border-border-dark text-text-muted hover:border-text-muted'}`}
+                                        className={`px-4 py-2 text-[9px] font-black uppercase tracking-widest border transition-all duration-300 ${platforms.includes(p.id) ? 'bg-primary/20 border-primary/40 text-primary' : 'bg-white/5 border-white/5 text-[#444] hover:border-[#666]'}`}
                                     >
                                         {p.label}
                                     </button>
                                 ))}
                             </div>
                         </div>
+
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                        <div className="space-y-2">
-                            <label className="text-xs font-mono text-text-muted uppercase">Post Type *</label>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+                        <div className="space-y-3">
+                            <label className="font-sans text-[10px] font-black text-[#666] uppercase tracking-widest">Format Type</label>
                             <select
                                 value={postType}
                                 onChange={(e) => setPostType(e.target.value as PostType)}
-                                className="w-full bg-background border border-border-dark rounded-sm p-3 text-sm text-text-primary focus:border-primary outline-none"
+                                className="w-full bg-white/[0.02] border border-white/[0.05] p-4 text-xs font-bold font-sans text-text-primary focus:border-text-muted/20 outline-none transition-all uppercase tracking-widest"
                             >
-                                {POST_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+                                {POST_TYPES.map(t => <option key={t} value={t}>{t.toUpperCase()}</option>)}
                             </select>
                         </div>
-                        <div className="space-y-2">
-                            <label className="text-xs font-mono text-text-muted uppercase">Content Pillar</label>
+                        <div className="space-y-3">
+                            <label className="font-sans text-[10px] font-black text-[#666] uppercase tracking-widest">Strategy Pillar</label>
                             <select
                                 value={contentPillar}
                                 onChange={(e) => setContentPillar(e.target.value)}
-                                className="w-full bg-background border border-border-dark rounded-sm p-3 text-sm text-text-primary focus:border-primary outline-none"
+                                className="w-full bg-white/[0.02] border border-white/[0.05] p-4 text-xs font-bold font-sans text-text-primary focus:border-text-muted/20 outline-none transition-all uppercase tracking-widest"
                             >
-                                {clientId === '' && <option value="">Select client first</option>}
-                                {selectedClientPillars.map(pillar => <option key={pillar} value={pillar}>{pillar}</option>)}
-                                <option value="Other">Other</option>
+                                {clientId === '' && <option value="">SELECT ACCOUNT FIRST</option>}
+                                {selectedClientPillars.map(pillar => <option key={pillar} value={pillar}>{pillar.toUpperCase()}</option>)}
+                                <option value="Other">OTHER</option>
                             </select>
                         </div>
-                        <div className="space-y-2">
-                            <label className="text-xs font-mono text-text-muted uppercase">Template Type</label>
+                        <div className="space-y-3">
+                            <label className="font-sans text-[10px] font-black text-[#666] uppercase tracking-widest">Asset Template</label>
                             <select
                                 value={templateType}
                                 onChange={(e) => setTemplateType(e.target.value as TemplateType)}
-                                className="w-full bg-background border border-border-dark rounded-sm p-3 text-sm text-text-primary focus:border-primary outline-none"
+                                className="w-full bg-white/[0.02] border border-white/[0.05] p-4 text-xs font-bold font-sans text-text-primary focus:border-text-muted/20 outline-none transition-all uppercase tracking-widest"
                             >
-                                {TEMPLATES.map(t => <option key={t} value={t}>{t}</option>)}
+                                {TEMPLATES.map(t => <option key={t} value={t}>{t.toUpperCase()}</option>)}
                             </select>
                         </div>
                     </div>
+
                 </section>
 
                 {/* SECTION 2: CONTENT */}
-                <section className="space-y-6">
-                    <h4 className="font-mono text-sm tracking-widest text-text-primary border-b border-border-dark pb-2">SECTION 2: CONTENT</h4>
+                <section className="space-y-8">
+                    <h4 className="font-sans text-[9px] font-black tracking-[0.3em] text-[#555] uppercase border-b border-white/[0.04] pb-4">02 · Creative Intelligence</h4>
 
-                    <div className="space-y-2">
-                        <label className="text-xs font-mono text-text-muted uppercase">HOOK — First line only</label>
+
+                    <div className="space-y-3">
+                        <label className="font-sans text-[10px] font-black text-[#666] uppercase tracking-widest flex justify-between">
+                          <span>Identify Hook</span>
+                        </label>
                         <textarea
                             value={hook}
                             onChange={(e) => setHook(e.target.value)}
-                            placeholder="THE ONE LINE THAT STOPS THE SCROLL..."
-                            className="w-full bg-background border border-border-dark rounded-sm p-3 text-sm text-text-primary focus:border-primary outline-none resize-none font-bold min-h-[60px]"
+                            placeholder="THE SCROLL-STOPPING COMMAND..."
+                            className="w-full bg-white/[0.02] border border-white/[0.05] p-5 text-xl font-medium font-serif italic text-text-primary focus:border-text-muted/20 outline-none resize-none min-h-[80px]"
                             rows={2}
                         />
-                        <div className="flex gap-2 pt-1 overflow-x-auto pb-2 scrollbar-none">
+                        <div className="flex gap-2 pt-2 overflow-x-auto pb-2 custom-scrollbar">
                             {PSYCH_TRIGGERS.map(t => (
                                 <button
                                     key={t}
                                     onClick={() => handlePsychTrigger(t)}
-                                    className="shrink-0 px-2 py-0.5 text-[10px] uppercase tracking-wider font-mono bg-surface border border-border-dark text-text-muted rounded-sm hover:text-primary hover:border-primary transition-colors"
+                                    className="shrink-0 px-3 py-1 text-[9px] font-black uppercase tracking-[0.2em] bg-white/5 border border-white/5 text-[#555] hover:text-primary hover:border-primary transition-all duration-300"
                                 >
-                                    [ {t} ]
+                                    {t}
                                 </button>
                             ))}
                         </div>
                     </div>
 
-                    <div className="space-y-2">
-                        <label className="text-xs font-mono text-text-muted uppercase">BODY COPY</label>
+
+                    <div className="space-y-3">
+                        <label className="font-sans text-[10px] font-black text-[#666] uppercase tracking-widest">Intelligence Body</label>
                         <textarea
                             value={captionBody}
                             onChange={(e) => setCaptionBody(e.target.value)}
-                            placeholder="2–4 sentences. What they realize. What they learn. First person but brand-first."
-                            className="w-full bg-background border border-border-dark rounded-sm p-3 text-sm text-text-primary focus:border-primary outline-none resize-none min-h-[100px]"
+                            placeholder="WHAT ARE THEY REALIZING? WHAT IS THE COMMAND?"
+                            className="w-full bg-white/[0.02] border border-white/[0.05] p-5 text-sm font-sans text-text-muted focus:border-text-muted/20 outline-none resize-none min-h-[120px] leading-relaxed"
                             rows={4}
                         />
                     </div>
+
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
@@ -290,19 +305,20 @@ export default function NewPostModal({ isOpen, onClose, post, prefilledDate }: N
                         </div>
                     </div>
 
-                    <div className="space-y-2">
-                        <label className="text-xs font-mono text-text-muted uppercase flex justify-between">
-                            <span>VISUAL BRIEF — FOR ART DIRECTOR / VIDEO EDITOR</span>
-                            <span className="text-primary/70">{templateType} applied</span>
+                    <div className="space-y-3">
+                        <label className="font-sans text-[10px] font-black text-[#666] uppercase tracking-widest flex justify-between">
+                            <span>Visual Briefing</span>
+                            <span className="text-primary/60 italic font-medium normal-case tracking-normal">{templateType} System Active</span>
                         </label>
                         <textarea
                             value={visualBrief}
                             onChange={(e) => setVisualBrief(e.target.value)}
-                            placeholder="Describe exactly what the visual should look like. Template used, key text, colors, elements, mood..."
-                            className="w-full bg-background border border-primary/30 rounded-sm p-3 text-sm text-text-primary focus:border-primary outline-none resize-none min-h-[100px]"
+                            placeholder="DESCRIBE THE VISUAL EXECUTION. MOOD. COLORS. COMMAND."
+                            className="w-full bg-white/[0.02] border border-primary/10 p-5 text-sm font-sans text-text-primary focus:border-primary/30 outline-none resize-none min-h-[120px] leading-relaxed"
                             rows={3}
                         />
                     </div>
+
                 </section>
 
                 {/* SECTION 3, 4, 5 */}

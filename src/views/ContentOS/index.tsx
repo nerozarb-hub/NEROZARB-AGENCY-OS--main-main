@@ -78,21 +78,22 @@ export default function ContentOS({ onNavigate }: { onNavigate?: (view: string, 
       variants={containerVariants}
       className="p-4 md:p-8 w-full max-w-[1800px] mx-auto space-y-4 md:space-y-8 min-h-full flex flex-col"
     >
-      <motion.header variants={itemVariants} className="flex flex-col md:flex-row md:justify-between md:items-end gap-3 flex-shrink-0">
-        <div>
-          <h2 className="font-heading text-2xl md:text-3xl tracking-tighter text-text-primary">CONTENT OS</h2>
-          <p className="font-mono text-[10px] md:text-xs tracking-widest text-text-muted mt-1 uppercase">Global Content Engine</p>
+      <motion.header variants={itemVariants} className="flex flex-col md:flex-row md:justify-between md:items-end gap-3 flex-shrink-0 mb-8">
+        <div className="space-y-1">
+          <p className="font-sans text-[10px] font-bold uppercase tracking-[0.2em] text-primary/80">Asset Engine</p>
+          <h2 className="editorial-title text-4xl sm:text-5xl text-text-primary">Content OS</h2>
         </div>
+
 
         <div className="flex items-center gap-2 md:gap-6 overflow-x-auto pb-1 scroll-touch">
           {/* Client Selector */}
-          <div className="flex bg-card  rounded-sm p-1 text-sm">
+          <div className="flex bg-white/5 border border-border-dark rounded-none p-1 text-xs">
             <select
               value={clientFilter}
               onChange={(e) => setClientFilter(e.target.value === 'all' ? 'all' : Number(e.target.value))}
-              className="bg-transparent text-text-muted border-none outline-none cursor-pointer py-1 px-2 hover:text-text-primary transition-colors"
+              className="bg-transparent text-text-muted font-sans font-bold uppercase tracking-widest border-none outline-none cursor-pointer py-1 px-3 hover:text-text-primary transition-colors"
             >
-              <option value="all">ALL CLIENTS</option>
+              <option value="all">Global View</option>
               {activeClients.map(c => (
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}
@@ -100,37 +101,39 @@ export default function ContentOS({ onNavigate }: { onNavigate?: (view: string, 
           </div>
 
 
+
           {/* View Toggles */}
-          <div className="flex bg-card  rounded-sm p-1">
+          <div className="flex bg-white/5 border border-border-dark rounded-none p-1">
             <button
               onClick={() => setViewMode('monthly')}
-              className={`p-2 rounded-sm transition-colors ${viewMode === 'monthly' ? 'bg-card-alt text-primary' : 'text-text-muted hover:text-text-primary'}`}
+              className={`p-2 rounded-none transition-all duration-300 ${viewMode === 'monthly' ? 'bg-primary text-text-primary' : 'text-text-muted hover:text-text-primary'}`}
               title="Monthly View"
             >
-              <CalendarIcon size={16} />
+              <CalendarIcon size={14} />
             </button>
             <button
               onClick={() => setViewMode('weekly')}
-              className={`p-2 rounded-sm transition-colors ${viewMode === 'weekly' ? 'bg-card-alt text-primary' : 'text-text-muted hover:text-text-primary'}`}
+              className={`p-2 rounded-none transition-all duration-300 ${viewMode === 'weekly' ? 'bg-primary text-text-primary' : 'text-text-muted hover:text-text-primary'}`}
               title="Weekly View"
             >
-              <CalendarDays size={16} />
+              <CalendarDays size={14} />
             </button>
             <button
               onClick={() => setViewMode('list')}
-              className={`p-2 rounded-sm transition-colors ${viewMode === 'list' ? 'bg-card-alt text-primary' : 'text-text-muted hover:text-text-primary'}`}
+              className={`p-2 rounded-none transition-all duration-300 ${viewMode === 'list' ? 'bg-primary text-text-primary' : 'text-text-muted hover:text-text-primary'}`}
               title="List View"
             >
-              <List size={16} />
+              <List size={14} />
             </button>
             <button
               onClick={() => setViewMode('pipeline')}
-              className={`p-2 rounded-sm transition-colors ${viewMode === 'pipeline' ? 'bg-card-alt text-primary' : 'text-text-muted hover:text-text-primary'}`}
+              className={`p-2 rounded-none transition-all duration-300 ${viewMode === 'pipeline' ? 'bg-primary text-text-primary' : 'text-text-muted hover:text-text-primary'}`}
               title="Pipeline View"
             >
-              <KanbanSquare size={16} />
+              <KanbanSquare size={14} />
             </button>
           </div>
+
 
           <Button size="sm" variant="outline" onClick={handleOpenPlanner} className="whitespace-nowrap">
             <ClipboardList size={14} />
@@ -207,13 +210,14 @@ export default function ContentOS({ onNavigate }: { onNavigate?: (view: string, 
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-sm bg-card border border-border-dark rounded-sm shadow-2xl overflow-hidden"
+              className="relative w-full max-w-sm bg-onyx border border-border-dark rounded-none shadow-2xl overflow-hidden"
             >
-              <div className="p-6 border-b border-border-dark flex justify-between items-center bg-card-alt">
-                <div>
-                  <h3 className="font-heading text-lg text-text-primary tracking-tight uppercase">Select Client</h3>
-                  <p className="font-mono text-[10px] text-text-muted mt-1 uppercase tracking-widest">Choose a client to plan this month for</p>
+              <div className="p-8 border-b border-border-dark flex justify-between items-center">
+                <div className="space-y-1">
+                  <h3 className="editorial-title text-2xl text-text-primary">Target Account</h3>
+                  <p className="font-sans text-[10px] font-bold text-primary/80 uppercase tracking-widest">Select Deployment Base</p>
                 </div>
+
                 <button onClick={() => setIsClientPickerOpen(false)} className="p-2 text-text-muted hover:text-text-primary transition-colors">
                   <X size={18} />
                 </button>
@@ -230,15 +234,16 @@ export default function ContentOS({ onNavigate }: { onNavigate?: (view: string, 
                         setIsClientPickerOpen(false);
                         setIsPlannerOpen(true);
                       }}
-                      className="w-full flex items-center gap-3 p-4 bg-card-alt hover:bg-primary/10 hover:border-primary/50 border border-border-dark rounded-sm transition-all text-left group"
+                      className="w-full flex items-center gap-4 p-5 hover:bg-white/[0.03] border-b border-white/[0.04] last:border-0 transition-all text-left group"
                     >
-                      <div className="w-2 h-2 rounded-full bg-primary flex-shrink-0" />
+                      <div className="w-1.5 h-1.5 rounded-none bg-primary/20 group-hover:bg-primary group-hover:rotate-45 transition-all duration-500" />
                       <div>
-                        <p className="font-heading text-sm text-text-primary uppercase group-hover:text-primary transition-colors">{c.name}</p>
-                        <p className="font-mono text-[10px] text-text-muted mt-0.5">{c.niche} · {c.tier}</p>
+                        <p className="font-sans text-xs font-bold text-text-primary uppercase tracking-widest group-hover:text-primary transition-colors">{c.name}</p>
+                        <p className="font-sans text-[10px] text-[#555] font-bold uppercase tracking-[0.1em] mt-1">{c.niche} · {c.tier}</p>
                       </div>
                     </button>
                   ))
+
                 )}
               </div>
             </motion.div>

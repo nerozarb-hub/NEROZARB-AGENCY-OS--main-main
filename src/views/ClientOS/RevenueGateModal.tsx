@@ -68,30 +68,39 @@ export default function RevenueGateModal({ isOpen, onClose, onClientCreated }: R
         <Modal
             isOpen={isOpen}
             onClose={onClose}
-            title="Install New Client"
-            width={650}
+            title={
+                <div className="space-y-1">
+                    <p className="font-sans text-[10px] font-bold uppercase tracking-[0.2em] text-primary/80">Asset Acquisition</p>
+                    <h2 className="editorial-title text-3xl text-text-primary italic">Install Entity</h2>
+                </div>
+            }
+            width={700}
+
             footer={
-                <div className="flex justify-end gap-3 w-full">
-                    <Button variant="outline" onClick={onClose} className="border-border-dark hover:border-text-muted flex-1 md:flex-none">
-                        CANCEL
+                <div className="flex justify-end gap-4 w-full">
+                    <Button variant="ghost" onClick={onClose} className="font-sans text-[10px] font-black uppercase tracking-widest text-[#555] hover:text-text-primary">
+                        Abort
                     </Button>
                     <Button
                         type="submit"
                         form="revenue-gate-form"
-                        className="bg-primary hover:bg-accent-mid text-text-primary px-8 flex-1 md:flex-none"
+                        className="bg-primary hover:bg-accent-mid text-text-primary px-10 h-12 font-sans text-[10px] font-black uppercase tracking-[0.2em]"
                         disabled={!formData.name || !formData.revenueGate || !formData.tier}
                     >
-                        CREATE CLIENT PROFILE
+                        Deploy Account
                     </Button>
                 </div>
+
             }
         >
-            <form id="revenue-gate-form" onSubmit={handleSubmit} className="space-y-8">
+            <form id="revenue-gate-form" onSubmit={handleSubmit} className="space-y-10 py-2">
+
                 {/* Basic Info */}
-                <div className="space-y-4">
-                    <h3 className="font-heading font-bold text-sm text-primary uppercase tracking-wider flex items-center gap-2">
-                        <span className="text-text-muted">01.</span> Entity Details
+                <div className="space-y-6">
+                    <h3 className="font-sans text-[9px] font-black tracking-[0.3em] text-[#555] uppercase border-b border-white/[0.04] pb-4 italic">
+                      01 · Entity Identity
                     </h3>
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <Input
                             label="Client/Company Name"
@@ -111,10 +120,11 @@ export default function RevenueGateModal({ isOpen, onClose, onClientCreated }: R
                 </div>
 
                 {/* Point of Contact */}
-                <div className="space-y-4">
-                    <h3 className="font-heading font-bold text-sm text-primary uppercase tracking-wider flex items-center gap-2">
-                        <span className="text-text-muted">02.</span> Point of Contact
+                <div className="space-y-6">
+                    <h3 className="font-sans text-[9px] font-black tracking-[0.3em] text-[#555] uppercase border-b border-white/[0.04] pb-4 italic">
+                      02 · Strategic Liaison
                     </h3>
+
                     <Input
                         label="Contact Name & Role"
                         placeholder="e.g. Ahmed (Creative Director)"
@@ -141,15 +151,17 @@ export default function RevenueGateModal({ isOpen, onClose, onClientCreated }: R
                 </div>
 
                 {/* Revenue & Tier */}
-                <div className="space-y-4">
-                    <h3 className="font-heading font-bold text-sm text-primary uppercase tracking-wider flex items-center gap-2">
-                        <span className="text-text-muted">03.</span> Revenue & Service Tier
+                <div className="space-y-6">
+                    <h3 className="font-sans text-[9px] font-black tracking-[0.3em] text-[#555] uppercase border-b border-white/[0.04] pb-4 italic">
+                      03 · Revenue Engineering
                     </h3>
 
-                    <div className="space-y-3">
-                        <label className="block text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">
+
+                    <div className="space-y-4">
+                        <label className="font-sans text-[10px] font-black text-[#666] uppercase tracking-widest">
                             Revenue Gate Qualification
                         </label>
+
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                             {['<1M PKR', '1M–5M PKR', '>5M PKR'].map(gate => (
                                 <button
@@ -163,42 +175,44 @@ export default function RevenueGateModal({ isOpen, onClose, onClientCreated }: R
                                         else if (gate === '>5M PKR') { autoTier = 'Tier 3: Market Dominance'; autoVal = '500000'; }
                                         setFormData({ ...formData, revenueGate: gate, tier: autoTier, contractValue: autoVal });
                                     }}
-                                    className={`p-3 text-sm border transition-all rounded-sm ${formData.revenueGate === gate
-                                        ? 'border-primary bg-primary/10 text-primary font-bold'
-                                        : 'border-border-dark text-text-secondary hover:border-text-muted hover:text-text-primary hover:bg-surface-hover'
+                                    className={`px-4 py-3 text-[10px] font-black uppercase tracking-[0.2em] border transition-all duration-300 ${formData.revenueGate === gate
+                                        ? 'bg-primary/20 border-primary/40 text-primary'
+                                        : 'bg-white/5 border-white/5 text-[#444] hover:border-[#666]'
                                         }`}
                                 >
                                     {gate}
                                 </button>
                             ))}
                         </div>
+
                     </div>
 
-                    <div className="space-y-3 pt-2">
-                        <label className="block text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">
-                            Service Tier
+                    <div className="space-y-4 pt-4">
+                        <label className="font-sans text-[10px] font-black text-[#666] uppercase tracking-widest">
+                            Strategic Deployment Tier
                         </label>
-                        <div className="grid grid-cols-1 gap-2">
+                        <div className="grid grid-cols-1 gap-3">
                             {['Tier 1: Active Presence', 'Tier 2: 60-Day Sprint', 'Tier 3: Market Dominance'].map(tier => (
                                 <button
                                     key={tier}
                                     type="button"
                                     onClick={() => setFormData({ ...formData, tier: tier })}
-                                    className={`p-4 text-left border transition-all flex justify-between items-center rounded-sm ${formData.tier === tier
-                                        ? 'border-primary bg-primary/5'
-                                        : 'border-border-dark hover:border-text-muted hover:bg-surface-hover'
+                                    className={`p-6 text-left border transition-all flex justify-between items-center ${formData.tier === tier
+                                        ? 'border-primary/40 bg-primary/10'
+                                        : 'border-white/5 bg-white/[0.01] hover:border-white/20'
                                         }`}
                                 >
-                                    <span className={`font-medium ${formData.tier === tier ? 'text-primary' : 'text-text-primary'}`}>
+                                    <span className={`font-sans text-[11px] font-black uppercase tracking-[0.2em] ${formData.tier === tier ? 'text-primary' : 'text-[#666]'}`}>
                                         {tier}
                                     </span>
                                     {formData.tier === tier && (
-                                        <span className="text-primary text-[10px] tracking-[0.2em] uppercase font-black">Selected</span>
+                                        <div className="w-1.5 h-1.5 bg-primary rotate-45" />
                                     )}
                                 </button>
                             ))}
                         </div>
                     </div>
+
 
                     <div className="pt-2">
                         <Input

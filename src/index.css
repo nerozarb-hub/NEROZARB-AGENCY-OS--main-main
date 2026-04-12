@@ -1,5 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@900&family=Space+Mono:wght@400;700&display=swap');
 @import "tailwindcss";
+
 
 @theme {
   --color-onyx: #0C0F14;
@@ -15,25 +15,28 @@
   --color-border-dark: rgba(255, 255, 255, 0.08);
   --color-surface: rgba(255, 255, 255, 0.03);
 
-  --font-heading: "Montserrat", sans-serif;
+  --font-heading: "Instrument Serif", serif;
   --font-mono: "Space Mono", monospace;
-  --font-sans: "Inter", sans-serif;
+  --font-sans: "Outfit", sans-serif;
 }
+
 
 body {
   background-color: var(--color-onyx);
   background-image:
-    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(63, 106, 36, 0.06) 0%, transparent 60%),
-    radial-gradient(circle at 50% 0%, #161a21 0%, transparent 70%);
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(63, 106, 36, 0.04) 0%, transparent 60%),
+    radial-gradient(circle at 50% 0%, #0a0d12 0%, transparent 70%);
   color: var(--color-text-primary);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
+  letter-spacing: -0.01em;
   /* Mobile: prevent double-tap zoom, enable smooth scroll */
   touch-action: manipulation;
   overscroll-behavior: none;
 }
+
 
 /* Smooth momentum scroll on all scrollable containers */
 .scroll-touch {
@@ -126,4 +129,37 @@ body {
 select option {
   background-color: #141820;
   color: var(--color-text-primary);
+}
+
+/* Macro-whitespace and Utility Extensions */
+.macro-section {
+  padding-top: clamp(3rem, 5vw, 6rem);
+  padding-bottom: clamp(3rem, 5vw, 6rem);
+}
+
+.editorial-title {
+  font-family: var(--font-heading);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.bento-border {
+  border: 1px solid var(--color-border-dark);
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }

@@ -23,11 +23,12 @@ const pillarColors: Record<string, string> = {
 };
 
 const categoryBorderColors: Record<string, string> = {
-    'sop': 'border-l-blue-500',
-    'brand-standard': 'border-l-amber-500',
-    'client-knowledge-base': 'border-l-sky-400',
-    'ai-prompt': 'border-l-primary',
+    'sop': 'border-l-blue-500/40',
+    'brand-standard': 'border-l-amber-500/40',
+    'client-knowledge-base': 'border-l-primary/40',
+    'ai-prompt': 'border-l-primary/60',
 };
+
 
 export const ProtocolCard: React.FC<ProtocolCardProps> = ({ protocol, onClick, onEdit, onDuplicate, onDelete }) => {
     const accentColor = pillarColors[protocol.pillar] || 'bg-primary';
@@ -36,68 +37,72 @@ export const ProtocolCard: React.FC<ProtocolCardProps> = ({ protocol, onClick, o
     return (
         <Card
             onClick={onClick}
-            className={`group relative transition-all cursor-pointer flex flex-col h-full overflow-hidden border-l-4 ${borderColor}`}
+            className={`group relative transition-all cursor-pointer flex flex-col h-full overflow-hidden border-l border-white/5 bg-white/[0.01] hover:bg-white/[0.02] rounded-none ${borderColor}`}
         >
             {/* Top Accent Bar */}
-            <div className={`absolute top-0 left-0 right-0 h-1 ${accentColor}`} />
+            <div className={`absolute top-0 left-0 right-0 h-[2px] opacity-40 ${accentColor}`} />
 
-            <div className="p-4 pt-5 flex-1 flex flex-col">
-                <div className="flex justify-between items-start mb-3">
-                    <div className="flex gap-2 items-center flex-wrap">
-                        <span className="font-mono text-[10px] text-primary/70 uppercase tracking-widest bg-primary/10 px-1.5 py-0.5 rounded-sm">
-                            [ {protocol.category.replace(/-/g, ' ')} ]
+
+            <div className="p-6 pt-8 flex-1 flex flex-col">
+                <div className="flex justify-between items-start mb-4">
+                    <div className="flex gap-3 items-center flex-wrap">
+                        <span className="font-sans text-[8px] font-black text-primary uppercase tracking-[0.2em] bg-primary/5 border border-primary/20 px-2 py-1">
+                            {protocol.category.replace(/-/g, ' ')}
                         </span>
-                        <Badge variant="outline" className="opacity-70">{protocol.pillar}</Badge>
+                        <div className="font-sans text-[8px] font-black text-[#555] uppercase tracking-widest border border-white/5 px-2 py-1">{protocol.pillar}</div>
                     </div>
                 </div>
 
-                <h3 className="font-heading text-sm text-text-primary uppercase mb-2 line-clamp-2">
+
+                <h3 className="font-sans text-[13px] font-bold text-text-primary uppercase tracking-tight mb-3 line-clamp-2 group-hover:text-primary transition-colors">
                     {protocol.title}
                 </h3>
 
-                <p className="text-xs text-text-secondary line-clamp-3 mb-4 flex-1">
-                    {protocol.content.replace(/[#*`\n]/g, ' ').substring(0, 100)}...
+                <p className="font-sans text-[11px] text-[#777] leading-relaxed line-clamp-3 mb-6 flex-1 tracking-wide">
+                    {protocol.content.replace(/[#*`\n]/g, ' ').substring(0, 100).toUpperCase()}
                 </p>
 
-                <div className="flex items-center justify-between mt-auto pt-4 border-t border-border-dark/50">
-                    <span className="font-mono text-[9px] text-text-muted">
-                        UPDATED: {new Date(protocol.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+
+                <div className="flex items-center justify-between mt-auto pt-5 border-t border-white/[0.04]">
+                    <span className="font-sans text-[8px] font-black text-[#333] uppercase tracking-widest italic">
+                        SYNC: {new Date(protocol.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase()}
                     </span>
                     {(protocol.linkedClientId || protocol.linkedTaskTypes.length > 0) && (
-                        <div className="flex gap-1">
+                        <div className="flex gap-2">
                             {protocol.linkedClientId && (
-                                <span className="w-1.5 h-1.5 rounded-full bg-olive-500" title="Client Linked" />
+                                <div className="w-1 h-1 rotate-45 bg-primary/40" title="Client Linked" />
                             )}
                             {protocol.linkedTaskTypes.length > 0 && (
-                                <span className="w-1.5 h-1.5 rounded-full bg-zinc-500" title="Task Linked" />
+                                <div className="w-1 h-1 rotate-45 bg-[#444]" title="Task Linked" />
                             )}
                         </div>
                     )}
                 </div>
+
             </div>
 
-            {/* Actions Menu (simplified for now, full dropdown later) */}
-            <div className="absolute top-3 right-3 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            {/* Actions Menu */}
+            <div className="absolute top-4 right-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <button
-                    className="p-1 hover:bg-white/5 rounded-sm"
+                    className="p-1.5 hover:bg-white/5 transition-all"
                     onClick={(e) => {
                         e.stopPropagation();
                         onDuplicate?.();
                     }}
                     title="Duplicate Protocol"
                 >
-                    <CopyPlus className="w-4 h-4 text-text-secondary hover:text-primary transition-colors" />
+                    <CopyPlus className="w-3.5 h-3.5 text-[#333] hover:text-primary transition-colors" />
                 </button>
                 <div
-                    className="p-1 hover:bg-white/5 rounded-sm"
+                    className="p-1.5 hover:bg-white/5 transition-all"
                     onClick={(e) => {
                         e.stopPropagation();
-                        // Open menu logic here
                     }}
                 >
-                    <MoreVertical className="w-4 h-4 text-text-secondary" />
+                    <MoreVertical className="w-3.5 h-3.5 text-[#333]" />
                 </div>
             </div>
+
         </Card>
     );
 }

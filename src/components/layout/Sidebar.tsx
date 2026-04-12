@@ -48,12 +48,13 @@ export default function Sidebar({ activeView, setActiveView, authLevel, onLogout
                         bg-sidebar border-r border-border-dark z-50">
 
         {/* Wordmark */}
-        <div className="p-[22px_18px_18px] border-b border-border-dark lg:text-left text-center flex-shrink-0">
-          <p className="hidden lg:block font-mono text-[10px] text-accent-light mb-1">[ NERO ] + [ ZARB ]</p>
-          <h1 className="font-heading text-[17px] font-black text-text-primary uppercase leading-none hidden lg:block">NEROZARB</h1>
-          <h1 className="font-heading text-[17px] font-black text-text-primary uppercase leading-none lg:hidden block">NZ</h1>
-          <p className="hidden lg:block font-sans text-[11px] font-medium text-text-muted mt-2">Agency OS · v2.0</p>
+        <div className="p-8 border-b border-border-dark flex-shrink-0">
+          <p className="font-sans text-[10px] uppercase font-bold tracking-widest text-[#555] mb-2 lg:block hidden">System v2.0</p>
+          <h1 className="editorial-title text-2xl text-text-primary lg:block hidden">Nerozarb</h1>
+          <h1 className="editorial-title text-xl text-text-primary lg:hidden block text-center">Nz</h1>
+          <div className="h-px w-8 bg-primary/40 mt-4 lg:block hidden" />
         </div>
+
 
         {/* Navigation */}
         <nav className="flex-1 py-2 flex flex-col overflow-y-auto custom-scrollbar">
@@ -65,23 +66,31 @@ export default function Sidebar({ activeView, setActiveView, authLevel, onLogout
               <button
                 key={item.id}
                 onClick={() => setActiveView(item.id)}
-                className={`flex items-center justify-center lg:justify-start gap-3 px-[18px] py-3 transition-all duration-200 border-l-2 relative
+                className={`flex items-center justify-center lg:justify-start gap-4 px-8 py-3.5 transition-all duration-300 relative group
                   ${isActive
-                    ? 'border-primary bg-primary/10 text-text-primary'
-                    : 'border-transparent text-text-muted hover:text-text-primary hover:bg-card-alt/30'
+                    ? 'text-text-primary'
+                    : 'text-text-muted hover:text-text-primary'
                   }`}
                 title={item.label}
               >
-                <Icon size={18} className={isActive ? 'text-primary' : ''} />
-                <span className="hidden lg:block font-heading font-bold text-[11px] tracking-[0.5px]">
+                <Icon size={16} className={`${isActive ? 'text-primary' : 'group-hover:text-text-primary'} transition-colors`} />
+                <span className="hidden lg:block font-sans font-semibold text-[10px] uppercase tracking-[0.12em]">
                   {item.label}
                 </span>
+                {isActive && (
+                  <motion.div
+                    layoutId="nav-indicator"
+                    className="absolute left-0 w-[2px] h-6 bg-primary"
+                    transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                  />
+                )}
                 {badgeCount > 0 && (
-                  <span className={`lg:ml-auto font-mono text-[8px] ${item.id === 'command' ? 'text-red-500' : 'text-primary'}`}>
-                    [{badgeCount}]
+                  <span className={`lg:ml-auto text-[10px] font-mono ${item.id === 'command' ? 'text-red-500' : 'text-primary/60'}`}>
+                    {badgeCount}
                   </span>
                 )}
               </button>
+
             );
           })}
         </nav>

@@ -5,62 +5,65 @@ import { ChevronRight } from 'lucide-react';
 
 export default function ListView({ tasks, onTaskClick }: { tasks: any[], onTaskClick: (task: any) => void }) {
   return (
-    <Card className="flex-1 flex flex-col min-h-0">
+    <Card className="flex-1 flex flex-col min-h-0 bg-transparent border-none rounded-none">
+
       <div className="flex-1 overflow-auto">
         <table className="w-full text-left text-sm">
-          <thead className="bg-card-alt border-b border-border-dark font-mono text-[10px] text-text-muted uppercase tracking-wider sticky top-0 z-10">
+          <thead className="bg-white/[0.02] border-b border-white/[0.04] sticky top-0 z-10">
             <tr>
-              <th className="p-4 font-normal">Task ID</th>
-              <th className="p-4 font-normal">Title</th>
-              <th className="p-4 font-normal">Client</th>
-              <th className="p-4 font-normal">Status</th>
-              <th className="p-4 font-normal">Priority</th>
-              <th className="p-4 font-normal">Assignee</th>
-              <th className="p-4 font-normal">Deadline</th>
-              <th className="p-4 font-normal text-right">Action</th>
+              <th className="p-5 font-sans text-[9px] font-black text-[#555] tracking-[0.3em] uppercase italic">Index</th>
+              <th className="p-5 font-sans text-[9px] font-black text-[#666] tracking-[0.3em] uppercase">Tactical Objective</th>
+              <th className="p-5 font-sans text-[9px] font-black text-[#666] tracking-[0.3em] uppercase">Entity</th>
+              <th className="p-5 font-sans text-[9px] font-black text-[#666] tracking-[0.3em] uppercase">State</th>
+              <th className="p-5 font-sans text-[9px] font-black text-[#666] tracking-[0.3em] uppercase">Priority</th>
+              <th className="p-5 font-sans text-[9px] font-black text-[#666] tracking-[0.3em] uppercase">Node</th>
+              <th className="p-5 font-sans text-[9px] font-black text-[#666] tracking-[0.3em] uppercase">Deadline</th>
+              <th className="p-5 font-sans text-[9px] font-black text-[#666] tracking-[0.3em] uppercase text-right">Flux</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-border-dark">
+
             {tasks.length === 0 ? (
               <tr>
-                <td colSpan={8} className="p-12 text-center">
-                  <div className="flex flex-col items-center justify-center text-text-muted">
-                    <div className="w-12 h-12 rounded-full bg-surface  flex items-center justify-center mb-3">
-                      <ChevronRight className="opacity-50" size={20} />
+                <td colSpan={8} className="p-24 text-center">
+                  <div className="flex flex-col items-center justify-center">
+                    <div className="w-16 h-16 border border-white/10 flex items-center justify-center mb-6 bg-white/[0.02] rotate-45 opacity-50">
+                      <ChevronRight className="text-text-primary -rotate-45" size={24} />
                     </div>
-                    <p className="font-heading font-bold text-sm text-text-primary tracking-tight uppercase mb-1">No Tasks Found</p>
-                    <p className="font-mono text-[10px] tracking-widest uppercase">This view is currently empty.</p>
+                    <h3 className="editorial-title text-3xl text-text-primary italic mb-3">Ledger Empty</h3>
+                    <p className="font-sans text-[9px] font-black text-[#444] uppercase tracking-[0.4em]">No active operation streams detected in this sector.</p>
                   </div>
                 </td>
               </tr>
             ) : (
+
               tasks.map((task) => (
                 <tr
                   key={task.id}
-                  className="hover:bg-card-alt transition-colors group cursor-pointer"
+                  className="hover:bg-white/[0.02] border-b border-white/[0.04] transition-all duration-300 group cursor-pointer"
                   onClick={() => onTaskClick(task)}
                 >
-                  <td className="p-4 font-mono text-[10px] text-text-muted">TSK-{task.id}</td>
-                  <td className="p-4 font-medium text-text-primary">{task.title}</td>
-                  <td className="p-4 text-text-secondary">{task.client}</td>
-                  <td className="p-4"><Badge>{task.status}</Badge></td>
-                  <td className="p-4">
+                  <td className="p-5 font-sans text-[9px] font-black text-[#333] tracking-widest">ARC-{task.id}</td>
+                  <td className="p-5 font-sans text-[11px] font-bold text-text-muted uppercase tracking-widest group-hover:text-text-primary transition-colors">{task.title}</td>
+                  <td className="p-5 font-sans text-[9px] font-black text-[#666] tracking-[0.2em] uppercase">{task.client}</td>
+                  <td className="p-5"><Badge className="rounded-none border-white/5 font-sans text-[9px] font-bold tracking-widest px-3 py-1 uppercase">{task.status}</Badge></td>
+                  <td className="p-5">
                     <div className="flex items-center gap-2">
-                      <div className={`w-2 h-2 rounded-full ${task.priority === 'high' ? 'bg-red-500' :
+                      <div className={`w-1.5 h-1.5 rotate-45 ${task.priority === 'high' ? 'bg-red-500' :
                           task.priority === 'medium' ? 'bg-yellow-500' : 'bg-primary'
                         }`} />
-                      <span className="text-xs text-text-secondary capitalize">{task.priority}</span>
+                      <span className="font-sans text-[11px] font-bold text-[#666] uppercase tracking-widest">{task.priority}</span>
                     </div>
                   </td>
-                  <td className="p-4 text-text-secondary">{task.assignee}</td>
-                  <td className="p-4 font-mono text-[10px] text-text-muted">{task.deadline}</td>
-                  <td className="p-4 text-right">
-                    <button className="text-text-muted hover:text-text-primary p-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <ChevronRight size={16} />
+                  <td className="p-5 font-sans text-[9px] font-black text-primary/60 tracking-[0.2em] uppercase">{task.assignee}</td>
+                  <td className="p-5 font-sans text-[9px] font-black text-[#333] tracking-[0.2em] uppercase">{task.deadline}</td>
+                  <td className="p-5 text-right">
+                    <button className="text-primary/40 hover:text-primary transition-all p-2 opacity-0 group-hover:opacity-100">
+                      <ChevronRight size={14} />
                     </button>
                   </td>
                 </tr>
               )))}
+
           </tbody>
         </table>
       </div>

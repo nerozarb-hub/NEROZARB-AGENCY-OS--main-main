@@ -92,24 +92,33 @@ export default function ClientEditModal({ isOpen, onClose, client }: ClientEditM
         <Modal
             isOpen={isOpen}
             onClose={onClose}
-            title="Update Client Profile"
-            width={650}
-            footer={
-                <div className="flex justify-end gap-3 w-full">
-                    <Button variant="outline" onClick={onClose} className="border-border-dark hover:border-text-muted flex-1 md:flex-none">
-                        CANCEL
-                    </Button>
-                    <Button type="submit" form="edit-client-form" className="bg-primary hover:bg-accent-mid text-text-primary px-8 flex-1 md:flex-none">
-                        SAVE CHANGES
-                    </Button>
+            title={
+                <div className="space-y-1">
+                    <p className="font-sans text-[10px] font-bold uppercase tracking-[0.2em] text-primary/80">Entity Configuration</p>
+                    <h2 className="editorial-title text-3xl text-text-primary italic">Refine Profile</h2>
                 </div>
             }
-        >
-            <form id="edit-client-form" onSubmit={handleSubmit} className="space-y-8">
-                <p className="font-mono text-[10px] text-text-muted -mt-4 tracking-widest uppercase mb-4">Registry ID: {client.id}</p>
+            width={700}
 
-                <div className="space-y-4">
-                    <h3 className="font-heading font-bold text-xs text-primary uppercase tracking-wider">Entity Details</h3>
+            footer={
+                <div className="flex justify-end gap-4 w-full">
+                    <Button variant="ghost" onClick={onClose} className="font-sans text-[10px] font-black uppercase tracking-widest text-[#555] hover:text-text-primary">
+                        Abort
+                    </Button>
+                    <Button type="submit" form="edit-client-form" className="bg-primary hover:bg-accent-mid text-text-primary px-10 h-12 font-sans text-[10px] font-black uppercase tracking-[0.2em]">
+                        Commit Changes
+                    </Button>
+                </div>
+
+            }
+        >
+            <form id="edit-client-form" onSubmit={handleSubmit} className="space-y-10 py-2">
+                <p className="font-sans text-[9px] font-black text-[#333] tracking-[0.4em] uppercase -mt-6 mb-6">Registry Hash: 00{client.id} · Alpha Protocol</p>
+
+
+                <div className="space-y-6">
+                    <h3 className="font-sans text-[9px] font-black tracking-[0.3em] text-[#555] uppercase border-b border-white/[0.04] pb-4 italic">01 · Profile Identity</h3>
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <Input
                             label="Client Name"
@@ -126,8 +135,9 @@ export default function ClientEditModal({ isOpen, onClose, client }: ClientEditM
                     </div>
                 </div>
 
-                <div className="space-y-4">
-                    <h3 className="font-heading font-bold text-xs text-primary uppercase tracking-wider">Point of Contact</h3>
+                <div className="space-y-6">
+                    <h3 className="font-sans text-[9px] font-black tracking-[0.3em] text-[#555] uppercase border-b border-white/[0.04] pb-4 italic">02 · Tactical Contact</h3>
+
                     <Input
                         label="Contact Name & Role"
                         required
@@ -150,60 +160,60 @@ export default function ClientEditModal({ isOpen, onClose, client }: ClientEditM
                     </div>
                 </div>
 
-                <div className="space-y-4">
-                    <h3 className="font-heading font-bold text-xs text-primary uppercase tracking-wider">Strategic Intelligence</h3>
+                <div className="space-y-6">
+                    <h3 className="font-sans text-[9px] font-black tracking-[0.3em] text-[#555] uppercase border-b border-white/[0.04] pb-4 italic">03 · Intelligence Assets</h3>
+
                     <div className="space-y-4">
-                        <div className="space-y-1">
-                            <label className="block text-[10px] font-black tracking-widest text-text-muted uppercase">Shadow Avatar</label>
+                        <div className="space-y-3">
+                            <label className="font-sans text-[10px] font-black text-[#666] uppercase tracking-widest">Shadow Avatar Profile</label>
                             <textarea
                                 value={formData.shadowAvatar}
                                 onChange={(e) => setFormData({ ...formData, shadowAvatar: e.target.value })}
-                                className="w-full bg-surface border border-border-dark px-4 py-3 text-sm text-text-primary focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/50 min-h-[80px] rounded-sm"
+                                className="w-full bg-white/[0.02] border border-white/[0.05] p-5 text-sm font-sans text-text-muted focus:border-text-muted/20 outline-none resize-none min-h-[100px] leading-relaxed"
                             />
                         </div>
-                        <div className="space-y-1">
-                            <label className="block text-[10px] font-black tracking-widest text-text-muted uppercase">Bleeding Neck (Core Pain)</label>
+                        <div className="space-y-3">
+                            <label className="font-sans text-[10px] font-black text-[#666] uppercase tracking-widest">Bleeding Neck Intelligence</label>
                             <textarea
                                 value={formData.bleedingNeck}
                                 onChange={(e) => setFormData({ ...formData, bleedingNeck: e.target.value })}
-                                className="w-full bg-surface border border-border-dark px-4 py-3 text-sm text-text-primary focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/50 min-h-[80px] rounded-sm"
+                                className="w-full bg-white/[0.02] border border-white/[0.05] p-5 text-sm font-sans text-text-muted focus:border-text-muted/20 outline-none resize-none min-h-[100px] leading-relaxed"
                             />
                         </div>
+
                     </div>
                 </div>
 
                 {authLevel === 'ceo' && (
-                    <div className="space-y-4 pt-4 border-t border-border-dark">
-                        <h3 className="font-heading font-bold text-xs text-yellow-500 uppercase tracking-wider">Relationship Management</h3>
-                        <div className="space-y-3">
-                            <label className="block text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">Manual Health Override</label>
-                            <div className="flex flex-wrap gap-4">
+                    <div className="space-y-8 pt-6 border-t border-white/[0.04]">
+                        <h3 className="font-sans text-[9px] font-black tracking-[0.3em] text-primary/60 uppercase italic">04 · Executive Override</h3>
+                        <div className="space-y-4">
+                            <label className="font-sans text-[10px] font-black text-[#666] uppercase tracking-widest">Stability Override</label>
+                            <div className="flex flex-wrap gap-3">
                                 {['healthy', 'at-risk', 'critical'].map(health => (
-                                    <label key={health} className="flex items-center gap-2 cursor-pointer">
-                                        <input
-                                            type="radio"
-                                            name="health"
-                                            value={health}
-                                            checked={formData.relationshipHealth === health}
-                                            onChange={(e) => setFormData({ ...formData, relationshipHealth: e.target.value })}
-                                            className="accent-primary"
-                                        />
-                                        <span className="font-mono text-xs text-text-secondary uppercase">{health}</span>
-                                    </label>
+                                    <button
+                                        key={health}
+                                        type="button"
+                                        onClick={() => setFormData({ ...formData, relationshipHealth: health })}
+                                        className={`px-6 py-3 text-[9px] font-black uppercase tracking-[0.2em] border transition-all duration-300 ${formData.relationshipHealth === health ? 'bg-primary/20 border-primary/40 text-primary' : 'bg-white/5 border-white/5 text-[#444] hover:border-[#666]'}`}
+                                    >
+                                      {health}
+                                    </button>
                                 ))}
                             </div>
                         </div>
-                        <div className="space-y-1 pt-4">
-                            <label className="block text-[10px] font-black tracking-widest text-text-muted uppercase">Log Event / Key Win</label>
-                            <Input
-                                label=""
-                                placeholder="Append manually to timeline (e.g., 'Secured big brand deal')"
+                        <div className="space-y-3 pt-2">
+                            <label className="font-sans text-[10px] font-black text-[#666] uppercase tracking-widest">Temporal Log Persistence</label>
+                            <input
+                                placeholder="APPEND KEY EVENT TO TIMELINE..."
                                 value={formData.newLogEvent}
                                 onChange={(e) => setFormData({ ...formData, newLogEvent: e.target.value })}
+                                className="w-full bg-white/[0.02] border border-white/[0.05] p-4 text-xs font-bold font-sans text-text-primary focus:border-text-muted/20 outline-none transition-all uppercase tracking-widest"
                             />
                         </div>
                     </div>
                 )}
+
             </form>
         </Modal>
     );

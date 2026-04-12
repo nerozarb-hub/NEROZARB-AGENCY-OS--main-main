@@ -112,158 +112,158 @@ export default function KnowledgeVault({ selectedClient }: { selectedClient?: st
 
     return (
         <div className="h-full flex flex-col animate-fade-in">
-            {/* Header */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 md:p-6 border-b border-border-dark flex-shrink-0 gap-3">
-                <div>
-                    <h1 className="font-heading text-2xl md:text-4xl tracking-tighter uppercase text-text-primary">
-                        {selectedClient ? "CLIENT KNOWLEDGE BASE" : "KNOWLEDGE VAULT"}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-8 md:p-12 border-b border-white/[0.04] flex-shrink-0 gap-6">
+                <div className="space-y-2">
+                    <h1 className="editorial-title text-4xl md:text-5xl text-text-primary italic">
+                        {selectedClient ? "Strategic Intelligence" : "Neural Repository"}
                     </h1>
-                    <p className="font-mono text-[10px] text-text-muted mt-1 uppercase tracking-widest">
-                        {selectedClient ? "Client-specific intelligence and protocols" : "Central Nervous System for Agency Intelligence"}
+                    <p className="font-sans text-[9px] font-black text-[#555] uppercase tracking-[0.4em]">
+                        {selectedClient ? "CLIENT-SPECIFIC OPERATIONAL PROTOCOLS" : "CENTRAL DEPLOYMENT LOGIC & TACTICAL SOPs"}
                     </p>
                 </div>
-                <Button size="sm" onClick={() => { setEditProtocol(undefined); setIsEditorOpen(true); }} className="whitespace-nowrap">
-                    <Plus className="w-4 h-4 mr-1" />
-                    <span className="hidden sm:inline">NEW PROTOCOL</span>
-                    <span className="sm:hidden">+ NEW</span>
+                <Button onClick={() => { setEditProtocol(undefined); setIsEditorOpen(true); }} className="bg-primary hover:bg-accent-mid text-text-primary px-10 h-12 font-sans text-[9px] font-black uppercase tracking-[0.2em] rounded-none">
+                    <Plus className="w-3.5 h-3.5 mr-2" />
+                    NEW PROTOCOL
                 </Button>
             </div>
 
+
             <div className="flex-1 p-4 md:p-6 flex flex-col min-h-0">
                 {/* Search & Tabs */}
-                <div className="mb-6 space-y-4">
-                    <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
+                <div className="mb-10 space-y-6">
+                    <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-6">
                         <div className="relative">
-                            <div ref={tabScrollRef} className="flex gap-1.5 p-1 bg-white/5 rounded-sm overflow-x-auto scroll-touch no-scrollbar">
+                            <div ref={tabScrollRef} className="flex gap-2 p-1.5 bg-white/[0.01] border border-white/5 rounded-none overflow-x-auto scroll-touch no-scrollbar">
                                 {CATEGORIES.map(cat => (
                                     <button
                                         key={cat.id}
                                         onClick={() => setActiveCategory(cat.id)}
-                                        className={`flex items-center gap-2 px-4 py-2 rounded-sm text-sm font-mono uppercase tracking-wider transition-colors whitespace-nowrap ${activeCategory === cat.id
-                                            ? 'bg-white/10 text-primary'
-                                            : 'text-text-secondary hover:text-text-primary hover:bg-white/5'
+                                        className={`flex items-center gap-3 px-6 py-3 rounded-none text-[9px] font-black font-sans uppercase tracking-[0.2em] transition-all whitespace-nowrap ${activeCategory === cat.id
+                                            ? 'bg-white/5 text-primary'
+                                            : 'text-[#444] hover:text-[#888] hover:bg-white/[0.02]'
                                             }`}
                                     >
-                                        {cat.icon}
+                                        <div className="opacity-40">{cat.icon}</div>
                                         {cat.label}
                                     </button>
                                 ))}
                             </div>
                             {/* Mobile scroll fade indicator */}
                             {showTabFade && (
-                                <div className="absolute right-0 top-0 bottom-0 w-10 bg-gradient-to-l from-background to-transparent pointer-events-none rounded-r-sm" />
+                                <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-[#0C0F14] to-transparent pointer-events-none" />
                             )}
                         </div>
 
-                        <div className="flex items-center gap-2">
-                            <div className="relative flex-1 sm:w-64 sm:flex-none">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+
+                        <div className="flex items-center gap-4">
+                            <div className="relative flex-1 sm:w-80 sm:flex-none">
+                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#333]" />
                                 <Input
-                                    className="pl-9 bg-white/5 border-border-dark w-full"
-                                    placeholder="Search knowledge..."
+                                    className="pl-12 bg-white/[0.01] border-white/5 rounded-none w-full h-12 font-sans text-xs tracking-wide"
+                                    placeholder="SCAN REPOSITORY..."
                                     value={searchQuery}
                                     onChange={e => setSearchQuery(e.target.value)}
                                 />
                             </div>
-                            <div className="flex  rounded-sm overflow-hidden bg-white/5 flex-shrink-0">
+                            <div className="flex border border-white/5 overflow-hidden bg-white/[0.01] flex-shrink-0">
                                 <button
                                     onClick={() => setViewMode('grid')}
-                                    className={`p-2 transition-colors ${viewMode === 'grid' ? 'bg-white/10 text-primary' : 'text-text-muted hover:text-text-primary'}`}
+                                    className={`p-3.5 transition-all ${viewMode === 'grid' ? 'bg-white/5 text-primary' : 'text-[#333] hover:text-[#666]'}`}
                                 >
-                                    <LayoutGrid className="w-4 h-4" />
+                                    <LayoutGrid className="w-3.5 h-3.5" />
                                 </button>
                                 <button
                                     onClick={() => setViewMode('list')}
-                                    className={`p-2 transition-colors ${viewMode === 'list' ? 'bg-white/10 text-primary' : 'text-text-muted hover:text-text-primary'}`}
+                                    className={`p-3.5 transition-all ${viewMode === 'list' ? 'bg-white/5 text-primary' : 'text-[#333] hover:text-[#666]'}`}
                                 >
-                                    <ListIcon className="w-4 h-4" />
+                                    <ListIcon className="w-3.5 h-3.5" />
                                 </button>
                             </div>
                         </div>
                     </div>
 
+
                     {/* Status Filter Tabs */}
-                    <div className="flex gap-1.5 pt-1">
-                        {(['all', 'active', 'draft', 'archived'] as const).map(s => (
-                            <button
-                                key={s}
-                                onClick={() => setActiveStatus(s)}
-                                className={`px-3 py-1 text-xs font-mono uppercase tracking-widest rounded-sm border transition-colors ${activeStatus === s
-                                    ? 'bg-primary/10 border-primary/50 text-primary'
-                                    : 'bg-transparent border-border-dark text-text-muted hover:text-text-primary hover:border-text-muted'
-                                    }`}
-                            >
-                                {s === 'all' ? 'All Status' : s}
-                            </button>
-                        ))}
+                    <div className="flex items-center gap-4 pt-2">
+                        <span className="font-sans text-[8px] font-black text-[#444] uppercase tracking-widest">Temporal State:</span>
+                        <div className="flex gap-2">
+                            {(['all', 'active', 'draft', 'archived'] as const).map(s => (
+                                <button
+                                    key={s}
+                                    onClick={() => setActiveStatus(s)}
+                                    className={`px-4 py-1.5 text-[8px] font-black font-sans uppercase tracking-[0.2em] transition-all border ${activeStatus === s
+                                        ? 'bg-primary/10 border-primary/20 text-primary'
+                                        : 'bg-transparent border-white/5 text-[#333] hover:text-[#666] hover:border-white/10'
+                                        }`}
+                                >
+                                    {s}
+                                </button>
+                            ))}
+                        </div>
                     </div>
 
                     {/* Pillar Filters */}
-                    <div className="flex gap-1.5 flex-wrap">
-                        <button
-                            onClick={() => setActivePillar('all')}
-                            className={`px-4 py-1.5 text-[11px] sm:text-xs font-mono uppercase tracking-widest rounded-sm border transition-colors ${activePillar === 'all'
-                                ? 'bg-primary/10 border-primary/50 text-primary'
-                                : 'bg-transparent border-border-dark text-text-muted hover:text-text-primary hover:border-text-muted'
-                                }`}
-                        >
-                            ALL PILLARS
-                        </button>
-                        {PILLARS.map(pillar => (
+                    <div className="flex items-center gap-4">
+                        <span className="font-sans text-[8px] font-black text-[#444] uppercase tracking-widest shrink-0">Tactical Pillar:</span>
+                        <div className="flex gap-2 flex-wrap">
                             <button
-                                key={pillar}
-                                onClick={() => setActivePillar(pillar)}
-                                className={`px-4 py-1.5 text-[11px] sm:text-xs font-mono uppercase tracking-widest rounded-sm border transition-colors ${activePillar === pillar
-                                    ? 'bg-primary/10 border-primary/50 text-primary'
-                                    : 'bg-transparent border-border-dark text-text-muted hover:text-text-primary hover:border-text-muted'
+                                onClick={() => setActivePillar('all')}
+                                className={`px-4 py-1.5 text-[8px] font-black font-sans uppercase tracking-[0.2em] transition-all border ${activePillar === 'all'
+                                    ? 'bg-primary/10 border-primary/20 text-primary'
+                                    : 'bg-transparent border-white/5 text-[#333] hover:text-[#666] hover:border-white/10'
                                     }`}
                             >
-                                {pillar}
+                                ALL_PILLARS
                             </button>
-                        ))}
+                            {PILLARS.map(pillar => (
+                                <button
+                                    key={pillar}
+                                    onClick={() => setActivePillar(pillar)}
+                                    className={`px-4 py-1.5 text-[8px] font-black font-sans uppercase tracking-[0.2em] transition-all border ${activePillar === pillar
+                                        ? 'bg-primary/10 border-primary/20 text-primary'
+                                        : 'bg-transparent border-white/5 text-[#333] hover:text-[#666] hover:border-white/10'
+                                        }`}
+                                >
+                                    {pillar}
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 </div>
+
 
                 {/* Content Area */}
                 <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
                     {activeCategory === 'client-knowledge-base' && selectedClient ? (
                         <ClientKnowledgeBase clientId={parseInt(selectedClient, 10)} />
                     ) : filteredProtocols.length === 0 ? (
-                        <div className="h-full flex flex-col items-center justify-center text-text-muted py-20">
-                            {activeCategory === 'ai-prompt' ? (
-                                <Cpu className="w-12 h-12 mb-4 opacity-30" />
-                            ) : activeCategory === 'sop' ? (
-                                <ScrollText className="w-12 h-12 mb-4 opacity-30" />
-                            ) : activeCategory === 'client-knowledge-base' ? (
-                                <Building2 className="w-12 h-12 mb-4 opacity-30" />
-                            ) : activeCategory === 'brand-standard' ? (
-                                <FileText className="w-12 h-12 mb-4 opacity-30" />
-                            ) : (
-                                <BookOpen className="w-12 h-12 mb-4 opacity-30" />
-                            )}
-                            <p className="font-mono uppercase tracking-widest text-sm">
+                        <div className="h-full flex flex-col items-center justify-center text-[#333] py-32 border border-white/[0.04] bg-white/[0.01]">
+                            <BookOpen className="w-10 h-10 mb-6 opacity-20" />
+                            <p className="font-sans font-black uppercase tracking-[0.3em] text-[10px]">
                                 {activeCategory === 'ai-prompt' ? 'No AI prompts found'
                                     : activeCategory === 'sop' ? 'No SOPs found'
                                         : activeCategory === 'client-knowledge-base' ? 'No client intelligence found'
                                             : activeCategory === 'brand-standard' ? 'No brand standards found'
                                                 : 'No protocols found'}
                             </p>
-                            <p className="font-mono text-xs text-text-muted mt-2 opacity-60">Try clearing your filters or create a new entry.</p>
-                            <Button variant="outline" className="mt-6" onClick={() => { setSearchQuery(''); setActiveCategory('all'); setActivePillar('all'); }}>
-                                Clear Filters
+                            <p className="font-sans text-[8px] font-bold text-[#333] mt-2 tracking-widest uppercase italic">Initialize context or adjust filters.</p>
+                            <Button variant="ghost" className="mt-8 font-sans text-[9px] font-black uppercase tracking-widest text-primary hover:bg-primary/5 px-8" onClick={() => { setSearchQuery(''); setActiveCategory('all'); setActivePillar('all'); }}>
+                                System Reset
                             </Button>
                         </div>
+
                     ) : (
                         <div className="flex flex-col h-full">
                             {activeCategory !== 'client-knowledge-base' && (
-                                <div className="text-[10px] font-mono text-text-muted mb-4 tracking-widest uppercase">
-                                    {filteredProtocols.length} Result{filteredProtocols.length !== 1 ? 's' : ''} Found
+                                <div className="text-[9px] font-sans font-black text-[#555] mb-6 tracking-[0.2em] uppercase italic">
+                                    {filteredProtocols.length} ARCHIVE{filteredProtocols.length !== 1 ? 'S' : ''} DISCOVERED
                                 </div>
                             )}
-                            <div className={
+
+                             <div className={
                                 viewMode === 'grid'
-                                    ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
-                                    : "flex flex-col gap-2"
+                                    ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+                                    : "flex flex-col gap-4"
                             }>
                                 {filteredProtocols.slice(0, visibleCount).map(protocol => (
                                     protocol.category === 'ai-prompt' ? (
@@ -286,12 +286,13 @@ export default function KnowledgeVault({ selectedClient }: { selectedClient?: st
                                 ))}
                             </div>
                             {visibleCount < filteredProtocols.length && (
-                                <div className="py-8 flex justify-center mt-4">
-                                    <Button variant="outline" onClick={() => setVisibleCount(v => v + 12)}>
-                                        LOAD MORE PROTOCOLS
+                                <div className="py-12 flex justify-center mt-10">
+                                    <Button variant="ghost" onClick={() => setVisibleCount(v => v + 12)} className="font-sans text-[9px] font-black uppercase tracking-[0.3em] text-primary hover:bg-primary/5 px-12 h-12 border border-primary/20">
+                                        EXPAND REPOSITORY
                                     </Button>
                                 </div>
                             )}
+
                         </div>
                     )}
                 </div>

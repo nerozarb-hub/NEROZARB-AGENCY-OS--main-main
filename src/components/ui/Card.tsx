@@ -8,23 +8,24 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 export const Card: React.FC<CardProps> = ({ children, className = '', accentTop = false, ...props }) => {
   return (
     <div
-      className={`bg-card border border-border-dark rounded-sm relative overflow-hidden transition-all duration-300 hover:border-primary/30 hover:shadow-[0_12px_40px_rgba(0,0,0,0.3),0_0_20px_rgba(63,106,36,0.1)] ${className}`}
+      className={`bg-card border border-border-dark rounded-md relative overflow-hidden transition-all duration-500 hover:border-text-muted/30 ${className}`}
       {...props}
     >
-      {accentTop && <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-primary/50 via-primary to-primary/50" />}
+      {accentTop && <div className="absolute top-0 left-0 right-0 h-[1px] bg-primary" />}
       {children}
     </div>
   );
 }
 
 export function CardHeader({ children, className = '', ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={`p-4 ${className}`} {...props}>{children}</div>;
+  return <div className={`p-5 ${className}`} {...props}>{children}</div>;
 }
 
 export function CardTitle({ children, className = '', ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
-  return <h3 className={`font-heading text-lg text-text-primary ${className}`} {...props}>{children}</h3>;
+  return <h3 className={`font-sans tracking-tight text-lg font-medium text-text-primary ${className}`} {...props}>{children}</h3>;
 }
 
 export function CardContent({ children, className = '', ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={`p-4 pt-0 ${className}`} {...props}>{children}</div>;
+  return <div className={`p-5 pt-0 ${className}`} {...props}>{children}</div>;
 }
+

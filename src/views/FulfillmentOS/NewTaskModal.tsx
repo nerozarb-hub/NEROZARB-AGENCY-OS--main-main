@@ -68,106 +68,113 @@ export default function NewTaskModal({ isOpen, onClose }: NewTaskModalProps) {
       isOpen={isOpen}
       onClose={onClose}
       title={
-        <div>
-          <h2 className="font-heading text-xl text-text-primary uppercase tracking-wider">Initialize New Task</h2>
-          <p className="font-mono text-[10px] text-text-muted mt-0.5 tracking-widest uppercase">Fulfillment OS Deployment</p>
+        <div className="space-y-1">
+          <p className="font-sans text-[10px] font-bold uppercase tracking-[0.2em] text-primary/80">Operational Proxy</p>
+          <h2 className="editorial-title text-3xl text-text-primary italic">Initialize Objective</h2>
         </div>
       }
+
       footer={
-        <div className="flex flex-col sm:flex-row justify-end gap-3 w-full">
-          <Button variant="ghost" onClick={onClose} className="font-mono text-xs uppercase tracking-widest w-full sm:w-auto">
-            Cancel
+        <div className="flex flex-col sm:flex-row justify-end gap-4 w-full">
+          <Button variant="ghost" onClick={onClose} className="font-sans text-[10px] font-black uppercase tracking-widest text-[#555] hover:text-text-primary">
+            Abort
           </Button>
           <Button
             onClick={handleSubmit}
             disabled={!name || clientId === ''}
-            className="font-mono text-xs uppercase tracking-widest bg-primary hover:bg-accent-mid text-text-primary min-w-[180px] w-full sm:w-auto"
+            className="bg-primary hover:bg-accent-mid text-text-primary px-10 h-12 font-sans text-[10px] font-black uppercase tracking-[0.2em]"
           >
-            Create Task
+            Deploy Objective
           </Button>
         </div>
       }
+
     >
       <div className="space-y-8 py-2">
         {/* Section 1: Core Details */}
         <div className="space-y-6">
-          <h3 className="font-mono text-[10px] uppercase tracking-widest text-text-muted flex items-center gap-2 border-b border-border-dark pb-2">
-            <ClipboardList className="w-3 h-3 text-primary" />
-            TASK IDENTIFICATION
+          <h3 className="font-sans text-[9px] font-black tracking-[0.3em] text-[#555] uppercase border-b border-white/[0.04] pb-5 italic">
+            Objective Identification
           </h3>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="md:col-span-2">
               <Input
-                label="Task Name"
-                placeholder="e.g. Q4 Strategy Deck"
+                label="Objective Designation"
+                placeholder="e.g. Q4 STRAT"
                 value={name}
                 onChange={e => setName(e.target.value)}
                 required
-                className="font-heading text-lg"
+                className="font-sans text-xl border-white/5 bg-white/[0.01]"
               />
             </div>
 
+
             <div className="space-y-1.5">
-              <label className="font-mono text-[10px] uppercase text-text-muted tracking-widest pl-1">Client *</label>
+              <label className="font-sans text-[9px] font-black text-[#444] uppercase tracking-widest pl-1">Entity Allocation *</label>
               <select
                 value={clientId}
                 onChange={e => setClientId(Number(e.target.value))}
-                className="w-full bg-background rounded-sm px-4 py-3 text-sm font-mono text-text-primary focus:outline-none focus:border-primary transition-colors appearance-none border border-border-dark"
+                className="w-full bg-white/[0.01] border border-white/5 rounded-none px-5 py-4 text-[11px] font-bold font-sans text-text-primary focus:outline-none focus:border-white/20 transition-all appearance-none uppercase tracking-widest"
               >
-                <option value="" disabled>SELECT CLIENT</option>
+                <option value="" disabled className="bg-[#0C0F14]">SELECT ENTITY</option>
                 {data.clients.map(c => (
-                  <option key={c.id} value={c.id}>{c.name.toUpperCase()}</option>
+                  <option key={c.id} value={c.id} className="bg-[#0C0F14]">{c.name.toUpperCase()}</option>
                 ))}
               </select>
             </div>
 
             <div className="space-y-1.5">
-              <label className="font-mono text-[10px] uppercase text-text-muted tracking-widest pl-1">Category</label>
+              <label className="font-sans text-[9px] font-black text-[#444] uppercase tracking-widest pl-1">Vector Category</label>
               <select
                 value={category}
                 onChange={e => setCategory(e.target.value as TaskCategory)}
-                className="w-full bg-background rounded-sm px-4 py-3 text-sm font-mono text-text-primary focus:outline-none focus:border-primary transition-colors appearance-none border border-border-dark"
+                className="w-full bg-white/[0.01] border border-white/5 rounded-none px-5 py-4 text-[11px] font-bold font-sans text-text-primary focus:outline-none focus:border-white/20 transition-all appearance-none uppercase tracking-widest"
               >
                 {['Content Production', 'Ad Creative', 'Website', 'Strategy', 'Video Production', 'Brand Design', 'Analytics', 'Automation', 'Client Communication', 'Other'].map(c => (
-                  <option key={c} value={c}>{c.toUpperCase()}</option>
+                  <option key={c} value={c} className="bg-[#0C0F14]">{c.toUpperCase()}</option>
                 ))}
               </select>
             </div>
+
           </div>
         </div>
 
         {/* Section 2: Resource Assignment */}
         <div className="space-y-6">
-          <h3 className="font-mono text-[10px] uppercase tracking-widest text-text-muted flex items-center gap-2 border-b border-border-dark pb-2">
-            <Users className="w-3 h-3 text-primary" />
-            RESOURCE ALLOCATION
+          <h3 className="font-sans text-[9px] font-black tracking-[0.3em] text-[#555] uppercase border-b border-white/[0.04] pb-5 italic">
+            Resource Stream
           </h3>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-1.5">
-              <label className="font-mono text-[10px] uppercase text-text-muted tracking-widest pl-1">Assignee Node</label>
+              <label className="font-sans text-[9px] font-black text-[#444] uppercase tracking-widest pl-1">Deployment Node</label>
               <select
                 value={assignedNode}
                 onChange={e => setAssignedNode(e.target.value as NodeRole)}
-                className="w-full bg-background rounded-sm px-4 py-3 text-sm font-mono text-text-primary focus:outline-none focus:border-primary transition-colors appearance-none border border-border-dark"
+                className="w-full bg-white/[0.01] border border-white/5 rounded-none px-5 py-4 text-[11px] font-bold font-sans text-text-primary focus:outline-none focus:border-white/20 transition-all appearance-none uppercase tracking-widest"
               >
                 {['CEO', 'Art Director', 'Video Editor', 'Operations Builder', 'Social Media Manager', 'Documentation Manager'].map(n => (
-                  <option key={n} value={n}>{n.toUpperCase()}</option>
+                  <option key={n} value={n} className="bg-[#0C0F14]">{n.toUpperCase()}</option>
                 ))}
               </select>
             </div>
 
             <div className="space-y-1.5">
-              <label className="font-mono text-[10px] uppercase text-text-muted tracking-widest pl-1">Priority Level</label>
-              <div className="grid grid-cols-3 gap-2">
+              <label className="font-sans text-[9px] font-black text-[#444] uppercase tracking-widest pl-1">Threat Level</label>
+              <div className="grid grid-cols-3 gap-3">
                 {[
-                  { id: 'normal', label: 'NORMAL', color: 'border-border-dark text-text-muted' },
-                  { id: 'high', label: 'HIGH', color: 'border-yellow-500/50 text-yellow-500 bg-yellow-500/5' },
-                  { id: 'critical', label: 'CRITICAL', color: 'border-red-500/50 text-red-500 bg-red-500/5' }
+                  { id: 'normal', label: 'NORMAL' },
+                  { id: 'high', label: 'HIGH' },
+                  { id: 'critical', label: 'CRITICAL' }
                 ].map(p => (
                   <button
                     key={p.id}
+                    type="button"
                     onClick={() => setPriority(p.id as any)}
-                    className={`py-3 text-[10px] font-mono uppercase tracking-widest border rounded-sm transition-all ${priority === p.id ? 'bg-primary/20 border-primary text-primary shadow-[0_0_15px_rgba(var(--primary-rgb),0.1)]' : `${p.color} hover:border-text-muted`
+                    className={`h-12 text-[10px] font-black font-sans tracking-widest border transition-all duration-300 ${priority === p.id 
+                      ? 'bg-primary/20 border-primary/40 text-primary' 
+                      : 'bg-white/5 border-white/5 text-[#444] hover:border-white/10'
                       }`}
                   >
                     {p.label}
@@ -175,42 +182,43 @@ export default function NewTaskModal({ isOpen, onClose }: NewTaskModalProps) {
                 ))}
               </div>
             </div>
+
           </div>
         </div>
 
         {/* Section 3: Timeline & Scale */}
         <div className="space-y-6">
-          <h3 className="font-mono text-[10px] uppercase tracking-widest text-text-muted flex items-center gap-2 border-b border-border-dark pb-2">
-            <Target className="w-3 h-3 text-primary" />
-            TIMELINE & PARAMETERS
+          <h3 className="font-sans text-[9px] font-black tracking-[0.3em] text-[#555] uppercase border-b border-white/[0.04] pb-5 italic">
+            Temporal Parameters
           </h3>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="sm:col-span-1 lg:col-span-1">
               <Input
                 label="Process Phase"
-                placeholder="e.g. phase1 (Optional)"
+                placeholder="e.g. ALPHA"
                 value={phase}
                 onChange={e => setPhase(e.target.value as any)}
-                className="font-mono"
+                className="font-sans text-[11px] font-bold border-white/5 bg-white/[0.01]"
               />
             </div>
             <div className="sm:col-span-1 lg:col-span-1">
               <Input
-                label="Deadline"
+                label="Objective Lock"
                 type="date"
                 value={deadline}
                 onChange={e => setDeadline(e.target.value)}
-                className="font-mono"
+                className="font-sans text-[11px] font-bold border-white/5 bg-white/[0.01]"
               />
             </div>
             <div className="sm:col-span-2 lg:col-span-1">
               <Input
-                label="Est. Quantum (Hours)"
-                placeholder="e.g. 4"
+                label="Quantum (Hours)"
+                placeholder="e.g. 12"
                 type="number"
                 value={estimatedHours}
                 onChange={e => setEstimatedHours(e.target.value)}
-                className="font-mono"
+                className="font-sans text-[11px] font-bold border-white/5 bg-white/[0.01]"
               />
             </div>
           </div>
@@ -218,20 +226,20 @@ export default function NewTaskModal({ isOpen, onClose }: NewTaskModalProps) {
 
         {/* Section 4: Brief */}
         <div className="space-y-6">
-          <h3 className="font-mono text-[10px] uppercase tracking-widest text-text-muted flex items-center gap-2 border-b border-border-dark pb-2">
-            <Clock className="w-3 h-3 text-primary" />
-            MISSION BRIEF
+          <h3 className="font-sans text-[9px] font-black tracking-[0.3em] text-[#555] uppercase border-b border-white/[0.04] pb-5 italic">
+            Objective Scope
           </h3>
-          <div className="space-y-1.5">
-            <label className="font-mono text-[10px] uppercase text-text-muted tracking-widest pl-1 leading-relaxed">Instruction Set & Objectives</label>
+          <div className="space-y-3">
+            <label className="font-sans text-[9px] font-black text-[#444] uppercase tracking-widest pl-1 leading-relaxed">Intelligence Briefing</label>
             <textarea
               value={brief}
               onChange={e => setBrief(e.target.value)}
-              className="w-full bg-background/50 border border-border-dark text-text-primary px-4 py-4 text-sm font-mono focus:outline-none focus:border-primary transition-colors hover:border-text-muted rounded-sm min-h-[120px] resize-none custom-scrollbar"
-              placeholder="DEFINE DELIVERABLES AND SUCCESS CRITERIA..."
+              className="w-full bg-white/[0.01] border border-white/5 text-text-primary px-5 py-5 text-[12px] font-sans font-medium focus:outline-none focus:border-white/20 transition-all hover:border-white/10 rounded-none min-h-[140px] resize-none custom-scrollbar uppercase tracking-widest leading-relaxed"
+              placeholder="ENTER SUCCESS CRITERIA AND OPERATIONAL INTENT..."
             />
           </div>
         </div>
+
       </div>
     </Modal>
   );
