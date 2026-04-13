@@ -6,8 +6,8 @@ interface LoginViewProps {
   onReset: () => void;
 }
 
-const CEO_PASSPHRASE = 'NEROCEO16';
-const TEAM_PASSPHRASE = 'NEROTEAM2025';
+const CEO_PASSPHRASE = 'NERO2024CEO';
+const TEAM_PASSPHRASE = 'NERO2024TEAM';
 
 export default function LoginView({ onLogin, onReset }: LoginViewProps) {
   const [passphrase, setPassphrase] = useState('');
