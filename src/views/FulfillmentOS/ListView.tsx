@@ -22,6 +22,7 @@ export default function ListView({ tasks, onTaskClick }: { tasks: any[], onTaskC
             </tr>
           </thead>
 
+          <tbody>
             {tasks.length === 0 ? (
               <tr>
                 <td colSpan={8} className="p-24 text-center">
@@ -63,7 +64,6 @@ export default function ListView({ tasks, onTaskClick }: { tasks: any[], onTaskC
                   </td>
                 </tr>
               )))}
-
           </tbody>
         </table>
       </div>

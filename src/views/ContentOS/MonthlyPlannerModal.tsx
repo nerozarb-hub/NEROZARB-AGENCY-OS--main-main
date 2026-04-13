@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { X, Plus, Trash2, Zap, Save, ClipboardList } from 'lucide-react';
 import { Modal } from '../../components/ui/Modal';
 import { Button } from '../../components/ui/Button';
@@ -143,7 +143,6 @@ export default function MonthlyPlannerModal({ isOpen, onClose, clientId, onNavig
                 <div className="overflow-x-auto custom-scrollbar border border-border-dark rounded-sm bg-[#0c0e12]">
                     <table className="w-full text-left border-collapse min-w-[1000px]">
                         <thead>
-                        <thead>
                             <tr className="font-sans text-[9px] font-black tracking-[0.2em] text-[#555] uppercase border-b border-border-dark bg-onyx">
                                 <th className="py-6 px-4 w-12 text-center font-black">Ref</th>
                                 <th className="py-6 px-4 w-40 font-black">Timeline</th>
@@ -154,8 +153,6 @@ export default function MonthlyPlannerModal({ isOpen, onClose, clientId, onNavig
                                 <th className="py-6 px-4 w-48 font-black">Operator</th>
                                 <th className="py-6 px-4 w-16 text-center font-black">Status</th>
                             </tr>
-                        </thead>
-
                         </thead>
                         <tbody className="divide-y divide-border-dark/30">
                             {rows.map((row, index) => (

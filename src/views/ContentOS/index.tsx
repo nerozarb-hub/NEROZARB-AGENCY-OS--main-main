@@ -78,74 +78,74 @@ export default function ContentOS({ onNavigate }: { onNavigate?: (view: string, 
       variants={containerVariants}
       className="page-container h-full flex flex-col overflow-hidden py-8"
     >
-      <motion.header variants={itemVariants} className="flex flex-col md:flex-row md:justify-between md:items-end gap-6 flex-shrink-0 border-b border-white/[0.04] pb-10 mb-8">
-        <div className="space-y-4">
-          <h2 className="font-heading text-6xl tracking-tighter text-text-primary uppercase leading-none">Content OS</h2>
-          <p className="font-sans text-[11px] font-bold tracking-[0.3em] text-text-muted/40 uppercase">Asset Forge · Narrative Flux</p>
+      {/* Header */}
+      <motion.header variants={itemVariants} className="page-header">
+        <div>
+          <h1 className="page-header-title">CONTENT OS</h1>
+          <p className="page-header-subtitle mt-2">Asset Forge · Narrative Flux</p>
         </div>
-
-
-        <div className="flex flex-wrap items-center gap-4 overflow-x-auto pb-1 scroll-touch">
-          {/* Client Selector */}
-          <div className="flex bg-white/[0.02] border border-white/[0.06] p-1 rounded-none">
-            <select
-              value={clientFilter}
-              onChange={(e) => setClientFilter(e.target.value === 'all' ? 'all' : Number(e.target.value))}
-              className="bg-transparent text-[11px] font-bold text-text-muted/60 tracking-[0.2em] outline-none cursor-pointer py-2 px-3 hover:text-text-primary transition-colors uppercase appearance-none"
-            >
-              <option value="all">ENTITY: GLOBAL VIEW</option>
-              {activeClients.map(c => (
-                <option key={c.id} value={c.id}>{c.name.toUpperCase()}</option>
-              ))}
-            </select>
-          </div>
-
-
-
-          {/* View Toggles */}
-          <div className="flex bg-white/[0.02] border border-white/[0.06] p-1 rounded-none">
-            <button
-              onClick={() => setViewMode('monthly')}
-              className={`p-2 transition-all rounded-none ${viewMode === 'monthly' ? 'bg-primary/20 text-primary' : 'text-text-muted/40 hover:text-text-primary'}`}
-              title="Monthly View"
-            >
-              <CalendarIcon size={14} />
-            </button>
-            <button
-              onClick={() => setViewMode('weekly')}
-              className={`p-2 transition-all rounded-none ${viewMode === 'weekly' ? 'bg-primary/20 text-primary' : 'text-text-muted/40 hover:text-text-primary'}`}
-              title="Weekly View"
-            >
-              <CalendarDays size={14} />
-            </button>
-            <button
-              onClick={() => setViewMode('list')}
-              className={`p-2 transition-all rounded-none ${viewMode === 'list' ? 'bg-primary/20 text-primary' : 'text-text-muted/40 hover:text-text-primary'}`}
-              title="List View"
-            >
-              <List size={14} />
-            </button>
-            <button
-              onClick={() => setViewMode('pipeline')}
-              className={`p-2 transition-all rounded-none ${viewMode === 'pipeline' ? 'bg-primary/20 text-primary' : 'text-text-muted/40 hover:text-text-primary'}`}
-              title="Pipeline View"
-            >
-              <KanbanSquare size={14} />
-            </button>
-          </div>
-
-
-          <Button variant="ghost" size="sm" onClick={handleOpenPlanner} className="whitespace-nowrap px-6">
-            <ClipboardList size={14} className="mr-2 opacity-50" />
-            <span className="hidden sm:inline">PLAN MONTH</span>
-          </Button>
-          <Button size="sm" onClick={() => handleOpenNewPost()} className="bg-primary hover:bg-accent-mid text-text-primary px-8 whitespace-nowrap">
-            <Plus size={14} className="mr-2" />
-            <span className="hidden sm:inline">NEW POST</span>
-            <span className="sm:hidden">+ NEW</span>
-          </Button>
-        </div>
+        <Button
+          onClick={() => handleOpenNewPost()}
+          className="bg-primary hover:bg-accent-mid text-text-primary px-8"
+        >
+          <Plus size={16} />
+          <span>+ NEW POST</span>
+        </Button>
       </motion.header>
+
+      {/* Controls Row */}
+      <motion.div variants={itemVariants} className="page-controls mb-8">
+        {/* Client Selector */}
+        <div className="flex bg-white/[0.02] border border-white/[0.06] p-1 rounded-none">
+          <select
+            value={clientFilter}
+            onChange={(e) => setClientFilter(e.target.value === 'all' ? 'all' : Number(e.target.value))}
+            className="bg-transparent text-[11px] font-bold text-text-muted/60 tracking-[0.2em] outline-none cursor-pointer py-2 px-3 hover:text-text-primary transition-colors uppercase appearance-none"
+          >
+            <option value="all">ENTITY: GLOBAL VIEW</option>
+            {activeClients.map(c => (
+              <option key={c.id} value={c.id}>{c.name.toUpperCase()}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* View Toggles */}
+        <div className="flex bg-white/[0.02] border border-white/[0.06] p-1 rounded-none">
+          <button
+            onClick={() => setViewMode('monthly')}
+            className={`p-2 transition-all rounded-none ${viewMode === 'monthly' ? 'bg-primary/20 text-primary' : 'text-text-muted/40 hover:text-text-primary'}`}
+            title="Monthly View"
+          >
+            <CalendarIcon size={14} />
+          </button>
+          <button
+            onClick={() => setViewMode('weekly')}
+            className={`p-2 transition-all rounded-none ${viewMode === 'weekly' ? 'bg-primary/20 text-primary' : 'text-text-muted/40 hover:text-text-primary'}`}
+            title="Weekly View"
+          >
+            <CalendarDays size={14} />
+          </button>
+          <button
+            onClick={() => setViewMode('list')}
+            className={`p-2 transition-all rounded-none ${viewMode === 'list' ? 'bg-primary/20 text-primary' : 'text-text-muted/40 hover:text-text-primary'}`}
+            title="List View"
+          >
+            <List size={14} />
+          </button>
+          <button
+            onClick={() => setViewMode('pipeline')}
+            className={`p-2 transition-all rounded-none ${viewMode === 'pipeline' ? 'bg-primary/20 text-primary' : 'text-text-muted/40 hover:text-text-primary'}`}
+            title="Pipeline View"
+          >
+            <KanbanSquare size={14} />
+          </button>
+        </div>
+
+        <Button variant="ghost" onClick={handleOpenPlanner} className="px-6">
+          <ClipboardList size={14} className="mr-2 opacity-50" />
+          <span>PLAN MONTH</span>
+        </Button>
+      </motion.div>
 
       <motion.div variants={itemVariants} className="flex-1 min-h-0 flex flex-col">
         {viewMode === 'monthly' && (

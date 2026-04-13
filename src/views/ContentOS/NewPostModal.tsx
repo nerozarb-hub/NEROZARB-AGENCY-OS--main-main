@@ -141,53 +141,60 @@ export default function NewPostModal({ isOpen, onClose, post, prefilledDate }: N
             onClose={onClose}
             title={
                 <div className="space-y-1">
-                    <p className="font-sans text-[10px] font-bold uppercase tracking-[0.2em] text-primary/80">Content Pipeline</p>
-                    <h2 className="editorial-title text-3xl text-text-primary italic">Identify Asset</h2>
+                    <p className="font-sans text-[10px] font-black uppercase tracking-[0.4em] text-primary/60">SYSTEM_DEPLOYMENT</p>
+                    <h2 className="font-heading text-4xl text-text-primary uppercase tracking-tighter">Register New Asset</h2>
                 </div>
             }
-            width={1000}
+            width={1100}
 
             footer={
-                <div className="flex justify-between items-center w-full">
-                    <Button variant="ghost" onClick={onClose} className="font-sans text-[10px] font-black uppercase tracking-widest text-[#555] hover:text-text-primary">
-                        Abort
+                <div className="flex justify-between items-center w-full px-2">
+                    <Button variant="ghost" onClick={onClose} className="font-sans text-[11px] font-black uppercase tracking-[0.3em] text-text-muted/40 hover:text-text-primary transition-colors">
+                        ABORT_SYSTEM
                     </Button>
-                    <Button onClick={handleSubmit} disabled={clientId === '' || !scheduledDate} className="bg-primary hover:bg-accent-mid text-text-primary px-10 h-12 font-sans text-[10px] font-black uppercase tracking-[0.2em]">
-                        <Save size={14} className="mr-2" />
-                        Deploy Asset
-                    </Button>
+                    <div className="flex items-center gap-6">
+                      <span className="font-sans text-[10px] font-black text-text-muted/20 tracking-widest hidden sm:block">PENDING_DEPLOYMENT_READY</span>
+                      <Button onClick={handleSubmit} disabled={clientId === '' || !scheduledDate} className="bg-primary hover:bg-accent-mid text-onyx px-12 h-14 rounded-none font-sans text-[11px] font-black uppercase tracking-[0.3em] transition-all hover:scale-[1.02] active:scale-[0.98]">
+                          <Save size={16} className="mr-3" />
+                          INITIATE_DEPLOYMENT
+                      </Button>
+                    </div>
                 </div>
 
             }
         >
-            <div className="space-y-10 py-2">
+            <div className="space-y-16 py-8 custom-scrollbar max-h-[70vh] overflow-y-auto px-2">
                 {/* SECTION 1: IDENTIFICATION */}
-                <section className="space-y-8">
-                    <h4 className="font-sans text-[9px] font-black tracking-[0.3em] text-[#555] uppercase border-b border-white/[0.04] pb-4">01 · Identification</h4>
+                <section className="space-y-10">
+                    <div className="flex items-center gap-4">
+                      <span className="font-sans text-[11px] font-black tracking-[0.4em] text-primary/40">01</span>
+                      <h4 className="font-sans text-[11px] font-black tracking-[0.3em] text-text-muted/60 uppercase">CORE_IDENTIFICATION</h4>
+                      <div className="flex-1 h-px bg-white/[0.06]" />
+                    </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-3">
-                            <label className="font-sans text-[10px] font-black text-[#666] uppercase tracking-widest">Target Client</label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                        <div className="space-y-4">
+                            <label className="font-sans text-[10px] font-black text-text-muted/40 uppercase tracking-[0.3em]">TARGET_ENTITY</label>
                             <select
                                 value={clientId}
                                 onChange={(e) => setClientId(e.target.value === '' ? '' : Number(e.target.value))}
-                                className="w-full bg-white/[0.02] border border-white/[0.05] p-4 text-xs font-bold font-sans text-text-primary focus:border-text-muted/20 outline-none transition-all uppercase tracking-widest"
+                                className="w-full bg-white/[0.02] border border-white/[0.06] p-5 text-[11px] font-black font-sans text-text-primary focus:border-primary/40 outline-none transition-all uppercase tracking-[0.2em] appearance-none cursor-pointer"
                                 required
                             >
-                                <option value="">SELECT CLIENT...</option>
+                                <option value="">SELECT_TARGET...</option>
                                 {clients.map(c => <option key={c.id} value={c.id}>{c.name.toUpperCase()}</option>)}
                             </select>
                         </div>
-                        <div className="space-y-3">
-                            <label className="font-sans text-[10px] font-black text-[#666] uppercase tracking-widest">Environment(s)</label>
+                        <div className="space-y-4">
+                            <label className="font-sans text-[10px] font-black text-text-muted/40 uppercase tracking-[0.3em]">DEPLOYMENT_ENVIRONMENTS</label>
                             <div className="flex flex-wrap gap-2">
                                 {PLATFORMS.map(p => (
                                     <button
                                         key={p.id}
                                         onClick={() => togglePlatform(p.id)}
-                                        className={`px-4 py-2 text-[9px] font-black uppercase tracking-widest border transition-all duration-300 ${platforms.includes(p.id) ? 'bg-primary/20 border-primary/40 text-primary' : 'bg-white/5 border-white/5 text-[#444] hover:border-[#666]'}`}
+                                        className={`px-5 py-2.5 text-[9px] font-black uppercase tracking-[0.2em] border transition-all duration-500 rounded-none ${platforms.includes(p.id) ? 'bg-primary/10 border-primary text-primary shadow-[0_0_20px_rgba(63,106,36,0.1)]' : 'bg-white/[0.02] border-white/[0.06] text-text-muted/40 hover:border-white/[0.2]'}`}
                                     >
-                                        {p.label}
+                                        {p.label.toUpperCase()}
                                     </button>
                                 ))}
                             </div>
@@ -195,35 +202,35 @@ export default function NewPostModal({ isOpen, onClose, post, prefilledDate }: N
 
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-                        <div className="space-y-3">
-                            <label className="font-sans text-[10px] font-black text-[#666] uppercase tracking-widest">Format Type</label>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
+                        <div className="space-y-4">
+                            <label className="font-sans text-[10px] font-black text-text-muted/40 uppercase tracking-[0.3em]">ASSET_FORMAT</label>
                             <select
                                 value={postType}
                                 onChange={(e) => setPostType(e.target.value as PostType)}
-                                className="w-full bg-white/[0.02] border border-white/[0.05] p-4 text-xs font-bold font-sans text-text-primary focus:border-text-muted/20 outline-none transition-all uppercase tracking-widest"
+                                className="w-full bg-white/[0.02] border border-white/[0.06] p-5 text-[11px] font-black font-sans text-text-primary focus:border-primary/40 outline-none transition-all uppercase tracking-[0.2em] appearance-none cursor-pointer"
                             >
                                 {POST_TYPES.map(t => <option key={t} value={t}>{t.toUpperCase()}</option>)}
                             </select>
                         </div>
-                        <div className="space-y-3">
-                            <label className="font-sans text-[10px] font-black text-[#666] uppercase tracking-widest">Strategy Pillar</label>
+                        <div className="space-y-4">
+                            <label className="font-sans text-[10px] font-black text-text-muted/40 uppercase tracking-[0.3em]">STRATEGIC_PILLAR</label>
                             <select
                                 value={contentPillar}
                                 onChange={(e) => setContentPillar(e.target.value)}
-                                className="w-full bg-white/[0.02] border border-white/[0.05] p-4 text-xs font-bold font-sans text-text-primary focus:border-text-muted/20 outline-none transition-all uppercase tracking-widest"
+                                className="w-full bg-white/[0.02] border border-white/[0.06] p-5 text-[11px] font-black font-sans text-text-primary focus:border-primary/40 outline-none transition-all uppercase tracking-[0.2em] appearance-none cursor-pointer"
                             >
-                                {clientId === '' && <option value="">SELECT ACCOUNT FIRST</option>}
+                                {clientId === '' && <option value="">AWAITING_TARGET...</option>}
                                 {selectedClientPillars.map(pillar => <option key={pillar} value={pillar}>{pillar.toUpperCase()}</option>)}
-                                <option value="Other">OTHER</option>
+                                <option value="Other">OTHER_PROTOCOL</option>
                             </select>
                         </div>
-                        <div className="space-y-3">
-                            <label className="font-sans text-[10px] font-black text-[#666] uppercase tracking-widest">Asset Template</label>
+                        <div className="space-y-4">
+                            <label className="font-sans text-[10px] font-black text-text-muted/40 uppercase tracking-[0.3em]">STRUCTURAL_TEMPLATE</label>
                             <select
                                 value={templateType}
                                 onChange={(e) => setTemplateType(e.target.value as TemplateType)}
-                                className="w-full bg-white/[0.02] border border-white/[0.05] p-4 text-xs font-bold font-sans text-text-primary focus:border-text-muted/20 outline-none transition-all uppercase tracking-widest"
+                                className="w-full bg-white/[0.02] border border-white/[0.06] p-5 text-[11px] font-black font-sans text-text-primary focus:border-primary/40 outline-none transition-all uppercase tracking-[0.2em] appearance-none cursor-pointer"
                             >
                                 {TEMPLATES.map(t => <option key={t} value={t}>{t.toUpperCase()}</option>)}
                             </select>
@@ -233,88 +240,93 @@ export default function NewPostModal({ isOpen, onClose, post, prefilledDate }: N
                 </section>
 
                 {/* SECTION 2: CONTENT */}
-                <section className="space-y-8">
-                    <h4 className="font-sans text-[9px] font-black tracking-[0.3em] text-[#555] uppercase border-b border-white/[0.04] pb-4">02 · Creative Intelligence</h4>
+                <section className="space-y-10">
+                    <div className="flex items-center gap-4">
+                      <span className="font-sans text-[11px] font-black tracking-[0.4em] text-primary/40">02</span>
+                      <h4 className="font-sans text-[11px] font-black tracking-[0.3em] text-text-muted/60 uppercase">CREATIVE_INTELLIGENCE</h4>
+                      <div className="flex-1 h-px bg-white/[0.06]" />
+                    </div>
 
 
-                    <div className="space-y-3">
-                        <label className="font-sans text-[10px] font-black text-[#666] uppercase tracking-widest flex justify-between">
-                          <span>Identify Hook</span>
+                    <div className="space-y-4">
+                        <label className="font-sans text-[10px] font-black text-text-muted/40 uppercase tracking-[0.3em] flex justify-between">
+                          <span>PRIMARY_HOOK</span>
+                          <span className="text-primary/40 italic font-medium normal-case tracking-normal">PSYCH_LAYER_ACTIVE</span>
                         </label>
                         <textarea
                             value={hook}
                             onChange={(e) => setHook(e.target.value)}
-                            placeholder="THE SCROLL-STOPPING COMMAND..."
-                            className="w-full bg-white/[0.02] border border-white/[0.05] p-5 text-xl font-medium font-serif italic text-text-primary focus:border-text-muted/20 outline-none resize-none min-h-[80px]"
+                            placeholder="INPUT_SCROLL_STOPPING_COMMAND..."
+                            className="w-full bg-white/[0.02] border border-white/[0.06] p-6 text-3xl font-heading text-text-primary focus:border-primary/40 outline-none resize-none min-h-[100px] transition-all"
                             rows={2}
                         />
-                        <div className="flex gap-2 pt-2 overflow-x-auto pb-2 custom-scrollbar">
+                        <div className="flex gap-2 pt-2 overflow-x-auto pb-2 custom-scrollbar no-scrollbar">
                             {PSYCH_TRIGGERS.map(t => (
                                 <button
                                     key={t}
                                     onClick={() => handlePsychTrigger(t)}
-                                    className="shrink-0 px-3 py-1 text-[9px] font-black uppercase tracking-[0.2em] bg-white/5 border border-white/5 text-[#555] hover:text-primary hover:border-primary transition-all duration-300"
+                                    className="shrink-0 px-4 py-1.5 text-[9px] font-black uppercase tracking-[0.2em] bg-white/5 border border-white/5 text-text-muted/40 hover:text-primary hover:border-primary transition-all duration-300"
                                 >
-                                    {t}
+                                    {t.toUpperCase()}
                                 </button>
                             ))}
                         </div>
                     </div>
 
 
-                    <div className="space-y-3">
-                        <label className="font-sans text-[10px] font-black text-[#666] uppercase tracking-widest">Intelligence Body</label>
+                    <div className="space-y-4">
+                        <label className="font-sans text-[10px] font-black text-text-muted/40 uppercase tracking-[0.3em]">INTELLIGENCE_BODY</label>
                         <textarea
                             value={captionBody}
                             onChange={(e) => setCaptionBody(e.target.value)}
                             placeholder="WHAT ARE THEY REALIZING? WHAT IS THE COMMAND?"
-                            className="w-full bg-white/[0.02] border border-white/[0.05] p-5 text-sm font-sans text-text-muted focus:border-text-muted/20 outline-none resize-none min-h-[120px] leading-relaxed"
+                            className="w-full bg-white/[0.02] border border-white/[0.06] p-6 text-sm font-sans text-text-muted focus:border-primary/40 outline-none resize-none min-h-[160px] leading-relaxed transition-all"
                             rows={4}
                         />
                     </div>
 
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                            <label className="text-xs font-mono text-text-muted uppercase">Call To Action</label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                        <div className="space-y-4">
+                            <label className="font-sans text-[10px] font-black text-text-muted/40 uppercase tracking-[0.3em]">ACTION_TRIGGER (CTA)</label>
                             <select
                                 value={ctaType}
                                 onChange={(e) => setCtaType(e.target.value as CTAType)}
-                                className="w-full bg-background border border-border-dark rounded-sm p-3 text-sm text-text-primary focus:border-primary outline-none"
+                                className="w-full bg-white/[0.02] border border-white/[0.06] p-5 text-[11px] font-black font-sans text-text-primary focus:border-primary/40 outline-none transition-all uppercase tracking-[0.2em] appearance-none cursor-pointer"
                             >
-                                {CTA_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+                                {CTA_TYPES.map(t => <option key={t} value={t}>{t.toUpperCase()}</option>)}
                             </select>
                             {ctaType === 'Custom' && (
                                 <input
                                     value={customCta}
                                     onChange={e => setCustomCta(e.target.value)}
-                                    placeholder="Enter custom CTA phrasing..."
-                                    className="w-full bg-background border border-border-dark rounded-sm p-3 mt-2 text-sm text-text-primary focus:border-primary outline-none"
+                                    placeholder="INPUT_CUSTOM_PHRASING..."
+                                    className="w-full bg-white/[0.02] border border-primary/20 p-5 mt-2 text-[11px] font-black text-text-primary focus:border-primary/40 outline-none uppercase tracking-[0.2em]"
                                 />
                             )}
                         </div>
-                        <div className="space-y-2">
-                            <label className="text-xs font-mono text-text-muted uppercase">Hashtags</label>
+                        <div className="space-y-4">
+                            <label className="font-sans text-[10px] font-black text-text-muted/40 uppercase tracking-[0.3em]">METADATA_LABELS (HASHTAGS)</label>
                             <textarea
                                 value={hashtags}
                                 onChange={(e) => setHashtags(e.target.value)}
-                                placeholder="#nerozarb #digitalgrowth ... (8–12 max)"
-                                className="w-full bg-background border border-border-dark rounded-sm p-3 text-sm text-text-primary focus:border-primary outline-none resize-none min-h-[80px]"
+                                placeholder="#NEROZARB #DIGITAL_GROWTH..."
+                                className="w-full bg-white/[0.02] border border-white/[0.06] p-5 text-sm font-sans text-text-primary focus:border-primary/40 outline-none resize-none min-h-[100px] transition-all"
                                 rows={2}
                             />
                         </div>
                     </div>
 
-                    <div className="space-y-3">
-                        <label className="font-sans text-[10px] font-black text-[#666] uppercase tracking-widest flex justify-between">
-                            <span>Visual Briefing</span>
-                            <span className="text-primary/60 italic font-medium normal-case tracking-normal">{templateType} System Active</span>
+                    <div className="space-y-4">
+                        <label className="font-sans text-[10px] font-black text-text-muted/40 uppercase tracking-[0.3em] flex justify-between">
+                            <span>VISUAL_BRIEFING</span>
+                            <span className="text-primary/40 italic font-medium normal-case tracking-normal">{templateType.toUpperCase()} SYSTEM ACTIVE</span>
                         </label>
                         <textarea
                             value={visualBrief}
                             onChange={(e) => setVisualBrief(e.target.value)}
-                            placeholder="DESCRIBE THE VISUAL EXECUTION. MOOD. COLORS. COMMAND."
-                            className="w-full bg-white/[0.02] border border-primary/10 p-5 text-sm font-sans text-text-primary focus:border-primary/30 outline-none resize-none min-h-[120px] leading-relaxed"
+                            placeholder="DESCRIBE VISUAL EXECUTION. MOOD. COLORS. COMMAND."
+                            className="w-full bg-white/[0.02] border border-primary/20 p-6 text-sm font-sans text-text-primary focus:border-primary/40 outline-none resize-none min-h-[120px] leading-relaxed transition-all"
                             rows={3}
                         />
                     </div>
@@ -322,107 +334,115 @@ export default function NewPostModal({ isOpen, onClose, post, prefilledDate }: N
                 </section>
 
                 {/* SECTION 3, 4, 5 */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                    <section className="space-y-6">
-                        <h4 className="font-mono text-sm tracking-widest text-text-primary border-b border-border-dark pb-2">SECTION 3: SCHEDULING</h4>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <label className="text-xs font-mono text-text-muted uppercase">Date *</label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
+                    <section className="space-y-10">
+                        <div className="flex items-center gap-4">
+                          <span className="font-sans text-[11px] font-black tracking-[0.4em] text-primary/40">03</span>
+                          <h4 className="font-sans text-[11px] font-black tracking-[0.3em] text-text-muted/60 uppercase">TEMPORAL_LOGISTICS</h4>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                                <label className="font-sans text-[10px] font-black text-text-muted/40 uppercase tracking-[0.3em]">DEPLOY_DATE</label>
                                 <input
                                     type="date"
                                     value={scheduledDate}
                                     onChange={(e) => setScheduledDate(e.target.value)}
-                                    className="w-full bg-background border border-border-dark rounded-sm p-3 text-sm text-text-primary focus:border-primary outline-none"
+                                    className="w-full bg-white/[0.02] border border-white/[0.06] p-5 text-[11px] font-black text-text-primary focus:border-primary/40 outline-none uppercase tracking-[0.2em] transition-all"
                                     required
                                 />
                             </div>
-                            <div className="space-y-2">
-                                <label className="text-xs font-mono text-text-muted uppercase">Time</label>
+                            <div className="space-y-4">
+                                <label className="font-sans text-[10px] font-black text-text-muted/40 uppercase tracking-[0.3em]">DEPLOY_TIME</label>
                                 <input
                                     type="time"
                                     value={scheduledTime}
                                     onChange={(e) => setScheduledTime(e.target.value)}
-                                    className="w-full bg-background border border-border-dark rounded-sm p-3 text-sm text-text-primary focus:border-primary outline-none"
+                                    className="w-full bg-white/[0.02] border border-white/[0.06] p-5 text-[11px] font-black text-text-primary focus:border-primary/40 outline-none uppercase tracking-[0.2em] transition-all"
                                 />
                             </div>
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <label className="text-xs font-mono text-text-muted uppercase">Priority</label>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                                <label className="font-sans text-[10px] font-black text-text-muted/40 uppercase tracking-[0.3em]">THREAT_LEVEL (PRIORITY)</label>
                                 <select
                                     value={priority}
                                     onChange={(e) => setPriority(e.target.value as any)}
-                                    className="w-full bg-background border border-border-dark rounded-sm p-3 text-sm text-text-primary focus:border-primary outline-none"
+                                    className="w-full bg-white/[0.02] border border-white/[0.06] p-5 text-[11px] font-black font-sans text-text-primary focus:border-primary/40 outline-none transition-all uppercase tracking-[0.2em] appearance-none cursor-pointer"
                                 >
-                                    <option value="normal">Normal</option>
-                                    <option value="high">High Priority</option>
-                                    <option value="urgent">URGENT</option>
+                                    <option value="normal">NORMAL_OPS</option>
+                                    <option value="high">HIGH_PRIORITY</option>
+                                    <option value="urgent">CRITICAL_URGENT</option>
                                 </select>
                             </div>
-                            <div className="space-y-2">
-                                <label className="text-xs font-mono text-text-muted uppercase">Status</label>
+                            <div className="space-y-4">
+                                <label className="font-sans text-[10px] font-black text-text-muted/40 uppercase tracking-[0.3em]">DEPLOY_STATE</label>
                                 <select
                                     value={status}
                                     onChange={(e) => setStatus(e.target.value as PostStage)}
-                                    className="w-full bg-background border border-border-dark rounded-sm p-3 text-sm text-text-primary focus:border-primary outline-none"
+                                    className="w-full bg-white/[0.02] border border-white/[0.06] p-5 text-[11px] font-black font-sans text-text-primary focus:border-primary/40 outline-none transition-all uppercase tracking-[0.2em] appearance-none cursor-pointer"
                                 >
                                     <option value="PLANNED">PLANNED</option>
-                                    <option value="BRIEF WRITTEN">BRIEF WRITTEN</option>
-                                    <option value="IN PRODUCTION">IN PRODUCTION</option>
+                                    <option value="BRIEF WRITTEN">BRIEF_REGISTERED</option>
+                                    <option value="IN PRODUCTION">IN_PRODUCTION</option>
                                 </select>
                             </div>
                         </div>
                     </section>
 
-                    <section className="space-y-6">
-                        <h4 className="font-mono text-sm tracking-widest text-text-primary border-b border-border-dark pb-2">ASSIGNMENT & ASSETS</h4>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <label className="text-xs font-mono text-text-muted uppercase">Assigned To</label>
+                    <section className="space-y-10">
+                        <div className="flex items-center gap-4">
+                          <span className="font-sans text-[11px] font-black tracking-[0.4em] text-primary/40">04</span>
+                          <h4 className="font-sans text-[11px] font-black tracking-[0.3em] text-text-muted/60 uppercase">NODE_ASSIGNMENT</h4>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                                <label className="font-sans text-[10px] font-black text-text-muted/40 uppercase tracking-[0.3em]">OPERATIONAL_NODE</label>
                                 <select
                                     value={assignedTo}
                                     onChange={(e) => setAssignedTo(e.target.value as NodeRole)}
-                                    className="w-full bg-background border border-border-dark rounded-sm p-3 text-sm text-text-primary focus:border-primary outline-none"
+                                    className="w-full bg-white/[0.02] border border-white/[0.06] p-5 text-[11px] font-black font-sans text-text-primary focus:border-primary/40 outline-none transition-all uppercase tracking-[0.2em] appearance-none cursor-pointer"
                                 >
-                                    <option value="Art Director">Art Director</option>
-                                    <option value="Video Editor">Video Editor</option>
-                                    <option value="Social Media Manager">Social Media Manager</option>
+                                    <option value="Art Director">ART_DIRECTOR</option>
+                                    <option value="Video Editor">VIDEO_OPERATOR</option>
+                                    <option value="Social Media Manager">SYSTEM_MANAGER</option>
                                 </select>
                             </div>
-                            <div className="space-y-2">
-                                <label className="text-xs font-mono text-text-muted uppercase">Link to Task</label>
+                            <div className="space-y-4">
+                                <label className="font-sans text-[10px] font-black text-text-muted/40 uppercase tracking-[0.3em]">TASK_BRIDGE</label>
                                 <select
                                     value={linkedTaskId}
                                     onChange={(e) => setLinkedTaskId(e.target.value === '' ? '' : Number(e.target.value))}
-                                    className="w-full bg-background border border-border-dark rounded-sm p-3 text-sm text-text-primary focus:border-primary outline-none"
+                                    className="w-full bg-white/[0.02] border border-white/[0.06] p-5 text-[11px] font-black font-sans text-text-primary focus:border-primary/40 outline-none transition-all uppercase tracking-[0.2em] appearance-none cursor-pointer"
                                 >
-                                    <option value="">None</option>
+                                    <option value="">NO_BRIDGE</option>
                                     {data.tasks.filter(t => t.status === 'active').map(t => (
-                                        <option key={t.id} value={t.id}>{t.name}</option>
+                                        <option key={t.id} value={t.id}>{t.name.toUpperCase()}</option>
                                     ))}
                                 </select>
                             </div>
-                            <div className="space-y-2 sm:col-span-2">
-                                <label className="text-xs font-mono text-text-muted uppercase">Linked Prompt</label>
+                            <div className="space-y-4 sm:col-span-2">
+                                <label className="font-sans text-[10px] font-black text-text-muted/40 uppercase tracking-[0.3em]">CORE_PROMPT_LINK</label>
                                 <select
                                     value={linkedPromptId}
                                     onChange={(e) => setLinkedPromptId(e.target.value === '' ? '' : Number(e.target.value))}
-                                    className="w-full bg-background border border-border-dark rounded-sm p-3 text-sm text-text-primary focus:border-primary outline-none"
+                                    className="w-full bg-white/[0.02] border border-white/[0.06] p-5 text-[11px] font-black font-sans text-text-primary focus:border-primary/40 outline-none transition-all uppercase tracking-[0.2em] appearance-none cursor-pointer"
                                 >
-                                    <option value="">None</option>
+                                    <option value="">NO_PROMPT</option>
                                     {data.protocols.filter(p => p.category === 'ai-prompt').map(p => (
-                                        <option key={p.id} value={p.id}>{p.title}</option>
+                                        <option key={p.id} value={p.id}>{p.title.toUpperCase()}</option>
                                     ))}
                                 </select>
                             </div>
                         </div>
-                        <div className="space-y-2">
-                            <label className="text-xs font-mono text-text-muted uppercase">Asset Links</label>
+                        <div className="space-y-4">
+                            <label className="font-sans text-[10px] font-black text-text-muted/40 uppercase tracking-[0.3em]">EXTERNAL_ASSET_LOG</label>
                             <input
                                 value={assetLinks}
                                 onChange={(e) => setAssetLinks(e.target.value)}
-                                placeholder="Link to Canva file, Drive folder..."
-                                className="w-full bg-background border border-border-dark rounded-sm p-3 text-sm text-text-primary focus:border-primary outline-none"
+                                placeholder="LINK_CANVA_DRIVE_ETC..."
+                                className="w-full bg-white/[0.02] border border-white/[0.06] p-5 text-[11px] font-black text-text-primary focus:border-primary/40 outline-none transition-all uppercase tracking-[0.2em]"
                             />
                         </div>
                     </section>

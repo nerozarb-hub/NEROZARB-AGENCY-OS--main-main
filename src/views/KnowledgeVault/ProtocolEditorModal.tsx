@@ -5,7 +5,7 @@ import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { Protocol, ProtocolCategory, PillarType, ProtocolStatus } from '../../utils/storage';
 import { useAppData } from '../../contexts/AppDataContext';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 
 interface ProtocolEditorModalProps {
     isOpen: boolean;

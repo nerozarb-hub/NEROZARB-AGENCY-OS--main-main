@@ -117,17 +117,26 @@ export default function RosterView({ onSelectClient }: { onSelectClient: (id: st
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="page-container space-y-8 pb-10 h-full flex flex-col"
+      className="page-container h-full flex flex-col"
     >
-      {/* Top Row */}
-      <div className="flex justify-between items-center gap-3">
-        <SectionHeader module="02" title="CLIENT OS" />
-        <Button onClick={() => setIsInstallModalOpen(true)} size="sm" className="bg-primary hover:bg-accent-mid text-text-primary whitespace-nowrap">
-          <Plus size={14} />
-          <span className="hidden sm:inline">[ + INSTALL CLIENT ]</span>
-          <span className="sm:hidden">+ NEW</span>
+      {/* Header */}
+      <header className="page-header">
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="w-1.5 h-1.5 bg-primary rounded-none" />
+            <span className="page-header-subtitle text-primary">02</span>
+          </div>
+          <h1 className="page-header-title">CLIENT OS</h1>
+          <p className="page-header-subtitle mt-2">Relational Logic · Tier Management</p>
+        </div>
+        <Button 
+          onClick={() => setIsInstallModalOpen(true)} 
+          className="bg-primary hover:bg-accent-mid text-text-primary"
+        >
+          <Plus size={16} />
+          <span>+ NEW CLIENT</span>
         </Button>
-      </div>
+      </header>
 
       {/* Pipeline Summary Bar */}
       <div className="flex items-center gap-2 md:gap-4 overflow-x-auto pb-2 border-b border-border-dark scroll-touch">

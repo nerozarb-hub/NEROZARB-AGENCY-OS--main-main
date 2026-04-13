@@ -111,36 +111,40 @@ export default function KnowledgeVault({ selectedClient }: { selectedClient?: st
     });
 
     return (
-        <div className="h-full flex flex-col animate-fade-in">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-8 md:p-12 border-b border-white/[0.04] flex-shrink-0 gap-6">
-                <div className="space-y-2">
-                    <h1 className="editorial-title text-4xl md:text-5xl text-text-primary italic">
-                        {selectedClient ? "Strategic Intelligence" : "Neural Repository"}
+        <div className="page-container h-full flex flex-col animate-fade-in">
+            {/* Header */}
+            <header className="page-header">
+                <div>
+                    <h1 className="page-header-title">
+                        {selectedClient ? "STRATEGIC INTELLIGENCE" : "KNOWLEDGE VAULT"}
                     </h1>
-                    <p className="font-sans text-[9px] font-black text-[#555] uppercase tracking-[0.4em]">
-                        {selectedClient ? "CLIENT-SPECIFIC OPERATIONAL PROTOCOLS" : "CENTRAL DEPLOYMENT LOGIC & TACTICAL SOPs"}
+                    <p className="page-header-subtitle mt-2">
+                        {selectedClient ? "CLIENT-SPECIFIC OPERATIONAL PROTOCOLS" : "CENTRAL DEPLOYMENT LOGIC & TACTICAL SOPS"}
                     </p>
                 </div>
-                <Button onClick={() => { setEditProtocol(undefined); setIsEditorOpen(true); }} className="bg-primary hover:bg-accent-mid text-text-primary px-10 h-12 font-sans text-[9px] font-black uppercase tracking-[0.2em] rounded-none">
-                    <Plus className="w-3.5 h-3.5 mr-2" />
-                    NEW PROTOCOL
+                <Button 
+                    onClick={() => { setEditProtocol(undefined); setIsEditorOpen(true); }} 
+                    className="bg-primary hover:bg-accent-mid text-text-primary px-8"
+                >
+                    <Plus size={16} />
+                    <span>+ NEW PROTOCOL</span>
                 </Button>
-            </div>
+            </header>
 
 
-            <div className="flex-1 p-4 md:p-6 flex flex-col min-h-0">
-                {/* Search & Tabs */}
-                <div className="mb-10 space-y-6">
-                    <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-6">
+            <div className="flex-1 flex flex-col min-h-0">
+                {/* Search & Tabs / Controls Area */}
+                <div className="page-controls mb-8 flex-col space-y-6">
+                    <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-6 w-full">
                         <div className="relative">
-                            <div ref={tabScrollRef} className="flex gap-2 p-1.5 bg-white/[0.01] border border-white/5 rounded-none overflow-x-auto scroll-touch no-scrollbar">
+                            <div ref={tabScrollRef} className="flex gap-2 p-1.5 bg-white/[0.01] border border-white/[0.08] rounded-none overflow-x-auto scroll-touch no-scrollbar">
                                 {CATEGORIES.map(cat => (
                                     <button
                                         key={cat.id}
                                         onClick={() => setActiveCategory(cat.id)}
                                         className={`flex items-center gap-3 px-6 py-3 rounded-none text-[9px] font-black font-sans uppercase tracking-[0.2em] transition-all whitespace-nowrap ${activeCategory === cat.id
                                             ? 'bg-white/5 text-primary'
-                                            : 'text-[#444] hover:text-[#888] hover:bg-white/[0.02]'
+                                            : 'text-muted-accessible hover:text-[#888] hover:bg-white/[0.02]'
                                             }`}
                                     >
                                         <div className="opacity-40">{cat.icon}</div>
@@ -157,24 +161,24 @@ export default function KnowledgeVault({ selectedClient }: { selectedClient?: st
 
                         <div className="flex items-center gap-4">
                             <div className="relative flex-1 sm:w-80 sm:flex-none">
-                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#333]" />
+                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
                                 <Input
-                                    className="pl-12 bg-white/[0.01] border-white/5 rounded-none w-full h-12 font-sans text-xs tracking-wide"
+                                    className="pl-12 bg-white/[0.01] border-white/[0.08] rounded-none w-full h-12 font-sans text-xs tracking-wide"
                                     placeholder="SCAN REPOSITORY..."
                                     value={searchQuery}
                                     onChange={e => setSearchQuery(e.target.value)}
                                 />
                             </div>
-                            <div className="flex border border-white/5 overflow-hidden bg-white/[0.01] flex-shrink-0">
+                            <div className="flex border border-white/[0.08] overflow-hidden bg-white/[0.01] flex-shrink-0">
                                 <button
                                     onClick={() => setViewMode('grid')}
-                                    className={`p-3.5 transition-all ${viewMode === 'grid' ? 'bg-white/5 text-primary' : 'text-[#333] hover:text-[#666]'}`}
+                                    className={`p-3.5 transition-all ${viewMode === 'grid' ? 'bg-white/5 text-primary' : 'text-white/20 hover:text-[#666]'}`}
                                 >
                                     <LayoutGrid className="w-3.5 h-3.5" />
                                 </button>
                                 <button
                                     onClick={() => setViewMode('list')}
-                                    className={`p-3.5 transition-all ${viewMode === 'list' ? 'bg-white/5 text-primary' : 'text-[#333] hover:text-[#666]'}`}
+                                    className={`p-3.5 transition-all ${viewMode === 'list' ? 'bg-white/5 text-primary' : 'text-white/20 hover:text-[#666]'}`}
                                 >
                                     <ListIcon className="w-3.5 h-3.5" />
                                 </button>
@@ -185,7 +189,7 @@ export default function KnowledgeVault({ selectedClient }: { selectedClient?: st
 
                     {/* Status Filter Tabs */}
                     <div className="flex items-center gap-4 pt-2">
-                        <span className="font-sans text-[8px] font-black text-[#444] uppercase tracking-widest">Temporal State:</span>
+                        <span className="font-sans text-[8px] font-black text-muted-accessible uppercase tracking-widest">Temporal State:</span>
                         <div className="flex gap-2">
                             {(['all', 'active', 'draft', 'archived'] as const).map(s => (
                                 <button
@@ -193,7 +197,7 @@ export default function KnowledgeVault({ selectedClient }: { selectedClient?: st
                                     onClick={() => setActiveStatus(s)}
                                     className={`px-4 py-1.5 text-[8px] font-black font-sans uppercase tracking-[0.2em] transition-all border ${activeStatus === s
                                         ? 'bg-primary/10 border-primary/20 text-primary'
-                                        : 'bg-transparent border-white/5 text-[#333] hover:text-[#666] hover:border-white/10'
+                                        : 'bg-transparent border-white/[0.08] text-white/20 hover:text-[#666] hover:border-white/10'
                                         }`}
                                 >
                                     {s}
@@ -204,13 +208,13 @@ export default function KnowledgeVault({ selectedClient }: { selectedClient?: st
 
                     {/* Pillar Filters */}
                     <div className="flex items-center gap-4">
-                        <span className="font-sans text-[8px] font-black text-[#444] uppercase tracking-widest shrink-0">Tactical Pillar:</span>
+                        <span className="font-sans text-[8px] font-black text-muted-accessible uppercase tracking-widest shrink-0">Tactical Pillar:</span>
                         <div className="flex gap-2 flex-wrap">
                             <button
                                 onClick={() => setActivePillar('all')}
                                 className={`px-4 py-1.5 text-[8px] font-black font-sans uppercase tracking-[0.2em] transition-all border ${activePillar === 'all'
                                     ? 'bg-primary/10 border-primary/20 text-primary'
-                                    : 'bg-transparent border-white/5 text-[#333] hover:text-[#666] hover:border-white/10'
+                                    : 'bg-transparent border-white/[0.08] text-white/20 hover:text-[#666] hover:border-white/10'
                                     }`}
                             >
                                 ALL_PILLARS
@@ -221,7 +225,7 @@ export default function KnowledgeVault({ selectedClient }: { selectedClient?: st
                                     onClick={() => setActivePillar(pillar)}
                                     className={`px-4 py-1.5 text-[8px] font-black font-sans uppercase tracking-[0.2em] transition-all border ${activePillar === pillar
                                         ? 'bg-primary/10 border-primary/20 text-primary'
-                                        : 'bg-transparent border-white/5 text-[#333] hover:text-[#666] hover:border-white/10'
+                                        : 'bg-transparent border-white/[0.08] text-white/20 hover:text-[#666] hover:border-white/10'
                                         }`}
                                 >
                                     {pillar}
@@ -237,7 +241,7 @@ export default function KnowledgeVault({ selectedClient }: { selectedClient?: st
                     {activeCategory === 'client-knowledge-base' && selectedClient ? (
                         <ClientKnowledgeBase clientId={parseInt(selectedClient, 10)} />
                     ) : filteredProtocols.length === 0 ? (
-                        <div className="h-full flex flex-col items-center justify-center text-[#333] py-32 border border-white/[0.04] bg-white/[0.01]">
+                        <div className="h-full flex flex-col items-center justify-center text-white/20 py-32 border border-white/[0.04] bg-white/[0.01]">
                             <BookOpen className="w-10 h-10 mb-6 opacity-20" />
                             <p className="font-sans font-black uppercase tracking-[0.3em] text-[10px]">
                                 {activeCategory === 'ai-prompt' ? 'No AI prompts found'
@@ -246,7 +250,7 @@ export default function KnowledgeVault({ selectedClient }: { selectedClient?: st
                                             : activeCategory === 'brand-standard' ? 'No brand standards found'
                                                 : 'No protocols found'}
                             </p>
-                            <p className="font-sans text-[8px] font-bold text-[#333] mt-2 tracking-widest uppercase italic">Initialize context or adjust filters.</p>
+                            <p className="font-sans text-[8px] font-bold text-white/20 mt-2 tracking-widest uppercase italic">Initialize context or adjust filters.</p>
                             <Button variant="ghost" className="mt-8 font-sans text-[9px] font-black uppercase tracking-widest text-primary hover:bg-primary/5 px-8" onClick={() => { setSearchQuery(''); setActiveCategory('all'); setActivePillar('all'); }}>
                                 System Reset
                             </Button>

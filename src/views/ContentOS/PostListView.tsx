@@ -46,65 +46,69 @@ export default function PostListView({ posts, clients, onPostClick }: PostListVi
 
 
             {/* Filter Bar */}
-            <div className="py-4 flex items-center gap-6 flex-wrap flex-shrink-0 border-b border-white/[0.04]">
-                <div className="flex items-center gap-3">
-                    <div className="h-px w-6 bg-primary" />
-                    <span className="font-sans text-[10px] font-bold uppercase tracking-[0.2em] text-[#555]">Filters</span>
+            <div className="py-8 flex items-center gap-8 flex-wrap flex-shrink-0 border-b border-white/[0.06]">
+                <div className="flex items-center gap-4">
+                    <div className="h-px w-8 bg-primary" />
+                    <span className="font-sans text-[11px] font-black uppercase tracking-[0.4em] text-text-muted/40">OPERATIONAL FILTERS</span>
                 </div>
 
-                <select
-                    value={filterStatus}
-                    onChange={e => setFilterStatus(e.target.value as any)}
-                    className="bg-white/5 border border-border-dark rounded-none px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest text-[#888] outline-none hover:border-text-muted transition-all"
-                >
-                    <option value="all">Status: All</option>
-                    {ALL_STAGES.map(s => <option key={s} value={s}>{s}</option>)}
-                </select>
+                <div className="flex items-center gap-4">
+                  <select
+                      value={filterStatus}
+                      onChange={e => setFilterStatus(e.target.value as any)}
+                      className="bg-white/[0.02] border border-white/[0.06] rounded-none px-6 py-2.5 text-[10px] font-black uppercase tracking-[0.2em] text-text-muted/60 outline-none hover:border-primary/40 focus:border-primary transition-all cursor-pointer appearance-none"
+                  >
+                      <option value="all">STATE: ALL</option>
+                      {ALL_STAGES.map(s => <option key={s} value={s}>{s}</option>)}
+                  </select>
 
-                <select
-                    value={filterPlatform}
-                    onChange={e => setFilterPlatform(e.target.value as any)}
-                    className="bg-white/5 border border-border-dark rounded-none px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest text-[#888] outline-none hover:border-text-muted transition-all"
-                >
-                    <option value="all">Platform: All</option>
-                    {ALL_PLATFORMS.map(p => <option key={p} value={p} className="capitalize">{p}</option>)}
-                </select>
+                  <select
+                      value={filterPlatform}
+                      onChange={e => setFilterPlatform(e.target.value as any)}
+                      className="bg-white/[0.02] border border-white/[0.06] rounded-none px-6 py-2.5 text-[10px] font-black uppercase tracking-[0.2em] text-text-muted/60 outline-none hover:border-primary/40 focus:border-primary transition-all cursor-pointer appearance-none"
+                  >
+                      <option value="all">ENV: ALL</option>
+                      {ALL_PLATFORMS.map(p => <option key={p} value={p} className="capitalize">{p.toUpperCase()}</option>)}
+                  </select>
+                </div>
 
-                <label className="flex items-center gap-2 cursor-pointer group">
+                <label className="flex items-center gap-3 cursor-pointer group px-4 py-2 hover:bg-white/[0.02] transition-colors">
                     <input
                         type="checkbox"
                         checked={filterOverdue}
                         onChange={e => setFilterOverdue(e.target.checked)}
-                        className="w-3 h-3 accent-red-500 rounded-none border border-border-dark bg-transparent"
+                        className="w-4 h-4 accent-primary rounded-none border border-white/[0.1] bg-transparent"
                     />
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted group-hover:text-red-400 transition-colors">Overdue Only</span>
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted/40 group-hover:text-red-400 transition-colors">CRITICAL OVERDUE</span>
                 </label>
 
-                <span className="ml-auto text-[10px] font-bold uppercase tracking-[0.15em] text-[#555]">
-                    {filtered.length} Deployment{filtered.length !== 1 ? 's' : ''} Identified
-                </span>
+                <div className="ml-auto flex items-center gap-4">
+                  <span className="font-sans text-[10px] font-black uppercase tracking-[0.2em] text-text-muted/20">
+                      {filtered.length} ASSETS REGISTERED
+                  </span>
+                </div>
             </div>
 
 
             {/* Table */}
             <div className="flex-1 overflow-auto custom-scrollbar">
-                <table className="w-full text-left border-collapse">
-                    <thead className="sticky top-0 z-10 bg-onyx">
-                        <tr className="border-b border-border-dark font-sans text-[10px] font-black uppercase tracking-[0.2em] text-[#555]">
-                            <th className="py-6 px-4 font-black cursor-pointer hover:text-text-primary transition-colors" onClick={() => setSortAsc(v => !v)}>
-                                <span className="flex items-center gap-2">Target Date <ArrowUpDown size={10} /></span>
+                <table className="w-full text-left border-separate border-spacing-0">
+                    <thead className="sticky top-0 z-10 bg-onyx/90 backdrop-blur-md">
+                        <tr className="border-b border-white/[0.06]">
+                            <th className="py-6 px-6 font-sans text-[11px] font-black uppercase tracking-[0.3em] text-text-muted/40 cursor-pointer hover:text-text-primary transition-colors border-b border-white/[0.1]" onClick={() => setSortAsc(v => !v)}>
+                                <span className="flex items-center gap-2">DEPLOYMENT DATE <ArrowUpDown size={12} className="opacity-20" /></span>
                             </th>
-                            <th className="py-6 px-4 font-black">Account</th>
-                            <th className="py-6 px-4 font-black">Environment</th>
-                            <th className="py-6 px-4 font-black">Asset Type</th>
-                            <th className="py-6 px-4 font-black">Intelligence Hook</th>
-                            <th className="py-6 px-4 font-black">Deployment Status</th>
-                            <th className="py-6 px-4 font-black">Operator</th>
-                            <th className="py-6 px-4 font-black text-right">Reference</th>
+                            <th className="py-6 px-6 font-sans text-[11px] font-black uppercase tracking-[0.3em] text-text-muted/40 border-b border-white/[0.1]">ENTITY</th>
+                            <th className="py-6 px-6 font-sans text-[11px] font-black uppercase tracking-[0.3em] text-text-muted/40 border-b border-white/[0.1]">PLATFORMS</th>
+                            <th className="py-6 px-6 font-sans text-[11px] font-black uppercase tracking-[0.3em] text-text-muted/40 border-b border-white/[0.1]">TYPE</th>
+                            <th className="py-6 px-6 font-sans text-[11px] font-black uppercase tracking-[0.3em] text-text-muted/40 border-b border-white/[0.1]">INTEL HOOK</th>
+                            <th className="py-6 px-6 font-sans text-[11px] font-black uppercase tracking-[0.3em] text-text-muted/40 border-b border-white/[0.1]">STATUS</th>
+                            <th className="py-6 px-6 font-sans text-[11px] font-black uppercase tracking-[0.3em] text-text-muted/40 border-b border-white/[0.1]">NODE</th>
+                            <th className="py-6 px-6 font-sans text-[11px] font-black uppercase tracking-[0.3em] text-text-muted/40 border-b border-white/[0.1] text-right">ACTION</th>
                         </tr>
                     </thead>
 
-                    <tbody>
+                    <tbody className="divide-y divide-white/[0.04]">
                         {filtered.map(post => {
                             const client = clients.find(c => c.id === post.clientId);
                             const isOverdue = post.scheduledDate < today && post.status !== 'PUBLISHED';
@@ -112,35 +116,46 @@ export default function PostListView({ posts, clients, onPostClick }: PostListVi
                                 <tr
                                     key={post.id}
                                     onClick={() => onPostClick(post)}
-                                    className={`border-b border-white/[0.03] hover:bg-white/[0.02] transition-all duration-500 cursor-pointer group ${isOverdue ? 'bg-red-500/5' : ''}`}
+                                    className={`hover:bg-primary/[0.02] transition-all duration-500 cursor-pointer group ${isOverdue ? 'bg-red-500/[0.03]' : ''}`}
                                 >
-                                    <td className="p-4">
-                                        <div className={`editorial-title text-base italic ${isOverdue ? 'text-red-400' : 'text-text-primary'}`}>{post.scheduledDate}</div>
-                                        <div className="font-sans text-[10px] uppercase font-bold tracking-widest text-[#555] mt-1">{post.scheduledTime}</div>
+                                    <td className="py-8 px-6">
+                                        <div className={`font-heading text-2xl tracking-tight ${isOverdue ? 'text-red-400' : 'text-text-primary'}`}>{post.scheduledDate}</div>
+                                        <div className="font-sans text-[10px] uppercase font-black tracking-widest text-text-muted/20 mt-1">{post.scheduledTime}</div>
                                     </td>
-                                    <td className="p-4">
-                                        <div className="font-sans text-[11px] font-bold uppercase tracking-widest text-primary/80">{client?.name || '—'}</div>
+                                    <td className="py-8 px-6">
+                                        <div className="font-sans text-[11px] font-bold uppercase tracking-[0.1em] text-primary">{client?.name || '—'}</div>
                                     </td>
-                                    <td className="p-4">
-                                        <div className="font-sans text-[11px] font-bold uppercase tracking-widest text-text-secondary">{post.platforms.join(' + ')}</div>
+                                    <td className="py-8 px-6">
+                                        <div className="flex -space-x-1">
+                                            {post.platforms.map((p, i) => (
+                                                <div key={p} className="w-6 h-6 border border-white/[0.1] bg-white/[0.05] flex items-center justify-center text-[9px] font-sans font-black rotate-45" style={{ zIndex: 10 - i }}>
+                                                    <span className="-rotate-45">{p[0].toUpperCase()}</span>
+                                                </div>
+                                            ))}
+                                        </div>
                                     </td>
-                                    <td className="p-4">
-                                        <span className="font-sans text-[10px] font-bold uppercase tracking-widest bg-white/5 border border-white/5 px-3 py-1 text-text-muted">
+                                    <td className="py-8 px-6">
+                                        <span className="font-sans text-[10px] font-black uppercase tracking-[0.15em] text-text-muted/60">
                                             {post.postType}
                                         </span>
                                     </td>
-                                    <td className="p-4 max-w-[280px]">
-                                        <div className="editorial-title text-base text-text-primary truncate">{post.hook || <span className="italic text-[#555]">No Hook Identified</span>}</div>
+                                    <td className="py-8 px-6 max-w-[320px]">
+                                        <div className="font-heading text-xl text-text-primary/80 group-hover:text-text-primary transition-colors truncate">
+                                            {post.hook || <span className="text-text-muted/20">NO INTEL DEFINED</span>}
+                                        </div>
                                     </td>
-                                    <td className="p-4">
-                                        <Badge status={post.status}>{post.status}</Badge>
+                                    <td className="py-8 px-6">
+                                        <div className="flex items-center gap-3">
+                                          <div className={`w-1.5 h-1.5 rounded-none rotate-45 ${getStatusColor(post.status)}`} />
+                                          <span className="font-sans text-[11px] font-black uppercase tracking-[0.2em] text-text-muted/60">{post.status}</span>
+                                        </div>
                                     </td>
-                                    <td className="p-4">
-                                        <div className="font-sans text-[10px] font-bold uppercase tracking-widest text-text-muted">{post.assignedTo}</div>
+                                    <td className="py-8 px-6">
+                                        <div className="font-sans text-[10px] font-black uppercase tracking-[0.15em] text-text-muted/40">{post.assignedTo?.split(' ')[0]}</div>
                                     </td>
-                                    <td className="p-4 text-right">
-                                        <button className="font-sans text-[10px] font-black uppercase tracking-widest text-primary opacity-0 group-hover:opacity-100 transition-all duration-500 hover:translate-x-1">
-                                            Execute →
+                                    <td className="py-8 px-6 text-right">
+                                        <button className="font-sans text-[10px] font-black uppercase tracking-[0.25em] text-primary opacity-20 group-hover:opacity-100 transition-all duration-700 hover:translate-x-1 bg-primary/5 px-4 py-2 border border-primary/10 hover:border-primary/40">
+                                            VIEW_ASSET
                                         </button>
                                     </td>
                                 </tr>
@@ -150,8 +165,8 @@ export default function PostListView({ posts, clients, onPostClick }: PostListVi
 
                         {filtered.length === 0 && (
                             <tr>
-                                <td colSpan={8} className="p-12 text-center text-text-muted/50 text-sm">
-                                    No posts match the current filters.
+                                <td colSpan={8} className="py-24 px-6 text-center">
+                                    <div className="font-heading text-4xl text-text-muted/10 uppercase tracking-tighter">No assets matching parameters</div>
                                 </td>
                             </tr>
                         )}
@@ -159,5 +174,20 @@ export default function PostListView({ posts, clients, onPostClick }: PostListVi
                 </table>
             </div>
         </motion.div>
+
     );
+}
+
+function getStatusColor(status: PostStage) {
+    switch (status) {
+        case 'PLANNED': return 'bg-white/[0.1]';
+        case 'BRIEF WRITTEN': return 'bg-blue-400/60';
+        case 'IN PRODUCTION': return 'bg-blue-500';
+        case 'REVIEW': return 'bg-yellow-500';
+        case 'CEO APPROVAL': return 'bg-orange-500';
+        case 'CLIENT APPROVAL': return 'bg-orange-400';
+        case 'SCHEDULED': return 'bg-purple-500';
+        case 'PUBLISHED': return 'bg-green-500';
+        default: return 'bg-white/[0.05]';
+    }
 }

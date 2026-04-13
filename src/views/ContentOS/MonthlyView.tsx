@@ -61,41 +61,41 @@ export default function MonthlyView({ posts, clients, onPostClick, onAddPost }: 
         <motion.div variants={itemVariants} className="bg-transparent flex-1 flex flex-col min-h-0 overflow-hidden">
 
             {/* Header row */}
-            <div className="flex justify-between items-center py-6 border-b border-white/[0.04]">
-                <div className="flex items-center gap-6">
+            <div className="flex flex-col md:flex-row justify-between items-center py-8 gap-4 flex-shrink-0">
+                <div className="flex items-center gap-8">
                     <button
                         onClick={prevMonth}
-                        className="p-1.5 text-[#555] hover:text-text-primary transition-all duration-300 border border-white/5 hover:border-text-muted"
+                        className="p-2 text-text-muted/40 hover:text-text-primary transition-all duration-300 border border-white/[0.06] hover:bg-white/[0.02]"
                     >
-                        <ChevronLeft size={14} />
+                        <ChevronLeft size={16} />
                     </button>
-                    <h3 className="editorial-title text-3xl text-text-primary tracking-tight italic min-w-[300px] text-center">{monthLabel}</h3>
+                    <h3 className="font-heading text-5xl text-text-primary tracking-tighter uppercase min-w-[320px] text-center leading-none">{monthLabel}</h3>
                     <button
                         onClick={nextMonth}
-                        className="p-1.5 text-[#555] hover:text-text-primary transition-all duration-300 border border-white/5 hover:border-text-muted"
+                        className="p-2 text-text-muted/40 hover:text-text-primary transition-all duration-300 border border-white/[0.06] hover:bg-white/[0.02]"
                     >
-                        <ChevronRight size={14} />
+                        <ChevronRight size={16} />
                     </button>
                 </div>
 
                 {/* Legend */}
-                <div className="flex flex-wrap justify-end gap-3 text-[10px] font-sans font-bold uppercase tracking-[0.2em] text-[#555]">
-                    <span className="flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/5 text-[#555]">
-                      <div className="w-1.5 h-1.5 rounded-none rotate-45 bg-border-dark" /> PLANNED
+                <div className="flex flex-wrap justify-end gap-2 text-[9px] font-sans font-black uppercase tracking-[0.25em] text-text-muted/40">
+                    <span className="flex items-center gap-2 px-3 py-1.5 bg-white/[0.02] border border-white/[0.04]">
+                      <div className="w-1.5 h-1.5 rounded-none rotate-45 bg-white/[0.1]" /> PLANNED
                     </span>
-                    <span className="flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/5 text-[#555]">
+                    <span className="flex items-center gap-2 px-3 py-1.5 bg-white/[0.02] border border-white/[0.04]">
                       <div className="w-1.5 h-1.5 rounded-none rotate-45 bg-blue-500" /> PRODUCTION
                     </span>
-                    <span className="flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/5 text-[#555]">
+                    <span className="flex items-center gap-2 px-3 py-1.5 bg-white/[0.02] border border-white/[0.04]">
                       <div className="w-1.5 h-1.5 rounded-none rotate-45 bg-yellow-500" /> REVIEW
                     </span>
-                    <span className="flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/5 text-[#555]">
+                    <span className="flex items-center gap-2 px-3 py-1.5 bg-white/[0.02] border border-white/[0.04]">
                       <div className="w-1.5 h-1.5 rounded-none rotate-45 bg-orange-500" /> CEO APPR
                     </span>
-                    <span className="flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/5 text-[#555]">
+                    <span className="flex items-center gap-2 px-3 py-1.5 bg-white/[0.02] border border-white/[0.04]">
                       <div className="w-1.5 h-1.5 rounded-none rotate-45 bg-purple-500" /> SCHEDULED
                     </span>
-                    <span className="flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/5 text-[#555]">
+                    <span className="flex items-center gap-2 px-3 py-1.5 bg-white/[0.02] border border-white/[0.04]">
                        <div className="w-1.5 h-1.5 rounded-none rotate-45 bg-green-500" /> PUBLISHED
                     </span>
                 </div>
@@ -103,10 +103,10 @@ export default function MonthlyView({ posts, clients, onPostClick, onAddPost }: 
 
 
             {/* Grid Header */}
-            <div className="grid grid-cols-[40px_repeat(7,1fr)] border-b border-white/[0.04]">
-                <div className="p-2 border-r border-white/[0.04]" /> {/* Week col header */}
+            <div className="grid grid-cols-[50px_repeat(7,1fr)] bg-white/[0.02] border-y border-white/[0.06]">
+                <div className="p-3 border-r border-white/[0.06]" /> {/* Week col header */}
                 {weekDays.map(day => (
-                    <div key={day} className="py-4 text-center font-sans text-[10px] font-black uppercase tracking-[0.2em] text-[#555] border-r border-white/[0.04] last:border-r-0">
+                    <div key={day} className="py-4 text-center font-sans text-[10px] font-black uppercase tracking-[0.3em] text-text-muted/40 border-r border-white/[0.06] last:border-r-0">
                         {day}
                     </div>
                 ))}
@@ -114,7 +114,7 @@ export default function MonthlyView({ posts, clients, onPostClick, onAddPost }: 
 
 
             {/* Grid Cells */}
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto custom-scrollbar">
                 {/* Group cells into rows of 7 for week numbers */}
                 {Array.from({ length: Math.ceil(cells.length / 7) }, (_, rowIdx) => {
                     const rowCells = cells.slice(rowIdx * 7, rowIdx * 7 + 7);
@@ -123,11 +123,11 @@ export default function MonthlyView({ posts, clients, onPostClick, onAddPost }: 
                     const weekNum = firstRealDate ? getWeekNum(firstRealDate) : null;
 
                     return (
-                        <div key={rowIdx} className="grid grid-cols-[40px_repeat(7,1fr)]" style={{ minHeight: '120px' }}>
+                        <div key={rowIdx} className="grid grid-cols-[50px_repeat(7,1fr)] group/row border-b border-white/[0.06]" style={{ minHeight: '160px' }}>
                             {/* Week number */}
-                            <div className="border-r border-b border-border-dark/50 flex items-start justify-center pt-2">
+                            <div className="border-r border-white/[0.06] flex items-start justify-center pt-4 bg-white/[0.01]">
                                 {weekNum && (
-                                    <span className="text-[9px] font-mono text-text-muted/40 tracking-widest">W{weekNum}</span>
+                                    <span className="text-[10px] font-sans font-black text-text-muted/20 tracking-[0.2em] uppercase origin-center -rotate-90 whitespace-nowrap">WEEK {weekNum}</span>
                                 )}
                             </div>
 
@@ -136,7 +136,7 @@ export default function MonthlyView({ posts, clients, onPostClick, onAddPost }: 
                                 const dateObj = rowCells[colIdx] ?? null;
                                 if (!dateObj) {
                                     return (
-                                        <div key={`pad-${rowIdx}-${colIdx}`} className="border-r border-b border-border-dark/50 last:border-r-0 bg-background/30" />
+                                        <div key={`pad-${rowIdx}-${colIdx}`} className="border-r border-white/[0.06] last:border-r-0 bg-white/[0.005]" />
                                     );
                                 }
 
@@ -148,21 +148,21 @@ export default function MonthlyView({ posts, clients, onPostClick, onAddPost }: 
                                 return (
                                     <div
                                         key={dateStr}
-                                        className={`p-3 border-r border-b border-white/[0.04] last:border-r-0 hover:bg-white/[0.02] transition-colors group flex flex-col relative cursor-default ${isToday ? 'bg-primary/5' : ''} ${isPast ? 'opacity-40' : ''}`}
+                                        className={`p-4 border-r border-white/[0.06] last:border-r-0 hover:bg-white/[0.02] transition-all duration-300 group/cell flex flex-col relative cursor-default ${isToday ? 'bg-primary/[0.03]' : ''} ${isPast ? 'opacity-30 pb-2' : ''}`}
                                     >
-                                        <div className="flex justify-between items-start mb-2 relative z-10">
-                                            <span className={`editorial-title text-base italic leading-none ${isToday ? 'text-primary' : 'text-text-muted'}`}>
-                                                {dateObj.getDate()}
+                                        <div className="flex justify-between items-start mb-4 relative z-10">
+                                            <span className={`font-heading text-2xl tracking-tighter leading-none ${isToday ? 'text-primary' : 'text-text-primary'}`}>
+                                                {dateObj.getDate().toString().padStart(2, '0')}
                                             </span>
                                             {dayPosts.length > 0 && (
-                                                <span className="font-sans text-[10px] font-bold text-[#555]">{dayPosts.length}</span>
+                                                <span className="font-sans text-[10px] font-black text-text-muted/40 tracking-widest">{dayPosts.length}</span>
                                             )}
                                         </div>
 
 
                                         {/* Hover Add Button */}
                                         <div
-                                            className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-background/50 cursor-pointer backdrop-blur-[1px] transition-all z-0"
+                                            className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/cell:opacity-100 bg-onyx/40 cursor-pointer backdrop-blur-[1px] transition-all duration-500 z-0 pointer-events-none group-hover/cell:pointer-events-auto"
                                             onClick={() => onAddPost(dateStr)}
                                         >
                                             <span className="text-3xl font-light text-text-muted/30">+</span>
@@ -170,28 +170,28 @@ export default function MonthlyView({ posts, clients, onPostClick, onAddPost }: 
 
                                         {/* Post previews */}
                                         <div className="flex-1 space-y-1 relative z-10 pointer-events-none">
-                                            {dayPosts.slice(0, 3).map(post => {
+                                            {dayPosts.slice(0, 4).map(post => {
                                                 const client = clients.find(c => c.id === post.clientId);
                                                 const isOverdueItem = isPast && post.status !== 'PUBLISHED' && post.status !== 'SCHEDULED';
                                                 return (
                                                     <div
                                                         key={post.id}
                                                         onClick={(e) => { e.stopPropagation(); onPostClick(post); }}
-                                                        className={`p-1.5 bg-white/5 border border-white/[0.02] flex items-center gap-2 cursor-pointer transition-all duration-300 pointer-events-auto truncate hover:border-text-muted/30 ${isOverdueItem ? 'border-red-500/30' : ''}`}
+                                                        className={`p-2 bg-white/[0.02] border border-white/[0.04] flex items-center gap-2 cursor-pointer transition-all duration-500 pointer-events-auto truncate hover:border-white/[0.1] hover:bg-white/[0.04] ${isOverdueItem ? 'border-red-500/30' : ''}`}
                                                         title={post.hook || post.postType}
                                                     >
                                                         <div className={`w-1.5 h-1.5 rounded-none rotate-45 shrink-0 ${getStatusColor(post.status)}`} />
-                                                        <span className={`truncate font-sans text-[9px] font-bold uppercase tracking-widest ${isOverdueItem ? 'text-red-400' : 'text-text-primary'}`}>{post.platforms[0] || 'POST'}</span>
+                                                        <span className={`truncate font-sans text-[9px] font-black uppercase tracking-[0.15em] ${isOverdueItem ? 'text-red-400' : 'text-text-primary'}`}>{post.platforms[0] || 'POST'}</span>
                                                         {client && (
-                                                            <span className="truncate font-sans text-[8px] font-bold text-primary/60 ml-auto shrink-0 uppercase tracking-tighter">{client.name.split(' ')[0]}</span>
+                                                            <span className="truncate font-sans text-[8px] font-bold text-text-muted/40 ml-auto shrink-0 uppercase tracking-tighter">{client.name.split(' ')[0]}</span>
                                                         )}
                                                     </div>
 
                                                 )
                                             })}
-                                            {dayPosts.length > 3 && (
-                                                <div className="text-[9px] text-text-muted text-center py-0.5 bg-background/50 rounded-sm">
-                                                    +{dayPosts.length - 3} more
+                                            {dayPosts.length > 4 && (
+                                                <div className="text-[9px] font-black text-text-muted/20 uppercase tracking-[0.2em] text-center py-1 mt-2">
+                                                    +{dayPosts.length - 4} ASSETS
                                                 </div>
                                             )}
                                         </div>

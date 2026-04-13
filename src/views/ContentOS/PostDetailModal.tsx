@@ -1,10 +1,9 @@
 import { useState, useMemo } from 'react';
 import { Modal } from '../../components/ui/Modal';
-import { Activity, ArrowRight, ExternalLink, BarChart, BrainCircuit } from 'lucide-react';
+import { ArrowRight, BarChart, BrainCircuit, ShieldCheck, X } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { useAppData } from '../../contexts/AppDataContext';
 import { Post, PostStage, PerformanceLog } from '../../utils/storage';
-import { Badge } from '../../components/ui/Badge';
 
 interface PostDetailModalProps {
   isOpen: boolean;
@@ -30,14 +29,10 @@ export default function PostDetailModal({ isOpen, onClose, post, onNavigate }: P
   const { data, updatePost, advancePostStage } = useAppData();
 
   const client = useMemo(() => data.clients.find(c => c.id === post.clientId), [data.clients, post.clientId]);
-  const linkedTask = useMemo(() => data.tasks.find(t => t.id === post.linkedTaskId), [data.tasks, post.linkedTaskId]);
-
   const currentStageIndex = STAGES.indexOf(post.status);
   const nextStage = STAGES[currentStageIndex + 1] as PostStage | undefined;
 
-  // Performance log state
   const [showPerformanceInput, setShowPerformanceInput] = useState(false);
-  const [activeTab, setActiveTab] = useState<'content' | 'details'>('content');
   const [metrics, setMetrics] = useState<Partial<PerformanceLog>>(post.performance || {
     reach: 0,
     impressions: 0,
@@ -79,99 +74,92 @@ export default function PostDetailModal({ isOpen, onClose, post, onNavigate }: P
   const isCeoGated = nextStage ? CEO_GATED_STAGES.includes(nextStage) : false;
 
   const headerTitle = (
-    <div className="flex items-center gap-4 flex-wrap">
+    <div className="flex items-center gap-6 flex-wrap">
       <div className="flex flex-col">
-        <p className="font-sans text-[10px] font-bold uppercase tracking-[0.2em] text-primary/80">Asset Identifier</p>
-        <h3 className="editorial-title text-2xl text-text-primary italic">Post Intelligence</h3>
+          <p className="font-sans text-[10px] font-black uppercase tracking-[0.4em] text-primary/60">ASSET_IDENTIFIER</p>
+          <h2 className="font-heading text-4xl text-text-primary uppercase tracking-tighter">Post Intelligence</h2>
       </div>
-      <div className="h-8 w-px bg-border-dark hidden md:block" />
+      <div className="h-10 w-px bg-white/[0.06] hidden md:block" />
       {client && (
-        <span className="font-sans text-[10px] font-bold text-primary/80 uppercase tracking-widest bg-white/5 border border-white/5 px-2 py-1">
-          {client.name}
+        <span className="font-sans text-[11px] font-black text-primary uppercase tracking-[0.2em] bg-primary/5 border border-primary/20 px-3 py-1">
+          {client.name.toUpperCase()}
         </span>
       )}
-      <div className="flex gap-1.5 overflow-x-auto pb-1 md:pb-0">
+      <div className="flex gap-2 items-center">
         {post.platforms.map(p => (
-          <span key={p} className="font-sans text-[9px] font-black uppercase tracking-widest text-[#555] bg-white/5 border border-white/5 px-2 py-0.5">
-            {p}
-          </span>
+            <div key={p} className="w-6 h-6 border border-white/[0.1] bg-white/[0.05] flex items-center justify-center text-[9px] font-sans font-black rotate-45">
+                <span className="-rotate-45">{p[0].toUpperCase()}</span>
+            </div>
         ))}
       </div>
-      <Badge status={post.status}>{post.status}</Badge>
+      <div className={`px-4 py-1.5 font-sans text-[10px] font-black uppercase tracking-[0.2em] border ${post.status === 'PUBLISHED' ? 'border-green-500/40 text-green-400 bg-green-500/5' : 'border-white/[0.1] text-text-muted/40 bg-white/[0.02]'}`}>
+        {post.status}
+      </div>
     </div>
   );
-
 
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
       title={headerTitle}
-      width={1100}
+      width={1200}
       footer={
-        <div className="flex flex-col sm:flex-row justify-between items-center w-full gap-4">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => {
-                if (onNavigate) {
-                  onNavigate('vault', post.clientId.toString());
-                  onClose();
-                }
-              }}
-              className="px-4 py-2 text-[#888] hover:text-text-primary flex items-center gap-2 font-sans text-[10px] font-black uppercase tracking-widest border border-border-dark hover:border-text-muted transition-all duration-500"
-            >
-              <BrainCircuit size={14} />
-              Vault Access
-            </button>
+        <div className="flex flex-col sm:flex-row justify-between items-center w-full gap-6 px-2">
+            <div className="flex items-center gap-6">
+                <button
+                    onClick={() => {
+                        if (onNavigate) {
+                            onNavigate('vault', post.clientId.toString());
+                            onClose();
+                        }
+                    }}
+                    className="group px-6 py-3 text-text-muted/40 hover:text-text-primary flex items-center gap-3 font-sans text-[10px] font-black uppercase tracking-[0.3em] border border-white/[0.06] hover:border-primary transition-all duration-700 hover:bg-primary/5"
+                >
+                    <BrainCircuit size={16} className="group-hover:text-primary transition-colors" />
+                    VAULT_ACCESS
+                </button>
 
-            <Button variant="ghost" onClick={onClose} className="text-[#555] hover:text-text-primary text-[10px] uppercase font-black tracking-widest">
-              Escape
-            </Button>
+                <Button variant="ghost" onClick={onClose} className="font-sans text-[11px] font-black uppercase tracking-[0.3em] text-text-muted/40 hover:text-text-primary transition-colors">
+                    TERMINATE_SESSION
+                </Button>
+            </div>
 
-          </div>
           {nextStage && (
-            <Button onClick={handleAdvanceStage} className="bg-primary hover:bg-accent-mid text-text-primary w-full sm:w-auto">
-              {isCeoGated && <span className="mr-1 text-[10px]">CEO:</span>}
-              ADVANCE TO {nextStage}
-              <ArrowRight size={14} className="ml-2" />
-            </Button>
+            <div className="flex items-center gap-6 w-full sm:w-auto">
+                <span className="font-sans text-[10px] font-black text-text-muted/20 tracking-[0.3em] hidden sm:block">READY_FOR_STATE_TRANSITION</span>
+                <Button onClick={handleAdvanceStage} className="bg-primary hover:bg-accent-mid text-onyx px-12 h-14 rounded-none font-sans text-[11px] font-black uppercase tracking-[0.3em] transition-all hover:scale-[1.02] active:scale-[0.98] w-full sm:w-auto">
+                    {isCeoGated && <span className="mr-2 opacity-60">CEO_AUTH:</span>}
+                    ADVANCE_TO_{nextStage.replace(' ', '_')}
+                    <ArrowRight size={16} className="ml-3" />
+                </Button>
+            </div>
           )}
         </div>
       }
     >
-      <div className="flex flex-col md:flex-row -m-6 h-full min-h-[500px]">
-        {/* Mobile Tabs */}
-        <div className="md:hidden flex border-b border-border-dark bg-card shrink-0">
-          <button
-            className={`flex-1 py-4 text-[9px] font-black tracking-[0.2em] uppercase transition-all duration-500 ${activeTab === 'content' ? 'text-primary border-b border-primary' : 'text-[#444]'}`}
-            onClick={() => setActiveTab('content')}
-          >
-            Intelligence
-          </button>
-          <button
-            className={`flex-1 py-4 text-[9px] font-black tracking-[0.2em] uppercase transition-all duration-500 ${activeTab === 'details' ? 'text-primary border-b border-primary' : 'text-[#444]'}`}
-            onClick={() => setActiveTab('details')}
-          >
-            Deployment
-          </button>
-
-        </div>
+      <div className="flex flex-col md:flex-row -m-6 h-full min-h-[600px] bg-onyx">
 
         {/* LEFT: Pipeline + Content + Activity */}
-        <div className={`flex-1 md:border-r border-border-dark flex-col p-6 md:p-8 space-y-10 overflow-y-auto ${activeTab === 'content' ? 'flex' : 'hidden md:flex'}`}>
+        <div className={`flex-1 md:border-r border-white/[0.06] flex-col p-10 md:p-12 space-y-16 overflow-y-auto custom-scrollbar`}>
           {/* Stage Pipeline */}
-          <section className="space-y-6">
-            <h4 className="font-sans text-[9px] font-black tracking-[0.3em] text-[#555] uppercase">Evolution Pipeline</h4>
-            <div className="flex items-center justify-between relative pt-2 overflow-x-auto pb-4 custom-scrollbar">
-              <div className="absolute top-[18px] left-0 right-0 h-px bg-border-dark -z-10" />
+          <section className="space-y-10">
+            <div className="flex items-center gap-4">
+              <span className="font-sans text-[11px] font-black tracking-[0.4em] text-primary/40">EV</span>
+              <h4 className="font-sans text-[11px] font-black tracking-[0.3em] text-text-muted/60 uppercase">EVOLUTION_PIPELINE</h4>
+              <div className="flex-1 h-px bg-white/[0.06]" />
+            </div>
+
+            <div className="flex items-center justify-between relative py-6 overflow-x-auto custom-scrollbar no-scrollbar">
+              <div className="absolute top-[39px] left-0 right-0 h-px bg-white/[0.06] -z-10" />
               {STAGES.map((stage, idx) => {
                 const isCompleted = idx < currentStageIndex;
                 const isCurrent = idx === currentStageIndex;
                 return (
-                  <div key={stage} className="flex flex-col items-center gap-3 bg-onyx px-2 shrink-0">
-                    <div className={`w-3.5 h-3.5 rounded-none rotate-45 border-2 transition-all duration-500 ${isCurrent ? 'border-primary bg-primary' : isCompleted ? 'border-primary/40 bg-primary/20' : 'border-[#222] bg-onyx'}`} />
-                    <span className={`font-sans text-[8px] font-black tracking-widest max-w-[64px] text-center uppercase leading-none ${isCurrent ? 'text-primary' : isCompleted ? 'text-text-muted' : 'text-[#333]'}`}>
-                      {stage}
+                  <div key={stage} className="flex flex-col items-center gap-4 px-4 shrink-0 transition-opacity duration-700" style={{ opacity: idx <= currentStageIndex + 1 ? 1 : 0.2 }}>
+                    <div className={`w-3.5 h-3.5 rounded-none rotate-45 border-2 transition-all duration-700 shadow-lg ${isCurrent ? 'border-primary bg-primary shadow-primary/20' : isCompleted ? 'border-primary/40 bg-primary/20' : 'border-white/[0.1] bg-onyx'}`} />
+                    <span className={`font-sans text-[8px] font-black tracking-[0.3em] text-center uppercase leading-none transition-colors duration-700 ${isCurrent ? 'text-primary' : isCompleted ? 'text-text-muted/60' : 'text-text-muted/20'}`}>
+                      {stage.replace(' ', '\n')}
                     </span>
                   </div>
                 );
@@ -181,140 +169,210 @@ export default function PostDetailModal({ isOpen, onClose, post, onNavigate }: P
 
 
           {/* Content Preview */}
-          <section className="space-y-6">
-            <h4 className="font-sans text-[9px] font-black tracking-[0.3em] text-[#555] uppercase border-b border-white/[0.04] pb-4">Content Intelligence</h4>
-            <div className="bg-white/[0.01] rounded-none p-8 space-y-8 border border-white/[0.04] relative group transition-all duration-500 hover:border-text-muted/20">
-              <div className="absolute top-0 left-0 w-1 h-8 bg-primary/60" />
-              <div>
-                <h5 className="font-sans text-[10px] font-bold text-[#555] uppercase tracking-[0.2em] mb-4 flex justify-between">
-                  <span>Intelligence Hook</span>
-                  {post.triggerUsed && <span className="text-primary/60 italic font-medium tracking-normal normal-case">Trigger: {post.triggerUsed}</span>}
-                </h5>
-                <p className="editorial-title text-3xl font-medium text-text-primary leading-tight italic">
-                  {post.hook || <span className="text-[#333] not-italic">No hook written yet...</span>}
+          <section className="space-y-10">
+            <div className="flex items-center gap-4">
+              <span className="font-sans text-[11px] font-black tracking-[0.4em] text-primary/40">CI</span>
+              <h4 className="font-sans text-[11px] font-black tracking-[0.3em] text-text-muted/60 uppercase">CREATIVE_INTELLIGENCE</h4>
+              <div className="flex-1 h-px bg-white/[0.06]" />
+            </div>
+
+            <div className="bg-white/[0.01] border border-white/[0.06] p-10 space-y-12 relative group overflow-hidden">
+              <div className="absolute top-0 right-0 w-1 p-4 bg-primary rotate-45 translate-x-3 -translate-y-3 opacity-20 group-hover:opacity-100 transition-all duration-700" />
+              
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <h5 className="font-sans text-[10px] font-black text-text-muted/40 uppercase tracking-[0.3em]">PRIMARY_HOOK_PAYLOAD</h5>
+                  {post.triggerUsed && <span className="font-sans text-[9px] font-black text-primary/60 uppercase tracking-[0.2em] bg-primary/5 px-3 py-1 border border-primary/20">{post.triggerUsed.toUpperCase()}_TRIGGER</span>}
+                </div>
+                <p className="font-heading text-4xl text-text-primary leading-[1.1] tracking-tighter">
+                  {post.hook || <span className="text-text-muted/10 italic">INTEL_UNDEFINED</span>}
                 </p>
               </div>
-              <div>
-                <h5 className="font-sans text-[10px] font-bold text-[#555] uppercase tracking-[0.2em] mb-4">Body Copy</h5>
-                <p className="font-sans text-sm text-text-muted whitespace-pre-wrap leading-relaxed">
-                  {post.captionBody || 'No deployment payload identified.'}
+
+              <div className="space-y-6 pt-10 border-t border-white/[0.06]">
+                <h5 className="font-sans text-[10px] font-black text-text-muted/40 uppercase tracking-[0.3em]">INTELLIGENCE_BODY_MAPPING</h5>
+                <p className="font-sans text-base text-text-muted whitespace-pre-wrap leading-relaxed max-w-[90%] font-black tracking-tight">
+                  {post.captionBody || 'Deployment payload not yet synchronized.'}
                 </p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-10 pt-10 border-t border-white/[0.06]">
+                  <div className="space-y-3">
+                      <h5 className="font-sans text-[9px] font-black text-text-muted/20 uppercase tracking-[0.3em]">ACTION_TRIGGER</h5>
+                      <span className="font-sans text-[11px] font-black text-primary uppercase tracking-[0.1em]">{post.cta?.toUpperCase() || 'NONE'}</span>
+                  </div>
+                  <div className="space-y-3">
+                      <h5 className="font-sans text-[9px] font-black text-text-muted/20 uppercase tracking-[0.3em]">VISUAL_PROTOCOL</h5>
+                      <span className="font-sans text-[11px] font-black text-text-muted/60 uppercase tracking-[0.1em]">{post.templateType.toUpperCase()}</span>
+                  </div>
               </div>
             </div>
           </section>
 
 
-          {/* Activity Log */}
-          <section className="space-y-6 pt-4">
-            <h4 className="font-sans text-[9px] font-black tracking-[0.3em] text-[#555] uppercase border-b border-white/[0.04] pb-4 flex items-center gap-3">
-              <Activity size={12} className="text-primary/60" />
-              Temporal Logs
-            </h4>
-            <div className="space-y-4">
-              {post.activityLog.slice().reverse().map((log, idx) => (
-                <div key={idx} className="flex gap-4 items-start group">
-                  <div className="w-1 h-1 rounded-none rotate-45 bg-[#333] group-hover:bg-primary mt-2 transition-all duration-500" />
-                  <div className="flex-1">
-                    <div className="font-sans text-[11px] text-text-secondary group-hover:text-text-primary transition-colors">{log.text}</div>
-                    <div className="font-sans text-[9px] font-bold text-[#444] mt-1.5 uppercase tracking-widest">
-                      {new Date(log.timestamp).toLocaleString()} · {log.author}
+          {/* Temporal Logs */}
+          <section className="space-y-10">
+             <div className="flex items-center gap-4">
+              <span className="font-sans text-[11px] font-black tracking-[0.4em] text-primary/40">TL</span>
+              <h4 className="font-sans text-[11px] font-black tracking-[0.3em] text-text-muted/60 uppercase">TEMPORAL_ACTIVITY_LOGS</h4>
+              <div className="flex-1 h-px bg-white/[0.06]" />
+            </div>
+
+            <div className="space-y-8 relative pl-6">
+                <div className="absolute left-0 top-0 bottom-0 w-px bg-white/[0.06]" />
+                {post.activityLog.slice().reverse().map((log, idx) => (
+                    <div key={idx} className="relative group">
+                        <div className="absolute -left-[30px] top-1.5 w-2 h-2 rounded-none rotate-45 bg-white/[0.06] group-hover:bg-primary transition-all duration-700" />
+                        <div className="space-y-2">
+                            <div className="font-sans text-[12px] font-black text-text-muted/60 group-hover:text-text-primary transition-colors duration-700 uppercase tracking-tight">{log.text.toUpperCase()}</div>
+                            <div className="font-sans text-[9px] font-black text-text-muted/20 uppercase tracking-[0.2em] flex gap-4">
+                                <span>{new Date(log.timestamp).toLocaleTimeString()}</span>
+                                <span>OPERATOR_{log.author.toUpperCase().replace(' ', '_')}</span>
+                            </div>
+                        </div>
                     </div>
-                  </div>
-                </div>
-              ))}
+                ))}
             </div>
           </section>
 
         </div>
 
         {/* RIGHT: Meta + Performance */}
-        <div className={`w-full md:w-[400px] border-l border-white/[0.04] bg-white/[0.01] p-8 md:p-10 space-y-12 overflow-y-auto ${activeTab === 'details' ? 'flex' : 'hidden md:flex flex-col'}`}>
-          <section className="space-y-6">
-            <h4 className="font-sans text-[9px] font-black tracking-[0.3em] text-[#555] uppercase border-b border-white/[0.04] pb-4">Deployment Metadata</h4>
-            <div className="space-y-5">
+        <div className={`w-full md:w-[450px] border-l border-white/[0.06] bg-white/[0.01] p-10 md:p-12 space-y-16 overflow-y-auto custom-scrollbar`}>
+          <section className="space-y-10">
+            <div className="flex items-center gap-4">
+              <span className="font-sans text-[11px] font-black tracking-[0.4em] text-primary/40">MT</span>
+              <h4 className="font-sans text-[11px] font-black tracking-[0.3em] text-text-muted/60 uppercase">DEPLOY_METADATA</h4>
+            </div>
+
+            <div className="space-y-8">
               {[
-                { label: 'Environment', value: post.platforms.join(' + ') },
-                { label: 'Intelligence Type', value: post.postType },
-                { label: 'Target Window', value: <span className="text-primary font-bold">{post.scheduledDate} · {post.scheduledTime}</span> },
-                { label: 'Primary Operator', value: post.assignedTo },
-                { label: 'Priority Level', value: <span className={`font-bold ${post.priority === 'urgent' ? 'text-red-400' : post.priority === 'high' ? 'text-orange-400' : 'text-text-muted'}`}>{post.priority.toUpperCase()}</span> },
+                { label: 'ENVIRONMENT', value: post.platforms.map(p => p.toUpperCase()).join(' + ') },
+                { label: 'INTEL TYPE', value: post.postType.toUpperCase() },
+                { label: 'TARGET WINDOW', value: <span className="text-primary font-black uppercase tracking-widest">{post.scheduledDate} · {post.scheduledTime}</span> },
+                { label: 'PRIMARY NODE', value: post.assignedTo.toUpperCase() },
+                { label: 'THREAT LEVEL', value: <span className={`font-black tracking-[0.2em] ${post.priority === 'urgent' ? 'text-red-400' : post.priority === 'high' ? 'text-orange-400' : 'text-text-muted/40'}`}>{post.priority.toUpperCase()}</span> },
               ].map(({ label, value }) => (
-                <div key={label} className="flex justify-between items-start gap-3 group">
-                  <span className="font-sans text-[9px] font-black text-[#444] group-hover:text-[#666] uppercase tracking-widest shrink-0 transition-colors">{label}</span>
-                  <span className="font-sans text-[11px] font-bold text-text-primary text-right">{value}</span>
+                <div key={label} className="grid grid-cols-5 gap-4 items-start group">
+                  <span className="col-span-2 font-sans text-[9px] font-black text-text-muted/20 group-hover:text-text-muted/40 uppercase tracking-[0.3em] transition-colors">{label}</span>
+                  <span className="col-span-3 font-sans text-[11px] font-black text-text-primary text-right tracking-[0.05em]">{value}</span>
                 </div>
               ))}
             </div>
-          </section>
 
-
-          <section className="space-y-4">
-            <div className="flex justify-between items-center border-b border-border-dark pb-2">
-              <h4 className="font-mono text-[10px] tracking-widest text-primary flex items-center gap-2 uppercase">
-                <BarChart size={14} />
-                PERFORMANCE
-              </h4>
-              {post.status === 'PUBLISHED' && !showPerformanceInput && (
-                <button
-                  className="text-[9px] uppercase text-text-muted hover:text-primary font-mono transition-colors"
-                  onClick={() => setShowPerformanceInput(true)}
-                >
-                  {post.performance ? 'UPDATE' : 'ADD +'}
-                </button>
-              )}
+            <div className="pt-10 border-t border-white/[0.06] space-y-6">
+                 <h5 className="font-sans text-[10px] font-black text-text-muted/40 uppercase tracking-[0.3em]">VISUAL_BRIEFING_DECODED</h5>
+                 <div className="bg-primary/[0.02] border border-primary/10 p-6 text-[11px] font-sans text-text-muted leading-relaxed uppercase tracking-[0.05em] font-black">
+                    {post.visualBrief || 'VISUAL_PROTOCOL_PENDING_GENERATION'}
+                 </div>
             </div>
-
-            {post.status !== 'PUBLISHED' ? (
-              <div className="p-4 border border-dashed border-border-dark/50 text-center rounded-sm">
-                <p className="text-[10px] text-text-muted uppercase font-mono">Metrics pending publish.</p>
-              </div>
-            ) : showPerformanceInput ? (
-              <div className="bg-background border border-primary/30 p-4 rounded-sm space-y-4">
-                <div className="grid grid-cols-2 gap-3">
-                  {(['reach', 'impressions', 'saves', 'shares', 'comments', 'likes'] as const).map(field => (
-                    <div key={field} className="space-y-1">
-                      <label className="text-[9px] text-text-muted uppercase font-mono">{field}</label>
-                      <input
-                        type="number"
-                        value={metrics[field] ?? 0}
-                        onChange={e => setMetrics({ ...metrics, [field]: Number(e.target.value) })}
-                        className="w-full bg-card p-1.5 text-xs text-text-primary rounded-sm outline-none border border-border-dark focus:border-primary"
-                      />
-                    </div>
-                  ))}
-                </div>
-                <div className="flex justify-end gap-2">
-                  <Button variant="ghost" size="sm" onClick={() => setShowPerformanceInput(false)} className="text-[10px] font-mono">CANCEL</Button>
-                  <Button size="sm" onClick={handleSavePerformance} className="text-[10px] font-mono">SAVE</Button>
-                </div>
-              </div>
-            ) : post.performance ? (
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="bg-background/50 p-3 rounded-sm border border-border-dark">
-                    <div className="text-[9px] uppercase text-text-muted font-mono mb-1">Save Rate</div>
-                    <div className="text-xl font-heading text-primary">{post.performance.saveRate}%</div>
-                  </div>
-                  <div className="bg-background/50 p-3 rounded-sm border border-border-dark">
-                    <div className="text-[9px] uppercase text-text-muted font-mono mb-1">Share Rate</div>
-                    <div className="text-xl font-heading text-secondary">{post.performance.shareRate}%</div>
-                  </div>
-                </div>
-                <div className="p-3 bg-background/50 border border-border-dark rounded-sm">
-                  <div className="text-[9px] text-text-muted font-mono uppercase mb-1">CEO Rating</div>
-                  <div className="text-xs uppercase font-bold text-text-primary">{post.performance.ceoRating}</div>
-                </div>
-              </div>
-            ) : (
-              <div className="p-4 border border-dashed border-border-dark/50 text-center rounded-sm">
-                <p className="text-[10px] text-text-muted font-mono uppercase mb-3">No metrics logged.</p>
-                <Button size="sm" onClick={() => setShowPerformanceInput(true)} className="text-[10px] font-mono">ADD PERFORMANCE</Button>
-              </div>
-            )}
           </section>
+
+          {/* Performance Analytics */}
+          <section className="space-y-10 pt-10 border-t border-white/[0.06]">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                    <span className="font-sans text-[11px] font-black tracking-[0.4em] text-primary/40">PR</span>
+                    <h4 className="font-sans text-[11px] font-black tracking-[0.3em] text-text-muted/60 uppercase">PERFORMANCE_ANALYTICS</h4>
+                </div>
+                {post.status === 'PUBLISHED' && !showPerformanceInput && (
+                    <button 
+                        onClick={() => setShowPerformanceInput(true)}
+                        className="font-sans text-[9px] font-black text-primary hover:text-white uppercase tracking-[0.2em] transition-colors"
+                    >
+                        {post.performance ? '[EDIT_INTEL]' : '[LOG_INTEL]'}
+                    </button>
+                )}
+              </div>
+              
+              <div className="grid grid-cols-1 gap-6">
+                  {showPerformanceInput ? (
+                      <div className="space-y-8 bg-white/[0.02] border border-primary/20 p-8 relative">
+                          <button onClick={() => setShowPerformanceInput(false)} className="absolute top-4 right-4 text-text-muted/20 hover:text-white transition-colors">
+                              <X size={16} />
+                          </button>
+                          <div className="grid grid-cols-2 gap-6">
+                              {(['reach', 'impressions', 'saves', 'shares', 'comments', 'likes'] as const).map(field => (
+                                <div key={field} className="space-y-3">
+                                  <label className="font-sans text-[9px] font-black text-text-muted/40 uppercase tracking-[0.3em]">{field}</label>
+                                  <input
+                                    type="number"
+                                    value={metrics[field] ?? 0}
+                                    onChange={e => setMetrics({ ...metrics, [field]: Number(e.target.value) })}
+                                    className="w-full bg-white/[0.05] border border-white/[0.06] p-4 text-[11px] font-black font-sans text-text-primary focus:border-primary/40 outline-none transition-all uppercase tracking-[0.1em]"
+                                  />
+                                </div>
+                              ))}
+                          </div>
+                          <div className="space-y-3">
+                              <label className="font-sans text-[9px] font-black text-text-muted/40 uppercase tracking-[0.3em]">CEO_INTEL_RATING</label>
+                              <select 
+                                value={metrics.ceoRating}
+                                onChange={e => setMetrics({...metrics, ceoRating: e.target.value})}
+                                className="w-full bg-white/[0.05] border border-white/[0.06] p-4 text-[11px] font-black font-sans text-text-primary focus:border-primary/40 outline-none transition-all uppercase tracking-[0.1em]"
+                              >
+                                  <option value="🟢 Exceptional">EXCEPTIONAL</option>
+                                  <option value="🟡 Performed">PERFORMED</option>
+                                  <option value="🔴 Below Radar">BELOW_RADAR</option>
+                              </select>
+                          </div>
+                          <Button onClick={handleSavePerformance} className="w-full bg-primary text-onyx font-sans text-[11px] font-black uppercase tracking-[0.2em] h-12 rounded-none">
+                              SYNCHRONIZE_ANALYTICS
+                          </Button>
+                      </div>
+                  ) : post.status !== 'PUBLISHED' ? (
+                      <div className="p-10 border border-dashed border-white/[0.06] flex flex-col items-center justify-center opacity-20">
+                          <ShieldCheck size={24} className="mb-4" />
+                          <span className="font-sans text-[9px] font-black uppercase tracking-[0.4em]">DEPLOYMENT_INCOMPLETE</span>
+                      </div>
+                  ) : post.performance ? (
+                      <div className="space-y-12">
+                          <div className="grid grid-cols-2 gap-6">
+                              {[
+                                  { label: 'REACH', value: post.performance.reach.toLocaleString() },
+                                  { label: 'INTEL_SAVES', value: post.performance.saves.toLocaleString(), color: 'text-primary' },
+                                  { label: 'IMPRESSIONS', value: post.performance.impressions.toLocaleString() },
+                                  { label: 'OPERATOR_LIKES', value: post.performance.likes.toLocaleString() }
+                              ].map(({label, value, color}) => (
+                                <div key={label} className="bg-white/[0.02] border border-white/[0.06] p-8 space-y-3 group hover:border-primary/20 transition-all duration-700">
+                                    <span className="font-sans text-[9px] font-black text-text-muted/20 uppercase tracking-[0.3em] group-hover:text-primary/40 transition-colors">{label}</span>
+                                    <div className={`font-heading text-4xl leading-none tracking-tighter ${color || 'text-text-primary'}`}>{value}</div>
+                                </div>
+                              ))}
+                          </div>
+                          
+                          <div className="space-y-6">
+                              <div className="flex justify-between items-center text-[10px] font-black tracking-[0.3em] text-text-muted/40 uppercase">
+                                  <span>CONVERSION_DENSITY_MAPPING</span>
+                                  <span className="text-primary font-black">{post.performance.saveRate}%</span>
+                              </div>
+                              <div className="h-[2px] bg-white/[0.04] w-full relative">
+                                  <div 
+                                    className="h-full bg-primary shadow-[0_0_15px_rgba(63,106,36,0.6)] transition-all duration-1000 ease-out" 
+                                    style={{ width: `${Math.min(post.performance.saveRate * 10, 100)}%` }} 
+                                  />
+                              </div>
+                          </div>
+
+                          <div className="bg-primary/[0.02] border border-primary/20 p-6 flex items-center justify-between">
+                               <div className="space-y-1">
+                                   <span className="font-sans text-[9px] font-black text-primary/40 uppercase tracking-[0.3em]">CEO_VALIDATION_STATUS</span>
+                                   <div className="font-sans text-[11px] font-black text-text-primary uppercase tracking-[0.1em]">{post.performance.ceoRating}</div>
+                               </div>
+                               <ShieldCheck size={20} className="text-primary opacity-40" />
+                          </div>
+                      </div>
+                  ) : (
+                      <div className="p-10 border border-dashed border-white/[0.06] flex flex-col items-center justify-center opacity-20 group hover:opacity-100 transition-opacity cursor-pointer" onClick={() => setShowPerformanceInput(true)}>
+                          <BarChart size={24} className="mb-4" />
+                          <span className="font-sans text-[9px] font-black uppercase tracking-[0.4em]">MISSING_PERFORMANCE_PACKET</span>
+                      </div>
+                  )}
+              </div>
+          </section>
+
         </div>
       </div>
     </Modal>
   );
 }
-

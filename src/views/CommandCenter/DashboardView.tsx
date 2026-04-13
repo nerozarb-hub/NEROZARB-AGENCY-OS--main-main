@@ -94,17 +94,19 @@ export default function DashboardView({ onNavigate }: { onNavigate?: (view: stri
       initial="hidden"
       animate="show"
       variants={container}
-      className="page-container space-y-8 pb-10"
+      className="page-container"
     >
       {/* Header */}
-      <motion.header variants={item} className="flex justify-between items-end mb-8">
-        <div className="space-y-1.5">
-          <p className="font-sans text-[11px] font-bold uppercase tracking-[0.2em] text-primary">Global Intelligence</p>
-          <h2 className="font-heading text-4xl sm:text-5xl text-text-primary tracking-tighter">Command Center</h2>
+      <motion.header variants={item} className="page-header">
+        <div>
+          <h1 className="page-header-title">COMMAND CENTER</h1>
+          <p className="page-header-subtitle mt-2">Executive Overview · Neural Synapse</p>
         </div>
         <div className="text-right hidden sm:block">
-          <p className="font-sans text-[10px] font-bold uppercase tracking-widest text-text-muted">Deployment Date</p>
-          <p className="font-sans text-xs text-text-secondary mt-1 font-medium italic">{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
+          <p className="page-header-subtitle text-text-muted/40 mb-1">Deployment Date</p>
+          <p className="font-sans text-xs text-text-secondary font-medium italic">
+            {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+          </p>
         </div>
       </motion.header>
 
