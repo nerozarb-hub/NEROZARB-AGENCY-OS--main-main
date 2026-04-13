@@ -94,17 +94,17 @@ export default function DashboardView({ onNavigate }: { onNavigate?: (view: stri
       initial="hidden"
       animate="show"
       variants={container}
-      className="p-4 md:p-8 max-w-7xl mx-auto space-y-6 md:space-y-8 pb-6"
+      className="page-container space-y-8 pb-10"
     >
       {/* Header */}
-      <motion.header variants={item} className="flex justify-between items-end mb-12 sm:mb-20">
-        <div className="space-y-2">
-          <p className="font-sans text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.2em] text-primary/80">Global Intelligence</p>
-          <h2 className="editorial-title text-4xl sm:text-5xl text-text-primary">Command Center</h2>
+      <motion.header variants={item} className="flex justify-between items-end mb-8">
+        <div className="space-y-1.5">
+          <p className="font-sans text-[11px] font-bold uppercase tracking-[0.2em] text-primary">Global Intelligence</p>
+          <h2 className="font-heading text-4xl sm:text-5xl text-text-primary tracking-tighter">Command Center</h2>
         </div>
         <div className="text-right hidden sm:block">
-          <p className="font-sans text-[10px] font-bold uppercase tracking-widest text-[#555]">Deployment Date</p>
-          <p className="font-sans text-xs sm:text-sm text-text-secondary mt-1 font-medium italic">{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
+          <p className="font-sans text-[10px] font-bold uppercase tracking-widest text-text-muted">Deployment Date</p>
+          <p className="font-sans text-xs text-text-secondary mt-1 font-medium italic">{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
         </div>
       </motion.header>
 
@@ -118,15 +118,14 @@ export default function DashboardView({ onNavigate }: { onNavigate?: (view: stri
       </motion.div>
 
       {/* Distribution & Operations */}
-      <motion.div variants={item} className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-10 py-8">
-        <div className="md:col-span-1 space-y-6">
+      <motion.div variants={item} className="grid grid-cols-1 md:grid-cols-3 gap-8 py-6">
+        <div className="md:col-span-1 space-y-4">
           <div className="flex items-center gap-3">
-            <div className="h-px flex-1 bg-border-dark" />
-            <h3 className="font-sans text-[10px] font-bold tracking-[0.2em] text-text-muted uppercase">Tier Distribution</h3>
+            <h3 className="font-sans text-[11px] font-bold tracking-widest text-text-muted uppercase">Tier Distribution</h3>
+            <div className="h-px flex-1 bg-white/[0.04]" />
           </div>
-          <Card className="p-6">
-            <div className="space-y-6">
-
+          <Card className="p-5">
+            <div className="space-y-5">
               <DistributionRow
                 label="Tier 1 (Enterprise)"
                 value={data.clients.filter(c => c.tier?.includes('1')).length}
@@ -146,14 +145,13 @@ export default function DashboardView({ onNavigate }: { onNavigate?: (view: stri
           </Card>
         </div>
 
-        <div className="md:col-span-2 space-y-6">
+        <div className="md:col-span-2 space-y-4">
           <div className="flex items-center gap-3">
-            <div className="h-px flex-1 bg-border-dark" />
-            <h3 className="font-sans text-[10px] font-bold tracking-[0.2em] text-text-muted uppercase">Live Operations</h3>
+            <h3 className="font-sans text-[11px] font-bold tracking-widest text-text-muted uppercase">Live Operations</h3>
+            <div className="h-px flex-1 bg-white/[0.04]" />
           </div>
-          <Card className="p-0 rounded-none border-x-0 border-b-0 border-t border-border-dark bg-transparent">
-            <div className="divide-y divide-border-dark">
-
+          <Card className="p-0 border-x-0 border-b-0 border-t border-white/[0.06] bg-transparent">
+            <div className="divide-y divide-white/[0.04]">
               {liveOperations.map((task, idx) => {
                 const client = data.clients.find(c => c.id === task.clientId);
                 return (
@@ -168,7 +166,7 @@ export default function DashboardView({ onNavigate }: { onNavigate?: (view: stri
                 );
               })}
               {data.tasks.length === 0 && (
-                <div className="p-4 text-center text-sm text-text-muted font-mono">No active operations.</div>
+                <div className="p-6 text-center text-sm text-text-muted font-mono">No active operations.</div>
               )}
             </div>
           </Card>
@@ -242,28 +240,28 @@ export default function DashboardView({ onNavigate }: { onNavigate?: (view: stri
       </motion.div>
 
       {/* Section 5: System Status Footer */}
-      <motion.div variants={item} className="flex flex-wrap gap-4 justify-between items-center pt-6 mt-8 border-t border-border-dark/50">
-        <div className="flex gap-6 md:gap-8">
+      <motion.div variants={item} className="flex flex-wrap gap-6 justify-between items-center pt-8 mt-12 border-t border-white/[0.04]">
+        <div className="flex gap-8 md:gap-12">
           <div>
-            <p className="font-mono text-[9px] text-text-muted tracking-widest uppercase mb-1">Database Integrity</p>
-            <p className="font-sans text-xs text-primary font-medium flex items-center gap-2">
-              <span className={`w-1.5 h-1.5 rounded-full ${import.meta.env.VITE_SUPABASE_URL ? 'bg-primary animate-pulse' : 'bg-yellow-500'}`} />
-              {import.meta.env.VITE_SUPABASE_URL ? 'SUPABASE CLOUD SECURE' : 'LOCAL STORAGE MODE'}
+            <p className="font-sans text-[11px] text-text-muted tracking-widest uppercase font-bold mb-1.5">Database Integrity</p>
+            <p className="font-sans text-xs text-primary font-bold flex items-center gap-2">
+              <span className={`w-1.5 h-1.5 bg-primary ${import.meta.env.VITE_SUPABASE_URL ? 'animate-pulse' : ''}`} />
+              {import.meta.env.VITE_SUPABASE_URL ? 'SECURE' : 'LOCAL'}
             </p>
           </div>
           <div>
-            <p className="font-mono text-[9px] text-text-muted tracking-widest uppercase mb-1">Last Synced</p>
-            <p className="font-sans text-xs text-text-secondary font-medium">{formatSyncTime(lastSyncedAt)}</p>
+            <p className="font-sans text-[11px] text-text-muted tracking-widest uppercase font-bold mb-1.5">Sync State</p>
+            <p className="font-sans text-xs text-text-secondary font-medium tracking-wide">{formatSyncTime(lastSyncedAt)}</p>
           </div>
           <div>
-            <p className="font-mono text-[9px] text-text-muted tracking-widest uppercase mb-1">Status</p>
-            <p className="font-sans text-xs text-text-secondary font-medium">System Nominal</p>
+            <p className="font-sans text-[11px] text-text-muted tracking-widest uppercase font-bold mb-1.5">Architecture</p>
+            <p className="font-sans text-xs text-text-secondary font-medium tracking-wide">Nominal</p>
           </div>
         </div>
         <div className="text-right">
-          <p className="font-mono text-[9px] text-text-muted tracking-widest uppercase mb-1">Auth Profile</p>
-          <p className="font-sans text-xs text-accent-light font-medium tracking-wide uppercase">
-            {sessionStorage.getItem('authLevel')?.toUpperCase() || 'TEAM MEMBER'}
+          <p className="font-sans text-[11px] text-text-muted tracking-widest uppercase font-bold mb-1.5">Identity</p>
+          <p className="font-sans text-xs text-accent-light font-bold tracking-widest uppercase">
+            {sessionStorage.getItem('authLevel') || 'TEAM'}
           </p>
         </div>
       </motion.div>
@@ -276,12 +274,12 @@ export default function DashboardView({ onNavigate }: { onNavigate?: (view: stri
 
 const KpiCard = memo(function KpiCard({ title, value, icon: Icon, trend, alert = false, onClick }: any) {
   return (
-    <Card accentTop className={`p-6 group transition-all duration-500 hover:border-text-muted/40 hover:bg-white/[0.02] ${onClick ? 'cursor-pointer active:scale-[0.98]' : 'cursor-default'}`} onClick={onClick}>
+    <Card accentTop className={`p-5 lg:p-6 group transition-all duration-500 hover:bg-white/[0.02] ${onClick ? 'cursor-pointer active:scale-[0.98]' : 'cursor-default'}`} onClick={onClick}>
       <div className="flex justify-between items-start mb-6">
-        <p className="font-sans text-[10px] font-bold uppercase tracking-[0.2em] text-[#555] leading-none">{title}</p>
-        <Icon size={12} className={`transition-transform duration-500 group-hover:scale-110 shrink-0 ${alert ? 'text-red-500' : 'text-primary/60'}`} />
+        <p className="font-sans text-[11px] font-bold uppercase tracking-widest text-text-muted leading-none">{title}</p>
+        <Icon size={14} className={`transition-transform duration-500 group-hover:scale-110 shrink-0 ${alert ? 'text-red-500' : 'text-primary/60'}`} />
       </div>
-      <p className="editorial-title text-4xl text-text-primary mb-4 tracking-normal italic" title={value}>{value}</p>
+      <p className="font-heading text-4xl text-text-primary mb-4 tracking-tighter" title={value}>{value}</p>
       <Badge status={alert ? 'critical' : 'healthy'}>{trend}</Badge>
     </Card>
   );
@@ -310,14 +308,14 @@ const DistributionRow = memo(function DistributionRow({ label, value, percentage
 const OperationRow = memo(function OperationRow({ client, task, status, time, onClick }: any) {
   return (
     <div
-      className="p-5 flex items-center justify-between hover:bg-white/[0.03] transition-all duration-500 cursor-pointer group border-b border-white/[0.04] last:border-0"
+      className="p-4 flex items-center justify-between hover:bg-white/[0.02] transition-colors cursor-pointer group border-b border-white/[0.04] last:border-0"
       onClick={onClick}
     >
-      <div className="flex items-center gap-6">
-        <div className="w-1.5 h-1.5 rounded-none bg-primary/20 group-hover:bg-primary transition-all duration-500 group-hover:rotate-45" />
+      <div className="flex items-center gap-4">
+        <div className="w-1 bg-primary/20 h-4 group-hover:bg-primary transition-colors" />
         <div>
-          <p className="text-xs text-text-primary font-medium tracking-wide uppercase group-hover:text-primary transition-colors">{task}</p>
-          <p className="text-[10px] font-bold text-[#555] uppercase tracking-widest mt-1">{client}</p>
+          <p className="text-[13px] text-text-primary font-medium tracking-tight group-hover:text-primary transition-colors">{task}</p>
+          <p className="text-[11px] font-bold text-text-muted uppercase tracking-widest mt-0.5">{client}</p>
         </div>
       </div>
 

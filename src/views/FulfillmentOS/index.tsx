@@ -66,35 +66,35 @@ export default function FulfillmentOS({ onNavigate }: { onNavigate?: (view: stri
       initial="hidden"
       animate="show"
       variants={containerVariants}
-      className="p-8 w-full max-w-[1800px] mx-auto space-y-12 min-h-full flex flex-col"
+      className="page-container h-full flex flex-col overflow-hidden py-8"
     >
 
       {/* Header & Controls */}
       <motion.header variants={itemVariants} className="flex flex-col md:flex-row md:justify-between md:items-end gap-6 flex-shrink-0 border-b border-white/[0.04] pb-10">
-        <div className="space-y-3">
-          <h2 className="editorial-title text-5xl md:text-6xl tracking-tight text-text-primary italic">Fulfillment Engine</h2>
-          <p className="font-sans text-[9px] font-black tracking-[0.4em] text-[#333] uppercase">Operational Flux · Velocity Control</p>
+        <div className="space-y-4">
+          <h2 className="font-heading text-6xl tracking-tighter text-text-primary uppercase leading-none">Fulfillment Engine</h2>
+          <p className="font-sans text-[11px] font-bold tracking-[0.3em] text-text-muted/40 uppercase">Operational Flux · Velocity Control</p>
         </div>
 
 
         {/* Controls Row — scrollable on mobile */}
         <div className="flex flex-wrap items-center gap-4 overflow-x-auto pb-1">
-          <div className="flex items-center bg-white/[0.02] border border-white/5 p-1 gap-1">
+          <div className="flex items-center bg-white/[0.02] border border-white/[0.06] p-1 rounded-none">
             <select
               value={clientFilter}
               onChange={(e) => setClientFilter(e.target.value === 'all' ? 'all' : Number(e.target.value))}
-              className="bg-transparent text-[9px] font-black text-[#555] tracking-[0.2em] outline-none cursor-pointer py-2 px-3 hover:text-text-primary transition-colors uppercase appearance-none"
+              className="bg-transparent text-[11px] font-bold text-text-muted/60 tracking-[0.2em] outline-none cursor-pointer py-2 px-3 hover:text-text-primary transition-colors uppercase appearance-none"
             >
               <option value="all">ENTITY: GLOBAL</option>
               {data.clients.map(c => (
                 <option key={c.id} value={c.id}>{c.name.toUpperCase()}</option>
               ))}
             </select>
-            <div className="w-px h-3 bg-white/10 mx-1" />
+            <div className="w-px h-3 bg-white/[0.06] mx-1" />
             <select
               value={nodeFilter}
               onChange={(e) => setNodeFilter(e.target.value as any)}
-              className="bg-transparent text-[9px] font-black text-[#555] tracking-[0.2em] outline-none cursor-pointer py-2 px-3 hover:text-text-primary transition-colors uppercase appearance-none"
+              className="bg-transparent text-[11px] font-bold text-text-muted/60 tracking-[0.2em] outline-none cursor-pointer py-2 px-3 hover:text-text-primary transition-colors uppercase appearance-none"
             >
               <option value="all">NODE: ALL</option>
               <option value="CEO">CEO</option>
@@ -104,11 +104,11 @@ export default function FulfillmentOS({ onNavigate }: { onNavigate?: (view: stri
               <option value="Social Media Manager">SMM</option>
               <option value="Documentation Manager">DOCS</option>
             </select>
-            <div className="w-px h-3 bg-white/10 mx-1" />
+            <div className="w-px h-3 bg-white/[0.06] mx-1" />
             <select
               value={stageFilter}
               onChange={(e) => setStageFilter(e.target.value as any)}
-              className="bg-transparent text-[9px] font-black text-[#555] tracking-[0.2em] outline-none cursor-pointer py-2 px-3 hover:text-text-primary transition-colors uppercase appearance-none"
+              className="bg-transparent text-[11px] font-bold text-text-muted/60 tracking-[0.2em] outline-none cursor-pointer py-2 px-3 hover:text-text-primary transition-colors uppercase appearance-none"
             >
               <option value="all">STAGE: ALL</option>
               <option value="BRIEFED">BRIEFED</option>
@@ -122,31 +122,31 @@ export default function FulfillmentOS({ onNavigate }: { onNavigate?: (view: stri
 
 
           {/* View Toggles */}
-          <div className="flex bg-white/[0.02] border border-white/5 p-1">
+          <div className="flex bg-white/[0.02] border border-white/[0.06] p-1 rounded-none">
             <button
               onClick={() => setViewMode('kanban')}
-              className={`p-2 transition-all ${viewMode === 'kanban' ? 'bg-primary/20 text-primary border border-primary/20' : 'text-[#444] hover:text-text-primary'}`}
+              className={`p-2 transition-all rounded-none ${viewMode === 'kanban' ? 'bg-primary/20 text-primary' : 'text-text-muted/40 hover:text-text-primary'}`}
               title="Kanban View"
             >
               <KanbanSquare size={14} />
             </button>
             <button
               onClick={() => setViewMode('list')}
-              className={`p-2 transition-all ${viewMode === 'list' ? 'bg-primary/20 text-primary border border-primary/20' : 'text-[#444] hover:text-text-primary'}`}
+              className={`p-2 transition-all rounded-none ${viewMode === 'list' ? 'bg-primary/20 text-primary' : 'text-text-muted/40 hover:text-text-primary'}`}
               title="List View"
             >
               <List size={14} />
             </button>
             <button
               onClick={() => setViewMode('timeline')}
-              className={`p-2 transition-all ${viewMode === 'timeline' ? 'bg-primary/20 text-primary border border-primary/20' : 'text-[#444] hover:text-text-primary'}`}
+              className={`p-2 transition-all rounded-none ${viewMode === 'timeline' ? 'bg-primary/20 text-primary' : 'text-text-muted/40 hover:text-text-primary'}`}
               title="Timeline View"
             >
               <CalendarDays size={14} />
             </button>
             <button
               onClick={() => setViewMode('my-tasks')}
-              className={`p-2 transition-all ${viewMode === 'my-tasks' ? 'bg-primary/20 text-primary border border-primary/20' : 'text-[#444] hover:text-text-primary'}`}
+              className={`p-2 transition-all rounded-none ${viewMode === 'my-tasks' ? 'bg-primary/20 text-primary' : 'text-text-muted/40 hover:text-text-primary'}`}
               title="My Tasks"
             >
               <User size={14} />
@@ -157,14 +157,14 @@ export default function FulfillmentOS({ onNavigate }: { onNavigate?: (view: stri
           <Button
             variant="ghost"
             onClick={() => setIsSprintGeneratorOpen(true)}
-            className="font-sans text-[9px] font-black tracking-[0.2em] h-10 px-6 text-[#666] hover:text-text-primary"
+            className="px-6"
           >
             <Zap size={14} className="mr-2 opacity-50" />
             <span className="hidden sm:inline">SPRINT GEN</span>
           </Button>
           <Button
             onClick={() => setIsNewTaskModalOpen(true)}
-            className="bg-primary hover:bg-accent-mid text-text-primary font-sans text-[9px] font-black tracking-[0.2em] h-10 px-8"
+            className="bg-primary hover:bg-accent-mid text-text-primary px-8"
           >
             <Plus size={14} className="mr-2" />
             TASK PROXY

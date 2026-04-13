@@ -6,10 +6,10 @@ interface TagProps {
     className?: string;
 }
 
-export function Tag({ children, color = '#C0C0C0', className = '' }: TagProps) {
+export function Tag({ children, color = 'rgba(255,255,255,0.4)', className = '' }: TagProps) {
     return (
         <span
-            className={`font-mono text-[9px] tracking-[1.2px] border px-[7px] py-[2px] transition-colors ${className}`}
+            className={`font-sans text-[10px] uppercase font-bold tracking-widest border px-2 py-0.5 transition-colors inline-block ${className}`}
             style={{ color, borderColor: color }}
         >
             {children}

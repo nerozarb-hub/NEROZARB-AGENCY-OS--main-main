@@ -70,34 +70,33 @@ export default function RevenueGateModal({ isOpen, onClose, onClientCreated }: R
             onClose={onClose}
             title={
                 <div className="space-y-1">
-                    <p className="font-sans text-[10px] font-bold uppercase tracking-[0.2em] text-primary/80">Asset Acquisition</p>
-                    <h2 className="editorial-title text-3xl text-text-primary italic">Install Entity</h2>
+                    <p className="font-sans text-[11px] font-bold uppercase tracking-[0.2em] text-primary">Asset Acquisition</p>
+                    <h2 className="font-heading text-4xl text-text-primary tracking-tighter uppercase">Install Entity</h2>
                 </div>
             }
             width={700}
 
             footer={
-                <div className="flex justify-end gap-4 w-full">
-                    <Button variant="ghost" onClick={onClose} className="font-sans text-[10px] font-black uppercase tracking-widest text-[#555] hover:text-text-primary">
+                <div className="flex justify-end gap-3 w-full">
+                    <Button variant="ghost" onClick={onClose}>
                         Abort
                     </Button>
                     <Button
                         type="submit"
                         form="revenue-gate-form"
-                        className="bg-primary hover:bg-accent-mid text-text-primary px-10 h-12 font-sans text-[10px] font-black uppercase tracking-[0.2em]"
+                        className="bg-primary hover:bg-accent-mid text-text-primary px-10"
                         disabled={!formData.name || !formData.revenueGate || !formData.tier}
                     >
                         Deploy Account
                     </Button>
                 </div>
-
             }
         >
             <form id="revenue-gate-form" onSubmit={handleSubmit} className="space-y-10 py-2">
 
                 {/* Basic Info */}
                 <div className="space-y-6">
-                    <h3 className="font-sans text-[9px] font-black tracking-[0.3em] text-[#555] uppercase border-b border-white/[0.04] pb-4 italic">
+                    <h3 className="font-sans text-[11px] font-bold tracking-[0.2em] text-text-muted uppercase border-b border-white/[0.04] pb-4">
                       01 · Entity Identity
                     </h3>
 
@@ -121,7 +120,7 @@ export default function RevenueGateModal({ isOpen, onClose, onClientCreated }: R
 
                 {/* Point of Contact */}
                 <div className="space-y-6">
-                    <h3 className="font-sans text-[9px] font-black tracking-[0.3em] text-[#555] uppercase border-b border-white/[0.04] pb-4 italic">
+                    <h3 className="font-sans text-[11px] font-bold tracking-[0.2em] text-text-muted uppercase border-b border-white/[0.04] pb-4">
                       02 · Strategic Liaison
                     </h3>
 
@@ -152,13 +151,13 @@ export default function RevenueGateModal({ isOpen, onClose, onClientCreated }: R
 
                 {/* Revenue & Tier */}
                 <div className="space-y-6">
-                    <h3 className="font-sans text-[9px] font-black tracking-[0.3em] text-[#555] uppercase border-b border-white/[0.04] pb-4 italic">
+                    <h3 className="font-sans text-[11px] font-bold tracking-[0.2em] text-text-muted uppercase border-b border-white/[0.04] pb-4">
                       03 · Revenue Engineering
                     </h3>
 
 
                     <div className="space-y-4">
-                        <label className="font-sans text-[10px] font-black text-[#666] uppercase tracking-widest">
+                        <label className="font-sans text-[11px] font-bold text-text-muted uppercase tracking-widest">
                             Revenue Gate Qualification
                         </label>
 
@@ -175,9 +174,9 @@ export default function RevenueGateModal({ isOpen, onClose, onClientCreated }: R
                                         else if (gate === '>5M PKR') { autoTier = 'Tier 3: Market Dominance'; autoVal = '500000'; }
                                         setFormData({ ...formData, revenueGate: gate, tier: autoTier, contractValue: autoVal });
                                     }}
-                                    className={`px-4 py-3 text-[10px] font-black uppercase tracking-[0.2em] border transition-all duration-300 ${formData.revenueGate === gate
+                                    className={`px-4 py-3 text-[11px] font-bold uppercase tracking-widest border transition-all duration-300 rounded-none ${formData.revenueGate === gate
                                         ? 'bg-primary/20 border-primary/40 text-primary'
-                                        : 'bg-white/5 border-white/5 text-[#444] hover:border-[#666]'
+                                        : 'bg-white/[0.02] border-white/[0.04] text-text-muted hover:border-white/[0.1]'
                                         }`}
                                 >
                                     {gate}
@@ -188,7 +187,7 @@ export default function RevenueGateModal({ isOpen, onClose, onClientCreated }: R
                     </div>
 
                     <div className="space-y-4 pt-4">
-                        <label className="font-sans text-[10px] font-black text-[#666] uppercase tracking-widest">
+                        <label className="font-sans text-[11px] font-bold text-text-muted uppercase tracking-widest">
                             Strategic Deployment Tier
                         </label>
                         <div className="grid grid-cols-1 gap-3">
@@ -197,16 +196,16 @@ export default function RevenueGateModal({ isOpen, onClose, onClientCreated }: R
                                     key={tier}
                                     type="button"
                                     onClick={() => setFormData({ ...formData, tier: tier })}
-                                    className={`p-6 text-left border transition-all flex justify-between items-center ${formData.tier === tier
+                                    className={`p-6 text-left border transition-all flex justify-between items-center rounded-none ${formData.tier === tier
                                         ? 'border-primary/40 bg-primary/10'
-                                        : 'border-white/5 bg-white/[0.01] hover:border-white/20'
+                                        : 'border-white/[0.04] bg-white/[0.01] hover:border-white/[0.1]'
                                         }`}
                                 >
-                                    <span className={`font-sans text-[11px] font-black uppercase tracking-[0.2em] ${formData.tier === tier ? 'text-primary' : 'text-[#666]'}`}>
+                                    <span className={`font-sans text-[12px] font-bold uppercase tracking-widest ${formData.tier === tier ? 'text-primary' : 'text-text-muted'}`}>
                                         {tier}
                                     </span>
                                     {formData.tier === tier && (
-                                        <div className="w-1.5 h-1.5 bg-primary rotate-45" />
+                                        <div className="w-1.5 h-1.5 bg-primary" />
                                     )}
                                 </button>
                             ))}

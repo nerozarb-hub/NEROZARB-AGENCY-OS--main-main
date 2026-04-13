@@ -13,26 +13,26 @@ interface BadgeProps {
 
 const statusConfig: Record<string, { color: string, icon: React.FC<any> | null }> = {
   // Health
-  'healthy': { color: 'bg-[#3F6A24]/10 border-[#3F6A24]/30 text-[#A8C69F]', icon: CheckCircle2 },
-  'at-risk': { color: 'bg-yellow-500/10 border-yellow-500/30 text-yellow-500', icon: AlertTriangle },
-  'critical': { color: 'bg-red-500/10 border-red-500/30 text-red-500', icon: XCircle },
+  'healthy': { color: 'bg-primary/10 border-primary/20 text-accent-light', icon: CheckCircle2 },
+  'at-risk': { color: 'bg-yellow-500/10 border-yellow-500/20 text-yellow-500', icon: AlertTriangle },
+  'critical': { color: 'bg-red-500/10 border-red-500/20 text-red-500', icon: XCircle },
   // Sprints
-  'active sprint': { color: 'bg-[#3F6A24]/10 border-[#3F6A24]/30 text-[#A8C69F]', icon: Activity },
-  'active': { color: 'bg-[#3F6A24]/10 border-[#3F6A24]/30 text-[#A8C69F]', icon: Activity },
+  'active sprint': { color: 'bg-primary/10 border-primary/20 text-accent-light', icon: Activity },
+  'active': { color: 'bg-primary/10 border-primary/20 text-accent-light', icon: Activity },
   // Content / Tasks
-  'waitlist': { color: 'bg-zinc-500/10 border-zinc-500/30 text-zinc-400', icon: Clock },
-  'drafting': { color: 'bg-sky-500/10 border-sky-500/30 text-sky-400', icon: CircleDashed },
-  'production': { color: 'bg-blue-500/10 border-blue-500/30 text-blue-400', icon: PlayCircle },
-  'review': { color: 'bg-purple-500/10 border-purple-500/30 text-purple-400', icon: Eye },
-  'deployed': { color: 'bg-[#3F6A24]/10 border-[#3F6A24]/30 text-[#A8C69F]', icon: Send },
+  'waitlist': { color: 'bg-white/5 border-white/10 text-text-muted', icon: Clock },
+  'drafting': { color: 'bg-sky-500/10 border-sky-500/20 text-sky-400', icon: CircleDashed },
+  'production': { color: 'bg-blue-500/10 border-blue-500/20 text-blue-400', icon: PlayCircle },
+  'review': { color: 'bg-purple-500/10 border-purple-500/20 text-purple-400', icon: Eye },
+  'deployed': { color: 'bg-primary/10 border-primary/20 text-accent-light', icon: Send },
   // PostStage statuses
-  'planned': { color: 'bg-zinc-500/10 border-zinc-500/30 text-zinc-400', icon: CalendarClock },
-  'brief written': { color: 'bg-sky-500/10 border-sky-500/30 text-sky-400', icon: CheckSquare },
-  'in production': { color: 'bg-blue-500/10 border-blue-500/30 text-blue-400', icon: PlayCircle },
-  'ceo approval': { color: 'bg-orange-500/10 border-orange-500/30 text-orange-400', icon: ShieldCheck },
-  'client approval': { color: 'bg-amber-500/10 border-amber-500/30 text-amber-400', icon: ShieldCheck },
-  'scheduled': { color: 'bg-purple-500/10 border-purple-500/30 text-purple-400', icon: CalendarClock },
-  'published': { color: 'bg-green-500/10 border-green-500/30 text-green-400', icon: CheckCircle2 },
+  'planned': { color: 'bg-white/5 border-white/10 text-text-muted', icon: CalendarClock },
+  'brief written': { color: 'bg-sky-500/10 border-sky-500/20 text-sky-400', icon: CheckSquare },
+  'in production': { color: 'bg-blue-500/10 border-blue-500/20 text-blue-400', icon: PlayCircle },
+  'ceo approval': { color: 'bg-orange-500/10 border-orange-500/20 text-orange-400', icon: ShieldCheck },
+  'client approval': { color: 'bg-amber-500/10 border-amber-500/20 text-amber-400', icon: ShieldCheck },
+  'scheduled': { color: 'bg-purple-500/10 border-purple-500/20 text-purple-400', icon: CalendarClock },
+  'published': { color: 'bg-primary/10 border-primary/20 text-accent-light', icon: CheckCircle2 },
 };
 
 export function Badge({ status = 'default', variant, className = '', children, showIcon = true }: BadgeProps) {
@@ -41,7 +41,7 @@ export function Badge({ status = 'default', variant, className = '', children, s
   const Icon = config.icon;
 
   return (
-    <span className={`font-sans text-[10px] font-semibold uppercase tracking-[0.06em] px-2.5 py-0.5 border rounded-full inline-flex items-center gap-1.5 transition-colors ${config.color} ${className}`}>
+    <span className={`font-sans text-[10px] font-bold uppercase tracking-widest px-2.5 py-0.5 border rounded-none inline-flex items-center gap-1.5 transition-colors ${config.color} ${className}`}>
       {showIcon && Icon && <Icon size={10} strokeWidth={2.5} />}
       <span>{children || status}</span>
     </span>

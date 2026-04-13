@@ -70,8 +70,8 @@ body {
 
 /* Custom Scrollbar */
 .custom-scrollbar::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
+  width: 3px;
+  height: 3px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
@@ -79,12 +79,12 @@ body {
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 0px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 /* Hide scrollbar visually but keep scroll functionality */
@@ -132,6 +132,14 @@ select option {
 }
 
 /* Macro-whitespace and Utility Extensions */
+.page-container {
+  @apply px-6 md:px-8 max-w-[1400px] mx-auto w-full flex-1;
+}
+
+.section-header {
+  @apply mb-6 md:mb-8;
+}
+
 .macro-section {
   padding-top: clamp(3rem, 5vw, 6rem);
   padding-bottom: clamp(3rem, 5vw, 6rem);

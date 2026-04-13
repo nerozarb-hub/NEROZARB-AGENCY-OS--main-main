@@ -117,7 +117,7 @@ export default function RosterView({ onSelectClient }: { onSelectClient: (id: st
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="p-4 md:p-8 max-w-[1600px] mx-auto space-y-4 md:space-y-8 h-full flex flex-col"
+      className="page-container space-y-8 pb-10 h-full flex flex-col"
     >
       {/* Top Row */}
       <div className="flex justify-between items-center gap-3">
@@ -133,11 +133,13 @@ export default function RosterView({ onSelectClient }: { onSelectClient: (id: st
       <div className="flex items-center gap-2 md:gap-4 overflow-x-auto pb-2 border-b border-border-dark scroll-touch">
         <button
           onClick={() => { setActiveFilter('All'); setSelectedIds([]); }}
-          className={`flex items-center gap-2 px-4 py-2 border transition-all duration-300 ${activeFilter === 'All' ? 'border-primary bg-primary/10 text-primary' : 'border-white/5 bg-white/[0.02] hover:border-text-muted text-[#555]'
-            }`}
+          className={`flex items-center gap-2 px-6 py-2 border transition-all duration-300 ${activeFilter === 'All'
+            ? 'border-primary bg-primary/10 text-primary'
+            : 'border-white/[0.04] bg-onyx/30 hover:border-white/[0.1] text-text-muted'
+          }`}
         >
-          <span className="font-sans font-black text-[9px] uppercase tracking-[0.2em]">All Identified</span>
-          <span className="font-sans text-[9px] font-bold opacity-40">[{data.clients.length}]</span>
+          <span className="font-sans font-bold text-[10px] uppercase tracking-widest">All Records</span>
+          <span className="font-sans text-[10px] font-bold opacity-40">({data.clients.length})</span>
         </button>
 
         {LIFECYCLE_STATUSES.map(status => {
@@ -147,11 +149,13 @@ export default function RosterView({ onSelectClient }: { onSelectClient: (id: st
             <button
               key={status}
               onClick={() => { setActiveFilter(status); setSelectedIds([]); }}
-              className={`flex items-center gap-3 px-4 py-2 border transition-all duration-300 ${isActive ? 'border-primary bg-primary/10' : 'border-white/5 bg-white/[0.02] hover:border-text-muted'
-                }`}
+              className={`flex items-center gap-3 px-6 py-2 border transition-all duration-300 ${isActive
+                ? 'border-primary bg-primary/10'
+                : 'border-white/[0.04] bg-onyx/30 hover:border-white/[0.1]'
+              }`}
             >
-              <span className={`font-sans text-[9px] font-black uppercase tracking-[0.2em] ${isActive ? 'text-primary' : 'text-[#555]'}`}>{status}</span>
-              <span className="font-sans text-[9px] font-bold text-[#444]">[{count}]</span>
+              <span className={`font-sans text-[10px] font-bold uppercase tracking-widest ${isActive ? 'text-primary' : 'text-text-muted'}`}>{status}</span>
+              <span className="font-sans text-[10px] font-bold opacity-40">({count})</span>
             </button>
           );
 
@@ -161,13 +165,13 @@ export default function RosterView({ onSelectClient }: { onSelectClient: (id: st
       {/* Search + Filter Row */}
       <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-between items-stretch sm:items-center">
         <div className="relative group w-full md:w-[450px]">
-          <Search size={12} className="absolute left-5 top-1/2 -translate-y-1/2 text-[#444] group-focus-within:text-primary transition-colors" />
+          <Search size={14} className="absolute left-5 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-primary transition-colors" />
           <input
             type="text"
-            placeholder="Search Intelligence Registry..."
+            placeholder="FILTER REGISTRY..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-onyx border border-white/5 pl-12 pr-6 py-3 font-sans text-[10px] font-bold tracking-[0.2em] text-text-primary placeholder:text-[#333] focus:outline-none focus:border-text-muted/30 transition-all uppercase"
+            className="w-full bg-onyx border border-white/[0.06] pl-12 pr-6 py-3 font-sans text-[11px] font-bold tracking-[0.2em] text-text-primary placeholder:text-text-muted/30 focus:outline-none focus:border-primary/50 transition-all uppercase rounded-none"
           />
         </div>
 
@@ -207,7 +211,7 @@ export default function RosterView({ onSelectClient }: { onSelectClient: (id: st
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 bg-[#0A0A0A] border border-primary/50 shadow-[0_0_50px_rgba(0,0,0,0.8)] px-6 py-3 rounded-sm flex items-center gap-6"
+            className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 bg-sidebar/95 backdrop-blur-md border border-primary/30 px-6 py-3 rounded-none flex items-center gap-6"
           >
             <div className="flex items-center gap-4 pr-6 border-r border-[#333]">
               <div className="text-primary font-sans text-xs font-black">{selectedIds.length.toString().padStart(2, '0')}</div>
@@ -256,30 +260,30 @@ export default function RosterView({ onSelectClient }: { onSelectClient: (id: st
           <div className="flex-1 overflow-auto custom-scrollbar scroll-touch">
             <table className="hidden md:table w-full min-w-[1000px] text-left whitespace-nowrap">
               <thead className="sticky top-0 z-20 bg-onyx border-b border-white/[0.04]">
-                <tr className="font-sans text-[9px] font-black text-[#555] uppercase tracking-[0.3em]">
-                  <th className="p-6 w-10">
-                    <button onClick={toggleSelectAll} className="text-[#333] hover:text-primary transition-colors">
+                <tr className="font-sans text-[10px] font-bold text-text-muted uppercase tracking-[0.2em]">
+                  <th className="px-6 py-4 w-10">
+                    <button onClick={toggleSelectAll} className="text-text-muted hover:text-primary transition-colors">
                       {selectedIds.length === processedClients.length && processedClients.length > 0 ? (
-                        <CheckSquare size={14} className="text-primary" />
+                        <CheckSquare size={16} className="text-primary" />
                       ) : (
-                        <Square size={14} />
+                        <Square size={16} />
                       )}
                     </button>
                   </th>
-                  <th className="p-6">Entity Profile</th>
-                  <th className="p-6">Lifecycle Status</th>
-                  <th className="p-6">Strategy Tier</th>
+                  <th className="px-6 py-4">Entity</th>
+                  <th className="px-6 py-4">Status</th>
+                  <th className="px-6 py-4">Tier</th>
                   {authLevel === 'ceo' ? (
                     <>
-                      <th className="p-6">Revenue Gate</th>
-                      <th className="p-6">Market Value</th>
+                      <th className="px-6 py-4">Gate</th>
+                      <th className="px-6 py-4">Valuation</th>
                     </>
                   ) : (
-                    <th className="p-6">Sector / Niche</th>
+                    <th className="px-6 py-4">Sector</th>
                   )}
-                  <th className="p-6">Deployment Health</th>
-                  <th className="p-6">Temporal Activity</th>
-                  <th className="p-6 text-right">Op</th>
+                  <th className="px-6 py-4">Health</th>
+                  <th className="px-6 py-4">Activity</th>
+                  <th className="px-6 py-4 text-right pr-8">Actions</th>
                 </tr>
               </thead>
 
@@ -306,26 +310,26 @@ export default function RosterView({ onSelectClient }: { onSelectClient: (id: st
                             )}
                           </button>
                         </td>
-                        <td className="p-6">
+                        <td className="px-6 py-4">
                           <div className="flex flex-col">
-                            <span className="font-sans font-black text-[13px] text-text-primary tracking-tight uppercase group-hover:text-primary transition-colors">{client.name}</span>
-                            <span className="font-sans text-[10px] font-bold text-[#444] uppercase tracking-widest mt-1">{client.contactName}</span>
+                            <span className="font-sans font-bold text-[13px] text-text-primary tracking-tight uppercase group-hover:text-primary transition-colors">{client.name}</span>
+                            <span className="font-sans text-[10px] font-bold text-text-muted/40 uppercase tracking-[0.1em] mt-0.5">{client.contactName}</span>
                           </div>
                         </td>
 
                         <td className="p-4">
                           <Badge status={client.status === 'Active Sprint' || client.status === 'Retainer' ? 'healthy' : 'review'}>{client.status}</Badge>
                         </td>
-                        <td className="p-4">
-                          <span className="font-sans text-[12px] text-accent-light">{client.tier}</span>
+                        <td className="px-6 py-4">
+                          <span className="font-sans text-[11px] font-medium text-accent-light uppercase tracking-widest leading-none">{client.tier.split(':')[0]}</span>
                         </td>
                         {authLevel === 'ceo' ? (
                           <>
-                            <td className="p-4">
-                              <span className="font-mono text-[10px] px-2 py-1  bg-card-alt text-text-secondary">{client.revenueGate}</span>
+                            <td className="px-6 py-4">
+                              <span className="font-sans text-[10px] font-bold px-2 py-1 bg-white/[0.04] text-text-muted uppercase tracking-widest">{client.revenueGate}</span>
                             </td>
-                            <td className="p-4">
-                              <span className="font-mono text-[12px] text-text-primary">{formatCurrency(client.ltv)}</span>
+                            <td className="px-6 py-4">
+                              <span className="font-mono text-[11px] text-text-primary font-bold tracking-tight">{formatCurrency(client.ltv)}</span>
                             </td>
                           </>
                         ) : (
@@ -333,30 +337,30 @@ export default function RosterView({ onSelectClient }: { onSelectClient: (id: st
                             <span className="font-sans text-[12px] text-text-secondary">{client.niche}</span>
                           </td>
                         )}
-                        <td className="p-4">
+                        <td className="px-6 py-4">
                           <div className="flex items-center gap-2">
-                            <div className={`w-2 h-2 rounded-full ${health === 'healthy' ? 'bg-primary' : health === 'at-risk' ? 'bg-yellow-500' : 'bg-red-500'}`} />
-                            <span className="font-mono text-[10px] uppercase text-text-secondary">{health}</span>
+                            <div className={`w-1.5 h-1.5 rounded-none ${health === 'healthy' ? 'bg-primary' : health === 'at-risk' ? 'bg-yellow-500' : 'bg-red-500'}`} />
+                            <span className={`font-sans text-[10px] uppercase font-bold tracking-widest ${health === 'healthy' ? 'text-primary' : health === 'at-risk' ? 'text-yellow-500' : 'text-red-500'}`}>{health}</span>
                           </div>
                         </td>
-                        <td className="p-4">
-                          <span className="font-mono text-[10px] text-text-muted uppercase">{calculateLastActivity(client)}</span>
+                        <td className="px-6 py-4">
+                          <span className="font-sans text-[10px] font-bold text-text-muted uppercase tracking-widest">{calculateLastActivity(client)}</span>
                         </td>
-                        <td className="p-6 text-right">
-                          <div className="flex items-center justify-end gap-5">
+                        <td className="px-6 py-4 text-right pr-8">
+                          <div className="flex items-center justify-end gap-6 text-text-muted">
                             <button
-                              className="font-sans text-[9px] font-black uppercase tracking-[0.2em] text-[#444] hover:text-primary transition-all duration-300 flex items-center gap-2"
+                              className="font-sans text-[10px] font-bold uppercase tracking-widest hover:text-primary transition-all duration-300 flex items-center gap-2"
                               onClick={(e) => { e.stopPropagation(); setClientToEdit(client); }}
                             >
-                              <Edit2 size={10} />
+                              <Edit2 size={12} />
                               Refine
                             </button>
                             {authLevel === 'ceo' && (
                               <button
-                                className="font-sans text-[9px] font-black uppercase tracking-[0.2em] text-[#444] hover:text-red-500 transition-all duration-300 flex items-center gap-2"
+                                className="font-sans text-[10px] font-bold uppercase tracking-widest hover:text-red-500 transition-all duration-300 flex items-center gap-2"
                                 onClick={(e) => { e.stopPropagation(); setClientToDelete(client); }}
                               >
-                                <Trash2 size={10} />
+                                <Trash2 size={12} />
                                 Purge
                               </button>
                             )}
@@ -396,19 +400,19 @@ export default function RosterView({ onSelectClient }: { onSelectClient: (id: st
                           </button>
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="font-heading font-bold text-[13px] text-text-primary tracking-tight uppercase truncate">{client.name}</span>
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="font-sans font-bold text-[14px] text-text-primary tracking-tight uppercase truncate">{client.name}</span>
                           </div>
-                          <div className="flex items-center gap-2">
+                          <div className="flex flex-wrap items-center gap-2">
                             <Badge status={client.status === 'Active Sprint' || client.status === 'Retainer' ? 'healthy' : 'review'}>{client.status}</Badge>
-                            <span className="font-sans text-[11px] text-accent-light">{client.tier}</span>
+                            <span className="font-sans text-[10px] font-bold text-accent-light uppercase tracking-widest">{client.tier.split(':')[0]}</span>
                           </div>
-                          <div className="flex items-center gap-4 mt-2">
+                          <div className="flex items-center gap-4 mt-3 pt-3 border-t border-white/[0.04]">
                             <div className="flex items-center gap-1.5">
-                              <div className={`w-2 h-2 rounded-full flex-shrink-0 ${health === 'healthy' ? 'bg-primary' : health === 'at-risk' ? 'bg-yellow-500' : 'bg-red-500'}`} />
-                              <span className="font-mono text-[9px] text-text-secondary uppercase tracking-widest">{health}</span>
+                              <div className={`w-1.5 h-1.5 rounded-none flex-shrink-0 ${health === 'healthy' ? 'bg-primary' : health === 'at-risk' ? 'bg-yellow-500' : 'bg-red-500'}`} />
+                              <span className={`font-sans text-[10px] font-bold uppercase tracking-widest ${health === 'healthy' ? 'text-primary' : 'text-text-muted'}`}>{health}</span>
                             </div>
-                            <p className="font-mono text-[9px] text-text-muted uppercase tracking-widest">{calculateLastActivity(client)}</p>
+                            <p className="font-sans text-[10px] font-bold text-text-muted uppercase tracking-widest">{calculateLastActivity(client)}</p>
                           </div>
                         </div>
                         <ChevronRight size={16} className="text-text-muted" />
@@ -443,19 +447,19 @@ export default function RosterView({ onSelectClient }: { onSelectClient: (id: st
         isOpen={!!clientToDelete}
         onClose={() => setClientToDelete(null)}
         title={
-          <h2 className="font-heading text-xl text-red-500 uppercase tracking-tight">Confirm Deletion</h2>
+          <h2 className="font-heading text-2xl text-red-500 tracking-tighter uppercase">Terminate Record</h2>
         }
         footer={
           <div className="flex flex-col sm:flex-row justify-end gap-3 w-full">
             <Button
               variant="ghost"
               onClick={() => setClientToDelete(null)}
-              className="font-mono text-[10px] uppercase tracking-widest w-full sm:w-auto h-11"
+              className="w-full sm:w-auto h-11"
             >
-              ABORT MISSION
+              Abort Mission
             </Button>
             <Button
-              className="bg-red-500 hover:bg-red-600 text-text-primary px-8 font-mono text-[10px] uppercase tracking-widest w-full sm:w-auto h-11"
+              className="bg-red-500 hover:bg-red-600 text-text-primary px-8 w-full sm:w-auto h-11"
               onClick={() => {
                 if (clientToDelete) {
                   deleteClient(clientToDelete.id);
@@ -463,32 +467,32 @@ export default function RosterView({ onSelectClient }: { onSelectClient: (id: st
                 }
               }}
             >
-              TERMINATE RECORD
+              Confirm Purge
             </Button>
           </div>
         }
       >
         {clientToDelete && (
           <div className="space-y-6 py-2">
-            <p className="text-sm text-text-secondary leading-relaxed font-mono uppercase">
+            <p className="font-sans text-[13px] text-text-secondary leading-relaxed uppercase font-bold tracking-tight">
               Are you sure you want to delete <strong className="text-red-500">{clientToDelete.name.toUpperCase()}</strong>?
               <br />
-              <span className="text-xs opacity-70">This action is irreversible and will permanentely purge all associated data.</span>
+              <span className="text-[11px] opacity-50 font-medium tracking-wide">This action is irreversible and will permanentely purge all associated data.</span>
             </p>
-            <div className="bg-red-500/5 border border-red-500/20 p-4 rounded-sm">
-              <p className="text-[10px] text-red-400 font-mono uppercase tracking-widest mb-3 border-b border-red-500/20 pb-2">Logical Cascade Deletion Chain:</p>
-              <ul className="text-[10px] text-text-muted space-y-2 list-none font-mono uppercase">
-                <li className="flex justify-between">
+            <div className="bg-red-500/5 border border-red-500/10 p-5 rounded-none">
+              <p className="font-sans text-[11px] text-red-400 font-bold uppercase tracking-[0.2em] mb-4 border-b border-red-500/10 pb-2">Logical Cascade Deletion Chain:</p>
+              <ul className="font-sans text-[11px] text-text-muted space-y-3 list-none uppercase font-bold tracking-widest">
+                <li className="flex justify-between items-center">
                   <span>Active/Completed Tasks</span>
-                  <span className="text-red-500">[{data.tasks.filter(t => t.clientId === clientToDelete.id).length}]</span>
+                  <span className="text-red-500 opacity-60">[{data.tasks.filter(t => t.clientId === clientToDelete.id).length}]</span>
                 </li>
-                <li className="flex justify-between">
+                <li className="flex justify-between items-center">
                   <span>Content Posts</span>
-                  <span className="text-red-500">[{data.posts.filter(p => p.clientId === clientToDelete.id).length}]</span>
+                  <span className="text-red-500 opacity-60">[{data.posts.filter(p => p.clientId === clientToDelete.id).length}]</span>
                 </li>
-                <li className="flex justify-between">
+                <li className="flex justify-between items-center">
                   <span>Vault Protocols</span>
-                  <span className="text-red-500">[{data.protocols.filter(p => p.clientId === clientToDelete.id).length}]</span>
+                  <span className="text-red-500 opacity-60">[{data.protocols.filter(p => p.clientId === clientToDelete.id).length}]</span>
                 </li>
               </ul>
             </div>

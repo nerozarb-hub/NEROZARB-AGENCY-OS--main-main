@@ -9,17 +9,17 @@ export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 
 export function Button({ children, variant = 'primary', size = 'md', className = '', ...props }: ButtonProps) {
   const variants: Record<string, string> = {
-    primary: 'bg-primary text-text-primary hover:bg-accent-mid',
+    primary: 'bg-primary text-text-primary hover:bg-accent-mid tracking-widest',
     default: 'bg-surface text-text-primary hover:bg-border-dark border border-border-dark',
-    ghost: 'bg-transparent text-text-muted hover:text-primary hover:bg-primary/10',
+    ghost: 'bg-transparent text-text-muted hover:text-text-primary hover:bg-white/5',
     outline: 'bg-transparent border border-border-dark text-text-secondary hover:border-text-primary hover:bg-white/5',
     danger: 'bg-transparent border border-red-500/50 text-red-500 hover:bg-red-500/10',
   };
 
 
   const sizes: Record<string, string> = {
-    sm: 'px-3 py-2 text-xs min-h-[36px]',
-    md: 'px-4 py-2.5 text-sm min-h-[44px]',
+    sm: 'px-3 py-1 text-[10px] min-h-[32px]',
+    md: 'px-4 py-2 text-sm min-h-[40px]',
   };
 
   return (

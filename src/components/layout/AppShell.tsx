@@ -41,33 +41,26 @@ export default function AppShell({
 
       <main className="flex-1 min-h-screen transition-all duration-300 flex flex-col
                        md:ml-[80px] lg:ml-[210px]
-                       pb-[70px] md:pb-0">
+                       pb-safe">
 
         {/* Global Context Bar — Editorial Refresh */}
-        <header className="hidden md:flex h-[60px] border-b border-border-dark items-center justify-between px-10 flex-shrink-0 z-40 relative">
+        <header className="hidden md:flex h-[52px] border-b border-white/[0.04] items-center justify-between px-8 flex-shrink-0 z-40 relative bg-onyx/50 backdrop-blur-md">
           <div className="flex items-center gap-3">
-            <Hexagon size={14} className="text-primary" />
-            <span className="editorial-title text-base text-text-primary">System Operations</span>
+            <div className="w-1.5 h-1.5 bg-primary rounded-none" />
+            <span className="font-sans text-[11px] font-bold uppercase tracking-[0.2em] text-text-primary">
+              {activeView.replace('-', ' ')}
+            </span>
           </div>
 
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-3">
-              <span className="font-sans text-[10px] font-semibold uppercase tracking-widest text-text-muted">Active Context</span>
-              <button className="flex items-center gap-2 px-3 py-1 bg-white/5 border border-border-dark rounded-none hover:border-text-muted transition-all">
-                <span className="text-[11px] font-medium text-text-primary tracking-wide">
-                  {selectedClient || 'Global View'}
-                </span>
-              </button>
-            </div>
-
+          <div className="flex items-center gap-4">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setIsPlannerOpen(true)}
-              className="text-text-muted hover:text-text-primary font-sans text-[10px] uppercase tracking-widest"
+              className="text-text-muted hover:text-text-primary"
             >
-              <ClipboardList size={14} className="mr-2" />
-              Plan Month
+              <ClipboardList size={14} />
+              <span className="font-sans text-[10px] uppercase tracking-widest ml-2">Plan Month</span>
             </Button>
           </div>
         </header>

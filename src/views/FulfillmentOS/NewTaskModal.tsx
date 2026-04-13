@@ -68,21 +68,21 @@ export default function NewTaskModal({ isOpen, onClose }: NewTaskModalProps) {
       isOpen={isOpen}
       onClose={onClose}
       title={
-        <div className="space-y-1">
-          <p className="font-sans text-[10px] font-bold uppercase tracking-[0.2em] text-primary/80">Operational Proxy</p>
-          <h2 className="editorial-title text-3xl text-text-primary italic">Initialize Objective</h2>
+        <div className="space-y-2">
+          <p className="font-sans text-[11px] font-bold uppercase tracking-[0.3em] text-primary/80">Operational Proxy</p>
+          <h2 className="font-heading text-4xl text-text-primary uppercase tracking-tighter leading-none">Initialize Objective</h2>
         </div>
       }
 
       footer={
         <div className="flex flex-col sm:flex-row justify-end gap-4 w-full">
-          <Button variant="ghost" onClick={onClose} className="font-sans text-[10px] font-black uppercase tracking-widest text-[#555] hover:text-text-primary">
+          <Button variant="ghost" onClick={onClose} className="px-8">
             Abort
           </Button>
           <Button
             onClick={handleSubmit}
             disabled={!name || clientId === ''}
-            className="bg-primary hover:bg-accent-mid text-text-primary px-10 h-12 font-sans text-[10px] font-black uppercase tracking-[0.2em]"
+            className="bg-primary hover:bg-accent-mid text-text-primary px-10"
           >
             Deploy Objective
           </Button>
@@ -93,7 +93,7 @@ export default function NewTaskModal({ isOpen, onClose }: NewTaskModalProps) {
       <div className="space-y-8 py-2">
         {/* Section 1: Core Details */}
         <div className="space-y-6">
-          <h3 className="font-sans text-[9px] font-black tracking-[0.3em] text-[#555] uppercase border-b border-white/[0.04] pb-5 italic">
+          <h3 className="font-sans text-[11px] font-bold tracking-[0.3em] text-text-muted/40 uppercase border-b border-white/[0.04] pb-5">
             Objective Identification
           </h3>
 
@@ -105,34 +105,34 @@ export default function NewTaskModal({ isOpen, onClose }: NewTaskModalProps) {
                 value={name}
                 onChange={e => setName(e.target.value)}
                 required
-                className="font-sans text-xl border-white/5 bg-white/[0.01]"
+                className="text-lg"
               />
             </div>
 
 
-            <div className="space-y-1.5">
-              <label className="font-sans text-[9px] font-black text-[#444] uppercase tracking-widest pl-1">Entity Allocation *</label>
+            <div className="space-y-2">
+              <label className="font-sans text-[11px] font-bold text-text-muted/60 uppercase tracking-widest pl-1">Entity Allocation *</label>
               <select
                 value={clientId}
                 onChange={e => setClientId(Number(e.target.value))}
-                className="w-full bg-white/[0.01] border border-white/5 rounded-none px-5 py-4 text-[11px] font-bold font-sans text-text-primary focus:outline-none focus:border-white/20 transition-all appearance-none uppercase tracking-widest"
+                className="w-full bg-white/[0.02] border border-white/[0.06] rounded-none px-4 h-10 text-[11px] font-bold font-sans text-text-primary focus:outline-none focus:ring-1 focus:ring-primary/20 transition-all appearance-none uppercase tracking-widest"
               >
-                <option value="" disabled className="bg-[#0C0F14]">SELECT ENTITY</option>
+                <option value="" disabled className="bg-sidebar">SELECT ENTITY</option>
                 {data.clients.map(c => (
-                  <option key={c.id} value={c.id} className="bg-[#0C0F14]">{c.name.toUpperCase()}</option>
+                  <option key={c.id} value={c.id} className="bg-sidebar">{c.name.toUpperCase()}</option>
                 ))}
               </select>
             </div>
 
-            <div className="space-y-1.5">
-              <label className="font-sans text-[9px] font-black text-[#444] uppercase tracking-widest pl-1">Vector Category</label>
+            <div className="space-y-2">
+              <label className="font-sans text-[11px] font-bold text-text-muted/60 uppercase tracking-widest pl-1">Vector Category</label>
               <select
                 value={category}
                 onChange={e => setCategory(e.target.value as TaskCategory)}
-                className="w-full bg-white/[0.01] border border-white/5 rounded-none px-5 py-4 text-[11px] font-bold font-sans text-text-primary focus:outline-none focus:border-white/20 transition-all appearance-none uppercase tracking-widest"
+                className="w-full bg-white/[0.02] border border-white/[0.06] rounded-none px-4 h-10 text-[11px] font-bold font-sans text-text-primary focus:outline-none focus:ring-1 focus:ring-primary/20 transition-all appearance-none uppercase tracking-widest"
               >
                 {['Content Production', 'Ad Creative', 'Website', 'Strategy', 'Video Production', 'Brand Design', 'Analytics', 'Automation', 'Client Communication', 'Other'].map(c => (
-                  <option key={c} value={c} className="bg-[#0C0F14]">{c.toUpperCase()}</option>
+                  <option key={c} value={c} className="bg-sidebar">{c.toUpperCase()}</option>
                 ))}
               </select>
             </div>
@@ -142,27 +142,27 @@ export default function NewTaskModal({ isOpen, onClose }: NewTaskModalProps) {
 
         {/* Section 2: Resource Assignment */}
         <div className="space-y-6">
-          <h3 className="font-sans text-[9px] font-black tracking-[0.3em] text-[#555] uppercase border-b border-white/[0.04] pb-5 italic">
+          <h3 className="font-sans text-[11px] font-bold tracking-[0.3em] text-text-muted/40 uppercase border-b border-white/[0.04] pb-5">
             Resource Stream
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-1.5">
-              <label className="font-sans text-[9px] font-black text-[#444] uppercase tracking-widest pl-1">Deployment Node</label>
+            <div className="space-y-2">
+              <label className="font-sans text-[11px] font-bold text-text-muted/60 uppercase tracking-widest pl-1">Deployment Node</label>
               <select
                 value={assignedNode}
                 onChange={e => setAssignedNode(e.target.value as NodeRole)}
-                className="w-full bg-white/[0.01] border border-white/5 rounded-none px-5 py-4 text-[11px] font-bold font-sans text-text-primary focus:outline-none focus:border-white/20 transition-all appearance-none uppercase tracking-widest"
+                className="w-full bg-white/[0.02] border border-white/[0.06] rounded-none px-4 h-10 text-[11px] font-bold font-sans text-text-primary focus:outline-none focus:ring-1 focus:ring-primary/20 transition-all appearance-none uppercase tracking-widest"
               >
                 {['CEO', 'Art Director', 'Video Editor', 'Operations Builder', 'Social Media Manager', 'Documentation Manager'].map(n => (
-                  <option key={n} value={n} className="bg-[#0C0F14]">{n.toUpperCase()}</option>
+                  <option key={n} value={n} className="bg-sidebar">{n.toUpperCase()}</option>
                 ))}
               </select>
             </div>
 
-            <div className="space-y-1.5">
-              <label className="font-sans text-[9px] font-black text-[#444] uppercase tracking-widest pl-1">Threat Level</label>
-              <div className="grid grid-cols-3 gap-3">
+            <div className="space-y-2">
+              <label className="font-sans text-[11px] font-bold text-text-muted/60 uppercase tracking-widest pl-1">Threat Level</label>
+              <div className="grid grid-cols-3">
                 {[
                   { id: 'normal', label: 'NORMAL' },
                   { id: 'high', label: 'HIGH' },
@@ -172,9 +172,9 @@ export default function NewTaskModal({ isOpen, onClose }: NewTaskModalProps) {
                     key={p.id}
                     type="button"
                     onClick={() => setPriority(p.id as any)}
-                    className={`h-12 text-[10px] font-black font-sans tracking-widest border transition-all duration-300 ${priority === p.id 
+                    className={`h-10 text-[10px] font-bold font-sans tracking-widest border transition-all duration-300 rounded-none ${priority === p.id 
                       ? 'bg-primary/20 border-primary/40 text-primary' 
-                      : 'bg-white/5 border-white/5 text-[#444] hover:border-white/10'
+                      : 'bg-white/[0.02] border-white/[0.06] text-text-muted/40 hover:border-white/20'
                       }`}
                   >
                     {p.label}
@@ -188,7 +188,7 @@ export default function NewTaskModal({ isOpen, onClose }: NewTaskModalProps) {
 
         {/* Section 3: Timeline & Scale */}
         <div className="space-y-6">
-          <h3 className="font-sans text-[9px] font-black tracking-[0.3em] text-[#555] uppercase border-b border-white/[0.04] pb-5 italic">
+          <h3 className="font-sans text-[11px] font-bold tracking-[0.3em] text-text-muted/40 uppercase border-b border-white/[0.04] pb-5">
             Temporal Parameters
           </h3>
 
@@ -199,7 +199,7 @@ export default function NewTaskModal({ isOpen, onClose }: NewTaskModalProps) {
                 placeholder="e.g. ALPHA"
                 value={phase}
                 onChange={e => setPhase(e.target.value as any)}
-                className="font-sans text-[11px] font-bold border-white/5 bg-white/[0.01]"
+                className="text-[11px]"
               />
             </div>
             <div className="sm:col-span-1 lg:col-span-1">
@@ -208,7 +208,7 @@ export default function NewTaskModal({ isOpen, onClose }: NewTaskModalProps) {
                 type="date"
                 value={deadline}
                 onChange={e => setDeadline(e.target.value)}
-                className="font-sans text-[11px] font-bold border-white/5 bg-white/[0.01]"
+                className="text-[11px]"
               />
             </div>
             <div className="sm:col-span-2 lg:col-span-1">
@@ -218,7 +218,7 @@ export default function NewTaskModal({ isOpen, onClose }: NewTaskModalProps) {
                 type="number"
                 value={estimatedHours}
                 onChange={e => setEstimatedHours(e.target.value)}
-                className="font-sans text-[11px] font-bold border-white/5 bg-white/[0.01]"
+                className="text-[11px]"
               />
             </div>
           </div>
@@ -226,15 +226,15 @@ export default function NewTaskModal({ isOpen, onClose }: NewTaskModalProps) {
 
         {/* Section 4: Brief */}
         <div className="space-y-6">
-          <h3 className="font-sans text-[9px] font-black tracking-[0.3em] text-[#555] uppercase border-b border-white/[0.04] pb-5 italic">
+          <h3 className="font-sans text-[11px] font-bold tracking-[0.3em] text-text-muted/40 uppercase border-b border-white/[0.04] pb-5">
             Objective Scope
           </h3>
-          <div className="space-y-3">
-            <label className="font-sans text-[9px] font-black text-[#444] uppercase tracking-widest pl-1 leading-relaxed">Intelligence Briefing</label>
+          <div className="space-y-2">
+            <label className="font-sans text-[11px] font-bold text-text-muted/60 uppercase tracking-widest pl-1">Intelligence Briefing</label>
             <textarea
               value={brief}
               onChange={e => setBrief(e.target.value)}
-              className="w-full bg-white/[0.01] border border-white/5 text-text-primary px-5 py-5 text-[12px] font-sans font-medium focus:outline-none focus:border-white/20 transition-all hover:border-white/10 rounded-none min-h-[140px] resize-none custom-scrollbar uppercase tracking-widest leading-relaxed"
+              className="w-full bg-white/[0.02] border border-white/[0.06] text-text-primary px-5 py-5 text-[12px] font-sans font-medium focus:outline-none focus:ring-1 focus:ring-primary/20 transition-all hover:border-white/10 rounded-none min-h-[140px] resize-none custom-scrollbar uppercase tracking-widest leading-relaxed"
               placeholder="ENTER SUCCESS CRITERIA AND OPERATIONAL INTENT..."
             />
           </div>
