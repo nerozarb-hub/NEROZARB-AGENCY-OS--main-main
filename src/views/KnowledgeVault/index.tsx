@@ -116,10 +116,10 @@ export default function KnowledgeVault({ selectedClient }: { selectedClient?: st
             <header className="page-header">
                 <div>
                     <h1 className="page-header-title">
-                        {selectedClient ? "STRATEGIC INTELLIGENCE" : "KNOWLEDGE VAULT"}
+                        {selectedClient ? "Client knowledge" : "Playbooks"}
                     </h1>
-                    <p className="page-header-subtitle mt-2">
-                        {selectedClient ? "CLIENT-SPECIFIC OPERATIONAL PROTOCOLS" : "CENTRAL DEPLOYMENT LOGIC & TACTICAL SOPS"}
+                    <p className="page-header-subtitle mt-1">
+                        {selectedClient ? "Notes and proven learnings for this client." : "SOPs, prompts, and reusable knowledge for the team."}
                     </p>
                 </div>
                 <Button 
@@ -127,7 +127,7 @@ export default function KnowledgeVault({ selectedClient }: { selectedClient?: st
                     className="bg-primary hover:bg-accent-mid text-text-primary px-8"
                 >
                     <Plus size={16} />
-                    <span>+ NEW PROTOCOL</span>
+                    <span>New playbook</span>
                 </Button>
             </header>
 

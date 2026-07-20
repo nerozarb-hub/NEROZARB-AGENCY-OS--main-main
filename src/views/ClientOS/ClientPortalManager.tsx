@@ -3,7 +3,7 @@ import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
 import { useAppData } from '../../contexts/AppDataContext';
-import { Link, Copy, Plus, Send, CheckCircle2, Circle } from 'lucide-react';
+import { Link, Copy, Plus, Send, CheckCircle2, Circle, Square } from 'lucide-react';
 import { Client, ProjectPhase } from '../../utils/storage';
 
 export default function ClientPortalManager({ clientId }: { clientId: number }) {

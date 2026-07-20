@@ -3,6 +3,7 @@ import { Post, PostStage, Client } from '../../utils/storage';
 import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { KanbanSquare } from 'lucide-react';
+import { EmptyState } from '../../components/ui/EmptyState';
 
 interface PostPipelineViewProps {
     posts: Post[];
@@ -29,15 +30,11 @@ const STAGES: PostStage[] = [
 export default function PostPipelineView({ posts, clients, onPostClick }: PostPipelineViewProps) {
     if (posts.length === 0) {
         return (
-            <div className="flex-1 flex flex-col items-center justify-center min-h-[400px] border border-white/[0.04] rounded-none bg-white/[0.01]">
-                <div className="w-16 h-16 rounded-none bg-white/5 border border-white/10 flex items-center justify-center mb-8 rotate-45">
-                    <KanbanSquare className="text-text-muted/20 -rotate-45" size={24} />
-                </div>
-                <h3 className="font-heading text-4xl text-text-primary uppercase tracking-tighter mb-4">No Active Pipelines</h3>
-                <p className="font-sans text-[11px] font-bold text-text-muted/40 uppercase tracking-[0.3em] max-w-sm text-center">
-                    System scanning complete. No deployments identified in the current sector.
-                </p>
-            </div>
+            <EmptyState
+                icon={<KanbanSquare size={22} />}
+                title="No posts in the pipeline"
+                description="Create a post or plan a month to see work move through review and publishing."
+            />
         );
     }
 
@@ -118,12 +115,11 @@ export default function PostPipelineView({ posts, clients, onPostClick }: PostPi
 function getStageColorDot(stage: PostStage) {
     switch (stage) {
         case 'PLANNED': return 'bg-white/[0.1]';
-        case 'PRODUCTION': return 'bg-blue-500';
+        case 'IN PRODUCTION': return 'bg-blue-500';
         case 'REVIEW': return 'bg-yellow-500';
-        case 'CEO APPR': return 'bg-orange-500';
+        case 'CEO APPROVAL': return 'bg-orange-500';
         case 'SCHEDULED': return 'bg-purple-500';
         case 'PUBLISHED': return 'bg-green-500';
         default: return 'bg-white/[0.05]';
     }
 }
-

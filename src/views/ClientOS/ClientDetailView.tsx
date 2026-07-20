@@ -88,12 +88,12 @@ export default function ClientDetailView({ clientId, onBack, onNavigate }: { cli
           )}
           <div className="flex items-center gap-2">
             <Button
-              onClick={() => onNavigate?.('vault', client.id.toString())}
+              onClick={() => onNavigate?.('studio', client.id.toString())}
               variant="ghost"
               className="px-4"
             >
               <BookOpen className="w-4 h-4 mr-2" />
-              Vault
+              Prompt Studio
             </Button>
             <Button
               onClick={() => setIsEditModalOpen(true)}
@@ -381,4 +381,3 @@ function TimelineItem({ title, time, type }: { key?: number | string, title: str
     </div>
   );
 }
-

@@ -10,12 +10,12 @@ interface SidebarProps {
 }
 
 const navItems = [
-  { id: 'command', label: 'Command Center', icon: LayoutDashboard, ceoOnly: true },
-  { id: 'client', label: 'Client OS', icon: Users, ceoOnly: false },
-  { id: 'fulfillment', label: 'Fulfillment', icon: Settings, ceoOnly: false },
-  { id: 'content', label: 'Content OS', icon: CalendarDays, ceoOnly: false },
-  { id: 'vault', label: 'Knowledge', icon: BookOpen, ceoOnly: false },
-  { id: 'onboarding', label: 'Onboarding', icon: Rocket, ceoOnly: false },
+  { id: 'command', label: 'Overview', icon: LayoutDashboard, ceoOnly: true },
+  { id: 'client', label: 'Clients', icon: Users, ceoOnly: false },
+  { id: 'fulfillment', label: 'Tasks', icon: Settings, ceoOnly: false },
+  { id: 'content', label: 'Content', icon: CalendarDays, ceoOnly: false },
+  { id: 'studio', label: 'Prompt Studio', icon: BookOpen, ceoOnly: false },
+  { id: 'onboarding', label: 'Setup', icon: Rocket, ceoOnly: false },
 ];
 
 export default function Sidebar({ activeView, setActiveView, authLevel, onLogout }: SidebarProps) {
@@ -43,15 +43,15 @@ export default function Sidebar({ activeView, setActiveView, authLevel, onLogout
   return (
     <>
       {/* ===== DESKTOP SIDEBAR — left rail ===== */}
-      <aside className="hidden md:flex fixed top-0 left-0 h-screen flex-col
-                        md:w-[80px] lg:w-[210px]
+      <aside className="hidden md:flex fixed top-0 left-0 min-h-[100dvh] flex-col
+                        md:w-[80px] lg:w-[224px]
                         bg-sidebar border-r border-border-dark z-50">
 
         {/* Wordmark */}
         <div className="p-6 border-b border-white/[0.04] flex-shrink-0">
-          <p className="font-sans text-[10px] uppercase font-bold tracking-widest text-[#555] mb-2 lg:block hidden">System v2.0</p>
-          <h1 className="editorial-title text-2xl text-text-primary lg:block hidden">Nerozarb</h1>
-          <h1 className="editorial-title text-xl text-text-primary lg:hidden block text-center">Nz</h1>
+          <p className="font-sans text-xs text-text-muted mb-1 lg:block hidden">Agency workspace</p>
+          <h1 className="text-xl font-semibold text-text-primary lg:block hidden">NEROZARB</h1>
+          <h1 className="text-lg font-semibold text-text-primary lg:hidden block text-center">N</h1>
         </div>
 
 
@@ -67,13 +67,13 @@ export default function Sidebar({ activeView, setActiveView, authLevel, onLogout
                 onClick={() => setActiveView(item.id)}
                 className={`flex items-center justify-center lg:justify-start gap-3 px-6 py-3 transition-all duration-300 relative group
                   ${isActive
-                    ? 'text-text-primary'
+                        ? 'text-text-primary bg-white/[0.05]'
                     : 'text-text-muted hover:text-text-primary'
                   }`}
                 title={item.label}
               >
                 <Icon size={16} className={`${isActive ? 'text-primary' : 'group-hover:text-text-primary'} transition-colors`} />
-                <span className="hidden lg:block font-sans font-bold text-[10px] uppercase tracking-widest">
+                <span className="hidden lg:block font-sans font-medium text-sm">
                   {item.label}
                 </span>
                 {isActive && (
@@ -98,8 +98,8 @@ export default function Sidebar({ activeView, setActiveView, authLevel, onLogout
         <div className="mt-auto border-t border-white/[0.04] flex-shrink-0">
           {authLevel === 'ceo' && (
             <div className="px-6 py-2 border-b border-white/[0.04] bg-primary/5">
-              <p className="font-mono text-[9px] text-primary tracking-widest hidden lg:block uppercase font-bold">CEO Active</p>
-              <p className="font-mono text-[9px] text-primary tracking-widest lg:hidden text-center uppercase font-bold">CEO</p>
+              <p className="font-sans text-xs text-primary hidden lg:block">Administrator</p>
+              <p className="font-sans text-xs text-primary lg:hidden text-center">Admin</p>
             </div>
           )}
           <div className="p-6 space-y-4 flex flex-col items-center lg:items-start bg-onyx/50">
@@ -108,16 +108,16 @@ export default function Sidebar({ activeView, setActiveView, authLevel, onLogout
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-none bg-primary opacity-75"></span>
                 <span className="relative inline-flex rounded-none h-1.5 w-1.5 bg-primary"></span>
               </div>
-              <p className="font-mono text-[9px] text-text-muted tracking-widest hidden lg:block uppercase font-bold">Nominal</p>
+              <p className="font-sans text-xs text-text-muted hidden lg:block">Workspace ready</p>
             </div>
 
             <button
               onClick={onLogout}
               className="flex items-center gap-2 text-text-muted hover:text-red-500 transition-colors group w-full justify-center lg:justify-start"
-              title="Terminate Session"
+              title="Sign out"
             >
               <LogOut size={14} />
-              <span className="hidden lg:block font-sans text-[10px] font-bold uppercase tracking-widest">Terminate</span>
+              <span className="hidden lg:block font-sans text-sm font-medium">Sign out</span>
             </button>
           </div>
         </div>
@@ -142,8 +142,8 @@ export default function Sidebar({ activeView, setActiveView, authLevel, onLogout
                 ${isActive ? 'text-primary' : 'text-text-muted'}`}
             >
               <Icon size={18} />
-              <span className="font-sans text-[9px] font-bold uppercase tracking-widest leading-none truncate w-full text-center">
-                {item.label.split(' ')[0]}
+              <span className="font-sans text-[9px] font-medium leading-none truncate w-full text-center">
+                {item.label}
               </span>
               {/* Active dots/line */}
               {isActive && (

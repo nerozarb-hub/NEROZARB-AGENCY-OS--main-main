@@ -46,11 +46,9 @@ export default function LoginView({ onLogin, onReset }: LoginViewProps) {
         className="w-full max-w-md flex flex-col items-center"
       >
         <div className="text-center mb-16 select-none" onClick={() => setResetClicks(prev => prev + 1)}>
-          <h1 className="font-heading text-6xl tracking-[-0.05em] text-text-primary mb-4 font-black cursor-pointer">NEROZARB</h1>
-          <div className="flex items-center justify-center gap-4 text-text-muted font-mono text-[9px] tracking-[0.4em] uppercase">
-            <span>[ EST. 2026 ]</span>
-            <span className="w-1 h-1 bg-primary rounded-full animate-pulse"></span>
-            <span>[ SECURE SYSTEM ]</span>
+          <h1 className="font-heading text-4xl tracking-tight text-text-primary mb-3 font-semibold cursor-pointer">NEROZARB</h1>
+          <div className="text-text-muted text-sm">
+            Team workspace
           </div>
         </div>
 
@@ -66,8 +64,8 @@ export default function LoginView({ onLogin, onReset }: LoginViewProps) {
               type="password"
               value={passphrase}
               onChange={(e) => setPassphrase(e.target.value)}
-              placeholder="ENTER PASSPHRASE"
-              className={`w-full bg-transparent border-b ${error ? 'border-red-500' : 'border-border-dark'} py-4 text-center font-mono text-sm tracking-[0.2em] text-text-primary placeholder:text-text-muted/30 focus:outline-none focus:border-primary transition-colors`}
+              placeholder="Enter your passphrase"
+              className={`w-full rounded-lg bg-white/[0.03] border ${error ? 'border-red-500' : 'border-border-dark'} px-4 py-3 text-center text-sm text-text-primary placeholder:text-text-muted/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors`}
               autoFocus
               autoComplete="off"
             />
@@ -78,7 +76,7 @@ export default function LoginView({ onLogin, onReset }: LoginViewProps) {
             disabled={isLoading || !passphrase.trim()}
             className="mt-8 w-full bg-primary hover:bg-accent-mid disabled:opacity-50 text-text-primary font-mono text-xs py-3 tracking-[0.2em] transition-colors uppercase disabled:cursor-not-allowed"
           >
-            {isLoading ? 'AUTHENTICATING...' : 'ACCESS SYSTEM'}
+            {isLoading ? 'Signing in…' : 'Sign in'}
           </button>
 
           <AnimatePresence>

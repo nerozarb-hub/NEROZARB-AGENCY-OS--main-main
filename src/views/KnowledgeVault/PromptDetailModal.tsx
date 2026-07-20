@@ -57,7 +57,7 @@ export function PromptDetailModal({ isOpen, onClose, protocol, onEdit }: PromptD
                 const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
                 return content.replace(
                     new RegExp(`\\[\\[${escapedKey}\\]\\]`, 'g'),
-                    `<span class="bg-primary/5 text-primary border-b border-primary/20 px-1 font-black underline decoration-primary/40 underline-offset-4">${val.toUpperCase()}</span>`
+                    `<span class="bg-primary/5 text-primary border-b border-primary/20 px-1 font-black underline decoration-primary/40 underline-offset-4">${String(val).toUpperCase()}</span>`
 
                 );
             }
@@ -193,4 +193,3 @@ export function PromptDetailModal({ isOpen, onClose, protocol, onEdit }: PromptD
         </Modal>
     );
 }
-

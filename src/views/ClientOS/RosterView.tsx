@@ -5,13 +5,14 @@ import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
 import { SectionHeader } from '../../components/ui/SectionHeader';
 import { Tag } from '../../components/ui/Tag';
-import { Plus, Search, Filter, ArrowUpDown, Trash2, Archive, CheckCircle2, ChevronRight, Square, CheckSquare, Edit2 } from 'lucide-react';
+import { Plus, Search, Filter, ArrowUpDown, Trash2, Archive, CheckCircle2, ChevronRight, Square, CheckSquare, Edit2, UsersRound } from 'lucide-react';
 import { Modal } from '../../components/ui/Modal';
 import { useAppData } from '../../contexts/AppDataContext';
 import { Client } from '../../utils/storage';
 import { formatCurrency } from '../../utils/formatCurrency';
 import RevenueGateModal from './RevenueGateModal';
 import ClientEditModal from './ClientEditModal';
+import { EmptyState } from '../../components/ui/EmptyState';
 
 const LIFECYCLE_STATUSES = ['Lead', 'Discovery', 'Active Sprint', 'Retainer', 'Closed'] as const;
 
@@ -126,15 +127,15 @@ export default function RosterView({ onSelectClient }: { onSelectClient: (id: st
             <span className="w-1.5 h-1.5 bg-primary rounded-none" />
             <span className="page-header-subtitle text-primary">02</span>
           </div>
-          <h1 className="page-header-title">CLIENT OS</h1>
-          <p className="page-header-subtitle mt-2">Relational Logic · Tier Management</p>
+          <h1 className="page-header-title">Clients</h1>
+          <p className="page-header-subtitle mt-1">Keep client details, status, and project context in one place.</p>
         </div>
         <Button 
           onClick={() => setIsInstallModalOpen(true)} 
           className="bg-primary hover:bg-accent-mid text-text-primary"
         >
           <Plus size={16} />
-          <span>+ NEW CLIENT</span>
+          <span>Add client</span>
         </Button>
       </header>
 
@@ -258,13 +259,13 @@ export default function RosterView({ onSelectClient }: { onSelectClient: (id: st
 
       <Card className="flex-1 flex flex-col overflow-hidden border-border-dark bg-card">
         {processedClients.length === 0 ? (
-          <div className="flex-1 flex flex-col items-center justify-center p-12 text-center">
-            <span className="font-mono text-[10px] tracking-[0.2em] text-text-muted uppercase mb-4">[ NO CLIENTS INSTALLED ]</span>
-            <p className="font-sans text-sm text-text-secondary mb-6 max-w-sm">Run the Revenue Gate to install your first client.</p>
-            <Button onClick={() => setIsInstallModalOpen(true)} className="bg-primary hover:bg-accent-mid text-text-primary">
-              + INSTALL FIRST CLIENT
-            </Button>
-          </div>
+          <EmptyState
+            icon={<UsersRound size={22} />}
+            title={searchQuery || activeFilter !== 'All' ? 'No clients match these filters' : 'No clients yet'}
+            description={searchQuery || activeFilter !== 'All' ? 'Clear a filter or search for another client.' : 'Add your first client to start setup, plan work, and track delivery.'}
+            actionLabel={searchQuery || activeFilter !== 'All' ? 'Clear filters' : 'Add client'}
+            onAction={() => searchQuery || activeFilter !== 'All' ? (setSearchQuery(''), setActiveFilter('All'), setTierFilter('All')) : setIsInstallModalOpen(true)}
+          />
         ) : (
           <div className="flex-1 overflow-auto custom-scrollbar scroll-touch">
             <table className="hidden md:table w-full min-w-[1000px] text-left whitespace-nowrap">

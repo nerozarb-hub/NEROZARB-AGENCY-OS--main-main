@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'motion/react';
 import { Button } from '../../components/ui/Button';
-import { KanbanSquare, List, CalendarDays, Plus, Zap, User } from 'lucide-react';
+import { KanbanSquare, List, CalendarDays, Plus, Sparkles, Zap, User } from 'lucide-react';
 import KanbanView from './KanbanView';
 import ListView from './ListView';
 import TimelineView from './TimelineView';
@@ -72,16 +72,19 @@ export default function FulfillmentOS({ onNavigate }: { onNavigate?: (view: stri
       {/* Header */}
       <motion.header variants={itemVariants} className="page-header">
         <div>
-          <h1 className="page-header-title">FULFILLMENT ENGINE</h1>
-          <p className="page-header-subtitle mt-2">Operational Flux · Velocity Control</p>
+          <h1 className="page-header-title">Tasks</h1>
+          <p className="page-header-subtitle mt-1">Assign work, follow progress, and keep delivery moving.</p>
         </div>
-        <Button
-          onClick={() => setIsNewTaskModalOpen(true)}
-          className="bg-primary hover:bg-accent-mid text-text-primary px-8"
-        >
-          <Plus size={16} />
-          <span>+ NEW TASK</span>
-        </Button>
+        <div className="flex flex-wrap gap-3">
+          <Button variant="outline" onClick={() => onNavigate?.('studio')}>
+            <Sparkles size={16} />
+            <span>Prompt Studio</span>
+          </Button>
+          <Button onClick={() => setIsNewTaskModalOpen(true)} className="bg-primary hover:bg-accent-mid text-text-primary px-8">
+            <Plus size={16} />
+            <span>New task</span>
+          </Button>
+        </div>
       </motion.header>
 
       {/* Controls Row */}
@@ -92,7 +95,7 @@ export default function FulfillmentOS({ onNavigate }: { onNavigate?: (view: stri
             onChange={(e) => setClientFilter(e.target.value === 'all' ? 'all' : Number(e.target.value))}
             className="bg-transparent text-[11px] font-bold text-text-muted/60 tracking-[0.2em] outline-none cursor-pointer py-2 px-3 hover:text-text-primary transition-colors uppercase appearance-none"
           >
-            <option value="all">ENTITY: GLOBAL</option>
+            <option value="all">All clients</option>
             {data.clients.map(c => (
               <option key={c.id} value={c.id}>{c.name.toUpperCase()}</option>
             ))}
@@ -103,7 +106,7 @@ export default function FulfillmentOS({ onNavigate }: { onNavigate?: (view: stri
             onChange={(e) => setNodeFilter(e.target.value as any)}
             className="bg-transparent text-[11px] font-bold text-text-muted/60 tracking-[0.2em] outline-none cursor-pointer py-2 px-3 hover:text-text-primary transition-colors uppercase appearance-none"
           >
-            <option value="all">NODE: ALL</option>
+            <option value="all">All owners</option>
             <option value="CEO">CEO</option>
             <option value="Art Director">ART DIRECTOR</option>
             <option value="Video Editor">VIDEO EDITOR</option>
@@ -117,7 +120,7 @@ export default function FulfillmentOS({ onNavigate }: { onNavigate?: (view: stri
             onChange={(e) => setStageFilter(e.target.value as any)}
             className="bg-transparent text-[11px] font-bold text-text-muted/60 tracking-[0.2em] outline-none cursor-pointer py-2 px-3 hover:text-text-primary transition-colors uppercase appearance-none"
           >
-            <option value="all">STAGE: ALL</option>
+            <option value="all">All stages</option>
             <option value="BRIEFED">BRIEFED</option>
             <option value="IN PRODUCTION">IN PRODUCTION</option>
             <option value="REVIEW">REVIEW</option>
@@ -165,7 +168,7 @@ export default function FulfillmentOS({ onNavigate }: { onNavigate?: (view: stri
           className="px-6"
         >
           <Zap size={14} className="mr-2 opacity-50" />
-          <span>SPRINT GEN</span>
+          <span>Start sprint</span>
         </Button>
       </motion.div>
 

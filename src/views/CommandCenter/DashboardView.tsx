@@ -2,9 +2,10 @@ import { useMemo, memo, useCallback } from 'react';
 import { motion } from 'motion/react';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
-import { Activity, AlertTriangle, DollarSign, Target, ChevronRight } from 'lucide-react';
+import { Activity, AlertTriangle, DollarSign, Target, ChevronRight, Users } from 'lucide-react';
 import { useAppData } from '../../contexts/AppDataContext';
 import { formatCurrency } from '../../utils/formatCurrency';
+import { EmptyState } from '../../components/ui/EmptyState';
 
 export default function DashboardView({ onNavigate }: { onNavigate?: (view: string, id?: string) => void }) {
   const { data } = useAppData();
@@ -89,6 +90,26 @@ export default function DashboardView({ onNavigate }: { onNavigate?: (view: stri
 
   const handleNavigateClient = useCallback(() => onNavigate?.('client'), [onNavigate]);
 
+  if (data.clients.length === 0 && data.tasks.length === 0 && data.posts.length === 0) {
+    return (
+      <div className="page-container">
+        <header className="page-header">
+          <div>
+            <h1 className="page-header-title">Welcome to your workspace</h1>
+            <p className="page-header-subtitle mt-1">Start with one client. The workspace will organize the work around them.</p>
+          </div>
+        </header>
+        <EmptyState
+          icon={<Users size={22} />}
+          title="Add your first client"
+          description="Create a client record, then use the setup checklist to launch their work, plan content, and manage tasks."
+          actionLabel="Add a client"
+          onAction={handleNavigateClient}
+        />
+      </div>
+    );
+  }
+
   return (
     <motion.div
       initial="hidden"
@@ -99,11 +120,11 @@ export default function DashboardView({ onNavigate }: { onNavigate?: (view: stri
       {/* Header */}
       <motion.header variants={item} className="page-header">
         <div>
-          <h1 className="page-header-title">COMMAND CENTER</h1>
-          <p className="page-header-subtitle mt-2">Executive Overview · Neural Synapse</p>
+          <h1 className="page-header-title">Overview</h1>
+          <p className="page-header-subtitle mt-1">A quick view of clients, work, and priorities.</p>
         </div>
         <div className="text-right hidden sm:block">
-          <p className="page-header-subtitle text-text-muted/40 mb-1">Deployment Date</p>
+          <p className="page-header-subtitle text-text-muted/40 mb-1">Today</p>
           <p className="font-sans text-xs text-text-secondary font-medium italic">
             {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
           </p>
@@ -226,15 +247,15 @@ export default function DashboardView({ onNavigate }: { onNavigate?: (view: stri
           </div>
           <Card className="p-8 flex gap-8 border-border-dark">
             <div className="flex-1">
-              <p className="font-sans text-[10px] text-[#555] font-bold uppercase tracking-widest mb-3">Content Forge</p>
+              <p className="font-sans text-[10px] text-[#555] font-bold uppercase tracking-widest mb-3">Content in progress</p>
               <p className="editorial-title text-5xl text-text-primary italic">{data.posts.filter(p => p.status !== 'Published').length}</p>
-              <p className="text-[10px] font-semibold text-text-muted uppercase tracking-widest mt-4">Active Deployments</p>
+              <p className="text-[10px] font-semibold text-text-muted uppercase tracking-widest mt-4">Posts not yet published</p>
             </div>
             <div className="w-px bg-border-dark" />
             <div className="flex-1">
-              <p className="font-sans text-[10px] text-[#555] font-bold uppercase tracking-widest mb-3">Task Queue</p>
+              <p className="font-sans text-[10px] text-[#555] font-bold uppercase tracking-widest mb-3">Open tasks</p>
               <p className="editorial-title text-5xl text-text-primary italic">{data.tasks.filter(t => t.status !== 'Deployed').length}</p>
-              <p className="text-[10px] font-semibold text-text-muted uppercase tracking-widest mt-4">Pending Execution</p>
+              <p className="text-[10px] font-semibold text-text-muted uppercase tracking-widest mt-4">Not yet completed</p>
             </div>
           </Card>
         </div>

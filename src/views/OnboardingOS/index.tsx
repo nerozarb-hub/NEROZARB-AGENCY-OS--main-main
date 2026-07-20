@@ -67,8 +67,8 @@ export default function OnboardingOS({ onNavigate }: { onNavigate?: (view: strin
             {/* Header */}
             <header className="page-header">
                 <div>
-                    <h1 className="page-header-title">ONBOARDING OS</h1>
-                    <p className="page-header-subtitle mt-2">VELOCITY: {stats.avgVelocity} DAYS · SYSTEM PROTOCOLS</p>
+                    <h1 className="page-header-title">Client setup</h1>
+                    <p className="page-header-subtitle mt-1">Guide each new client from signed agreement to active work.</p>
                 </div>
             </header>
 

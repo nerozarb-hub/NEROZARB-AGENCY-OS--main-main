@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Button } from '../../components/ui/Button';
-import { Calendar as CalendarIcon, KanbanSquare, CalendarDays, List, Plus, ClipboardList, X } from 'lucide-react';
+import { Calendar as CalendarIcon, KanbanSquare, CalendarDays, List, Plus, ClipboardList, Sparkles, X } from 'lucide-react';
 import { useAppData } from '../../contexts/AppDataContext';
 import { Post } from '../../utils/storage';
 import MonthlyView from './MonthlyView';
@@ -81,16 +81,19 @@ export default function ContentOS({ onNavigate }: { onNavigate?: (view: string, 
       {/* Header */}
       <motion.header variants={itemVariants} className="page-header">
         <div>
-          <h1 className="page-header-title">CONTENT OS</h1>
-          <p className="page-header-subtitle mt-2">Asset Forge · Narrative Flux</p>
+          <h1 className="page-header-title">Content</h1>
+          <p className="page-header-subtitle mt-1">Plan, prepare, approve, and publish client content.</p>
         </div>
-        <Button
-          onClick={() => handleOpenNewPost()}
-          className="bg-primary hover:bg-accent-mid text-text-primary px-8"
-        >
-          <Plus size={16} />
-          <span>+ NEW POST</span>
-        </Button>
+        <div className="flex flex-wrap gap-3">
+          <Button variant="outline" onClick={() => onNavigate?.('studio')}>
+            <Sparkles size={16} />
+            <span>Prompt Studio</span>
+          </Button>
+          <Button onClick={() => handleOpenNewPost()} className="bg-primary hover:bg-accent-mid text-text-primary px-8">
+            <Plus size={16} />
+            <span>New post</span>
+          </Button>
+        </div>
       </motion.header>
 
       {/* Controls Row */}
@@ -102,7 +105,7 @@ export default function ContentOS({ onNavigate }: { onNavigate?: (view: string, 
             onChange={(e) => setClientFilter(e.target.value === 'all' ? 'all' : Number(e.target.value))}
             className="bg-transparent text-[11px] font-bold text-text-muted/60 tracking-[0.2em] outline-none cursor-pointer py-2 px-3 hover:text-text-primary transition-colors uppercase appearance-none"
           >
-            <option value="all">ENTITY: GLOBAL VIEW</option>
+            <option value="all">All clients</option>
             {activeClients.map(c => (
               <option key={c.id} value={c.id}>{c.name.toUpperCase()}</option>
             ))}
@@ -143,7 +146,7 @@ export default function ContentOS({ onNavigate }: { onNavigate?: (view: string, 
 
         <Button variant="ghost" onClick={handleOpenPlanner} className="px-6">
           <ClipboardList size={14} className="mr-2 opacity-50" />
-          <span>PLAN MONTH</span>
+          <span>Plan month</span>
         </Button>
       </motion.div>
 

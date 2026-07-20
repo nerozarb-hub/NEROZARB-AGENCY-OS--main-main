@@ -2,7 +2,8 @@ import { useState, useMemo, DragEvent } from 'react';
 import { motion } from 'motion/react';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
-import { Calendar, MessageSquare, Paperclip, GripVertical } from 'lucide-react';
+import { Calendar, MessageSquare, Paperclip, GripVertical, ListTodo } from 'lucide-react';
+import { EmptyState } from '../../components/ui/EmptyState';
 import { useAppData } from '../../contexts/AppDataContext';
 import { Stage } from '../../utils/storage';
 
@@ -73,15 +74,11 @@ export default function KanbanView({ tasks, onTaskClick }: { tasks: any[], onTas
 
   if (tasks.length === 0) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center min-h-[400px] border border-white/[0.04] bg-white/[0.01]">
-        <div className="w-16 h-16 border border-white/[0.06] flex items-center justify-center mb-6 bg-white/[0.02]">
-          <Calendar className="text-text-muted/20" size={24} />
-        </div>
-        <h3 className="font-heading text-4xl text-text-primary uppercase tracking-tighter mb-4">Void Pipeline</h3>
-        <p className="font-sans text-[11px] font-bold text-text-muted/40 uppercase tracking-[0.3em] max-w-sm text-center">
-          SPRINT CACHE EMPTY. INITIALIZE NEW OPERATIONS TO POPULATE THE LEDGER.
-        </p>
-      </div>
+      <EmptyState
+        icon={<ListTodo size={22} />}
+        title="No tasks to show"
+        description="Create a task for a client, or start a sprint to add the standard first-phase work."
+      />
     );
   }
 

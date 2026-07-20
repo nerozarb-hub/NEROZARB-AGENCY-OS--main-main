@@ -12,7 +12,7 @@ const DashboardView = lazy(() => import('./views/CommandCenter/DashboardView'));
 const ClientOS = lazy(() => import('./views/ClientOS'));
 const FulfillmentOS = lazy(() => import('./views/FulfillmentOS'));
 const ContentOS = lazy(() => import('./views/ContentOS'));
-const KnowledgeVault = lazy(() => import('./views/KnowledgeVault'));
+const PromptStudio = lazy(() => import('./views/PromptStudio'));
 const OnboardingOS = lazy(() => import('./views/OnboardingOS'));
 const ClientPortalView = lazy(() => import('./views/PortalOS/ClientPortalView'));
 
@@ -197,7 +197,7 @@ export default function App() {
               setActiveView(view);
               if (id) setSelectedGlobalClient(id);
             }} />}
-            {activeView === 'vault' && <KnowledgeVault selectedClient={selectedGlobalClient} />}
+            {activeView === 'studio' && <PromptStudio onNavigate={setActiveView} />}
             {activeView === 'onboarding' && <OnboardingOS onNavigate={(view, id) => {
               setActiveView(view);
               if (id) setSelectedGlobalClient(id);
@@ -213,4 +213,3 @@ export default function App() {
     </AppDataProvider>
   );
 }
-
