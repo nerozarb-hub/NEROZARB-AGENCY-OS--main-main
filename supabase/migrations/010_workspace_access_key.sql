@@ -6,9 +6,5 @@ $$;
 revoke all on function public.get_workspace_access_key() from public, anon, authenticated;
 grant execute on function public.get_workspace_access_key() to service_role;
 
-select vault.create_secret(
-  'AC-82-AF-53-16-45-81-8E-D3-8C',
-  'workspace_access_key',
-  'NEROZARB shared workspace access key'
-)
-where not exists (select 1 from vault.secrets where name = 'workspace_access_key');
+-- The actual key is configured directly in Supabase Vault as `workspace_access_key`.
+-- Never commit an access key to source control or browser environment variables.
