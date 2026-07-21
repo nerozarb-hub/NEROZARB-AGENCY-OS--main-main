@@ -1,5 +1,5 @@
 import { supabase } from './supabase';
-import { AppData, Client, Task, Post, Protocol, OnboardingProtocol, ActivityEntry, TimelineEvent, OnboardingStep } from './storage';
+import { AppData, Client, Task, Post, Protocol, OnboardingProtocol, ActivityEntry, TimelineEvent, OnboardingStep, PromptTemplate, InstructionBlock, ContextPack, PromptRecipe, StructuredBrief, CompiledPrompt, GenerationRun, ModelProfile, QualityRubric } from './storage';
 
 // Helper to check if Supabase is actually configured
 const isSupabaseConfigured = () => {
@@ -187,6 +187,18 @@ const mapSettings = (row: any): AppData['settings'] => ({
     lastUpdated: row.lastUpdated ?? row.last_updated ?? null,
 });
 
+// Prompt OS records use UUID identifiers and preserve compiler snapshots exactly as stored.
+const promptDates = (row: any) => ({ createdAt: row.created_at ?? new Date().toISOString(), updatedAt: row.updated_at ?? row.created_at ?? new Date().toISOString() });
+const mapTemplate = (row: any): PromptTemplate => ({ id: row.id, title: row.title ?? '', description: row.description ?? '', category: row.category ?? 'Content', content: row.content ?? '', status: row.status ?? 'draft', version: row.version ?? 1, tags: row.tags ?? [], ...promptDates(row) });
+const mapBlock = (row: any): InstructionBlock => ({ id: row.id, title: row.title ?? '', description: row.description ?? '', instruction: row.instruction ?? '', category: row.category ?? 'General', scope: row.scope ?? 'global', priority: row.priority ?? 100, status: row.status ?? 'draft', version: row.version ?? 1, tags: row.tags ?? [], compatibleTasks: row.compatible_tasks ?? [], compatibleIndustries: row.compatible_industries ?? [], compatibleModels: row.compatible_models ?? [], source: row.source ?? '', conditions: row.conditions ?? [], clientId: row.client_id ?? undefined, lastValidatedAt: row.last_validated_at ?? undefined, ...promptDates(row) });
+const mapPack = (row: any): ContextPack => ({ id: row.id, name: row.name ?? '', description: row.description ?? '', packType: row.pack_type ?? 'brand', status: row.status ?? 'draft', version: row.version ?? 1, priority: row.priority ?? 100, clientId: row.client_id ?? undefined, productName: row.product_name ?? undefined, required: row.required ?? false, blockIds: [], assetUrls: row.asset_urls ?? [], references: row.reference_urls ?? [], tags: row.tags ?? [], lastValidatedAt: row.last_validated_at ?? undefined, ...promptDates(row) });
+const mapRecipe = (row: any): PromptRecipe => ({ id: row.id, name: row.name ?? '', description: row.description ?? '', taskType: row.task_type ?? '', outputType: row.output_type ?? '', status: row.status ?? 'draft', version: row.version ?? 1, requiredInputs: row.required_inputs ?? [], optionalInputs: row.optional_inputs ?? [], variables: row.variables ?? [], requiredPackTypes: row.required_pack_types ?? [], defaultBlockIds: row.default_block_ids ?? [], conditionalBlockIds: row.conditional_block_ids ?? [], outputSchema: row.output_schema ?? '', evaluationRubricId: row.evaluation_rubric_id ?? undefined, compatibleModels: row.compatible_models ?? [], defaultModel: row.default_model ?? '', ...promptDates(row) });
+const mapRubric = (row: any): QualityRubric => ({ id: row.id, name: row.name ?? '', criteria: row.criteria ?? [], passThreshold: Number(row.pass_threshold ?? 80), status: row.status ?? 'draft', version: row.version ?? 1, ...promptDates(row) });
+const mapModel = (row: any): ModelProfile => ({ id: row.id, provider: row.provider ?? '', name: row.name ?? '', family: row.family ?? 'text', contextLimit: row.context_limit ?? 32000, supportsJson: row.supports_json ?? false, supportedAssetTypes: row.supported_asset_types ?? [], active: row.active ?? true, version: row.version ?? 1, ...promptDates(row) });
+const mapBrief = (row: any): StructuredBrief => ({ id: row.id, clientId: row.client_id, product: row.product ?? '', campaign: row.campaign ?? '', deliverableType: row.deliverable_type ?? '', platform: row.platform ?? '', objective: row.objective ?? '', audience: row.audience ?? '', contentPillar: row.content_pillar ?? '', offer: row.offer ?? '', cta: row.cta ?? '', brief: row.brief ?? '', recipeId: row.recipe_id ?? undefined, contextPackIds: [], assetUrls: row.asset_urls ?? [], status: row.status ?? 'draft', ...promptDates(row) });
+const mapCompiled = (row: any): CompiledPrompt => ({ id: row.id, briefId: row.brief_id, prompt: row.prompt ?? '', appliedBlockIds: [], appliedPackIds: [], sourceSnapshots: [], resolvedVariables: row.resolved_variables ?? {}, audit: row.audit ?? undefined, modelProfileId: row.model_profile_id ?? undefined, missingInputs: row.audit?.missingInputs ?? [], conflicts: row.audit?.conflicts ?? [], createdAt: row.created_at ?? new Date().toISOString() });
+const mapRun = (row: any): GenerationRun => ({ id: row.id, briefId: row.brief_id, compiledPromptId: row.compiled_prompt_id, provider: row.provider ?? undefined, model: row.model ?? undefined, status: row.status ?? 'ready-for-generation', qualityScore: row.quality_score === null ? null : Number(row.quality_score), reviewerFeedback: row.reviewer_feedback ?? '', createdAt: row.created_at ?? new Date().toISOString() });
+
 // ─────────────────────────────────────────────────────────────────────────────
 // FETCH
 // ─────────────────────────────────────────────────────────────────────────────
@@ -195,13 +207,22 @@ export const fetchAppDataFromSupabase = async (): Promise<Partial<AppData> | nul
     if (!isSupabaseConfigured()) return null;
 
     try {
-        const [clientsRes, tasksRes, postsRes, protocolsRes, onboardingsRes, settingsRes] = await Promise.all([
+        const [clientsRes, tasksRes, postsRes, protocolsRes, onboardingsRes, settingsRes, templatesRes, blocksRes, packsRes, recipesRes, rubricsRes, modelsRes, briefsRes, compiledRes, runsRes] = await Promise.all([
             supabase.from('clients').select('*'),
             supabase.from('tasks').select('*'),
             supabase.from('posts').select('*'),
             supabase.from('protocols').select('*'),
             supabase.from('onboarding_protocols').select('*'),
-            supabase.from('settings').select('*').eq('id', 'global').single()
+            supabase.from('settings').select('*').eq('id', 'global').maybeSingle(),
+            supabase.from('prompt_templates').select('*'),
+            supabase.from('instruction_blocks').select('*'),
+            supabase.from('context_packs').select('*'),
+            supabase.from('prompt_recipes').select('*'),
+            supabase.from('quality_rubrics').select('*'),
+            supabase.from('model_profiles').select('*'),
+            supabase.from('prompt_briefs').select('*'),
+            supabase.from('compiled_prompts').select('*'),
+            supabase.from('prompt_generation_runs').select('*')
         ]);
 
         if (clientsRes.error) throw clientsRes.error;
@@ -209,6 +230,7 @@ export const fetchAppDataFromSupabase = async (): Promise<Partial<AppData> | nul
         if (postsRes.error) throw postsRes.error;
         if (protocolsRes.error) throw protocolsRes.error;
         if (onboardingsRes.error) throw onboardingsRes.error;
+        if (templatesRes.error || blocksRes.error || packsRes.error || recipesRes.error || rubricsRes.error || modelsRes.error || briefsRes.error || compiledRes.error || runsRes.error) throw templatesRes.error || blocksRes.error || packsRes.error || recipesRes.error || rubricsRes.error || modelsRes.error || briefsRes.error || compiledRes.error || runsRes.error;
 
         const result: Partial<AppData> = {
             clients: (clientsRes.data ?? []).map(mapClient),
@@ -216,6 +238,15 @@ export const fetchAppDataFromSupabase = async (): Promise<Partial<AppData> | nul
             posts: (postsRes.data ?? []).map(mapPost),
             protocols: (protocolsRes.data ?? []).map(mapProtocol),
             onboardings: (onboardingsRes.data ?? []).map(mapOnboarding),
+            promptTemplates: (templatesRes.data ?? []).map(mapTemplate),
+            instructionBlocks: (blocksRes.data ?? []).map(mapBlock),
+            contextPacks: (packsRes.data ?? []).map(mapPack),
+            promptRecipes: (recipesRes.data ?? []).map(mapRecipe),
+            qualityRubrics: (rubricsRes.data ?? []).map(mapRubric),
+            modelProfiles: (modelsRes.data ?? []).map(mapModel),
+            briefs: (briefsRes.data ?? []).map(mapBrief),
+            compiledPrompts: (compiledRes.data ?? []).map(mapCompiled),
+            generationRuns: (runsRes.data ?? []).map(mapRun),
         };
 
         if (settingsRes.data) {
@@ -377,4 +408,34 @@ export const syncSettingsToSupabase = async (settings: AppData['settings']) => {
     } catch (e) {
         console.error('Failed to sync settings to Supabase', e);
     }
+};
+
+const isUuid = (value: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
+
+export const syncPromptOsToSupabase = async (data: AppData) => {
+    if (!isSupabaseConfigured()) return;
+    const templates = data.promptTemplates.filter(item => isUuid(item.id)).map(item => ({ id: item.id, title: item.title, description: item.description, category: item.category, content: item.content, status: item.status, version: item.version, tags: item.tags, created_at: item.createdAt, updated_at: item.updatedAt }));
+    const blocks = data.instructionBlocks.filter(item => isUuid(item.id)).map(item => ({ id: item.id, client_id: item.clientId ?? null, title: item.title, description: item.description ?? '', instruction: item.instruction, category: item.category ?? 'General', scope: item.scope, priority: item.priority ?? 100, status: item.status, version: item.version, tags: item.tags, compatible_tasks: item.compatibleTasks ?? [], compatible_industries: item.compatibleIndustries ?? [], compatible_models: item.compatibleModels ?? [], source: item.source ?? null, conditions: item.conditions ?? [], last_validated_at: item.lastValidatedAt ?? null, created_at: item.createdAt, updated_at: item.updatedAt }));
+    const packs = data.contextPacks.filter(item => isUuid(item.id)).map(item => ({ id: item.id, client_id: item.clientId ?? null, name: item.name, description: item.description, pack_type: item.packType, product_name: item.productName ?? null, priority: item.priority ?? 100, required: item.required ?? false, status: item.status, version: item.version, asset_urls: item.assetUrls ?? [], reference_urls: item.references ?? [], tags: item.tags ?? [], last_validated_at: item.lastValidatedAt ?? null, created_at: item.createdAt, updated_at: item.updatedAt }));
+    const recipes = data.promptRecipes.filter(item => isUuid(item.id)).map(item => ({ id: item.id, name: item.name, description: item.description, task_type: item.taskType, output_type: item.outputType, status: item.status, version: item.version, required_inputs: item.requiredInputs, optional_inputs: item.optionalInputs ?? [], variables: item.variables ?? [], required_pack_types: item.requiredPackTypes ?? [], default_block_ids: item.defaultBlockIds ?? [], conditional_block_ids: item.conditionalBlockIds ?? [], output_schema: item.outputSchema ?? null, evaluation_rubric_id: item.evaluationRubricId ?? null, compatible_models: item.compatibleModels ?? [], default_model: item.defaultModel, created_at: item.createdAt, updated_at: item.updatedAt }));
+    const rubrics = data.qualityRubrics.filter(item => isUuid(item.id)).map(item => ({ id: item.id, name: item.name, criteria: item.criteria, pass_threshold: item.passThreshold, status: item.status, version: item.version, created_at: item.createdAt, updated_at: item.updatedAt }));
+    const models = data.modelProfiles.filter(item => isUuid(item.id)).map(item => ({ id: item.id, provider: item.provider, name: item.name, family: item.family, context_limit: item.contextLimit, supports_json: item.supportsJson, supported_asset_types: item.supportedAssetTypes, active: item.active, version: item.version, created_at: item.createdAt, updated_at: item.updatedAt }));
+    const briefs = data.briefs.filter(item => isUuid(item.id)).map(item => ({ id: item.id, client_id: item.clientId, recipe_id: item.recipeId && isUuid(item.recipeId) ? item.recipeId : null, product: item.product ?? null, campaign: item.campaign ?? null, deliverable_type: item.deliverableType, platform: item.platform, objective: item.objective, audience: item.audience ?? null, content_pillar: item.contentPillar ?? null, offer: item.offer ?? null, cta: item.cta ?? null, brief: item.brief, structured_data: { mandatoryInclusions: item.mandatoryInclusions ?? '', prohibitedInclusions: item.prohibitedInclusions ?? '', contextPackIds: item.contextPackIds }, asset_urls: item.assetUrls ?? [], status: item.status, created_at: item.createdAt, updated_at: item.updatedAt }));
+    const compiled = data.compiledPrompts.filter(item => isUuid(item.id) && isUuid(item.briefId)).map(item => ({ id: item.id, brief_id: item.briefId, prompt: item.prompt, resolved_variables: item.resolvedVariables ?? {}, audit: item.audit ?? {}, model_profile_id: item.modelProfileId && isUuid(item.modelProfileId) ? item.modelProfileId : null, created_at: item.createdAt }));
+    const runs = data.generationRuns.filter(item => isUuid(item.id) && isUuid(item.briefId) && isUuid(item.compiledPromptId)).map(item => ({ id: item.id, brief_id: item.briefId, compiled_prompt_id: item.compiledPromptId, provider: item.provider ?? null, model: item.model ?? null, status: item.status, quality_score: item.qualityScore, reviewer_feedback: item.reviewerFeedback, created_at: item.createdAt }));
+    try {
+        await Promise.all([
+            templates.length && supabase.from('prompt_templates').upsert(templates), blocks.length && supabase.from('instruction_blocks').upsert(blocks), packs.length && supabase.from('context_packs').upsert(packs), recipes.length && supabase.from('prompt_recipes').upsert(recipes), rubrics.length && supabase.from('quality_rubrics').upsert(rubrics), models.length && supabase.from('model_profiles').upsert(models), briefs.length && supabase.from('prompt_briefs').upsert(briefs), compiled.length && supabase.from('compiled_prompts').upsert(compiled), runs.length && supabase.from('prompt_generation_runs').upsert(runs),
+        ]);
+        const sources = data.compiledPrompts.flatMap(prompt => (prompt.sourceSnapshots ?? []).filter(source => isUuid(prompt.id) && isUuid(source.id)).map(source => ({ compiled_prompt_id: prompt.id, source_type: source.type, source_id: source.id, source_title: source.title, source_version: source.version, source_snapshot: source.snapshot })));
+        if (sources.length) await supabase.from('compiled_prompt_sources').upsert(sources);
+    } catch (error) { console.error('Failed to sync Prompt OS data.', error); }
+};
+
+export const subscribeToRealtimeSync = (onChange: () => void) => {
+    if (!isSupabaseConfigured()) return () => undefined;
+    const tables = ['clients', 'tasks', 'posts', 'protocols', 'onboarding_protocols', 'prompt_templates', 'instruction_blocks', 'context_packs', 'prompt_recipes', 'quality_rubrics', 'model_profiles', 'prompt_briefs', 'compiled_prompts', 'prompt_generation_runs'];
+    const channel = tables.reduce((current, table) => current.on('postgres_changes', { event: '*', schema: 'public', table }, onChange), supabase.channel('nerozarb-agency-sync'));
+    channel.subscribe();
+    return () => { supabase.removeChannel(channel); };
 };

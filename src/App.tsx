@@ -3,7 +3,7 @@ import LoginView from './views/Auth/LoginView';
 import AppShell from './components/layout/AppShell';
 import { loadData, saveData, AppData } from './utils/storage';
 import { AppDataProvider } from './contexts/AppDataContext';
-import { fetchAppDataFromSupabase, syncSettingsToSupabase } from './utils/supabaseSync';
+import { fetchAppDataFromSupabase, subscribeToRealtimeSync, syncSettingsToSupabase } from './utils/supabaseSync';
 import { GlobalErrorBoundary } from './components/layout/GlobalErrorBoundary';
 import { supabase } from './lib/supabase';
 
@@ -66,10 +66,12 @@ export default function App() {
     hydrate();
 
     // 3. Listen for Auth Changes (Login / Logout across tabs)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (session) {
         // Keep current auth level if set during login process
         setAuthLevel(prev => prev || 'ceo');
+        const cloudData = await fetchAppDataFromSupabase();
+        if (cloudData) setData(prev => ({ ...prev, ...cloudData }));
       } else {
         setAuthLevel(null);
         sessionStorage.removeItem('authLevel');
@@ -77,6 +79,17 @@ export default function App() {
     });
 
     return () => subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    let refreshTimer: ReturnType<typeof setTimeout> | undefined;
+    return subscribeToRealtimeSync(() => {
+      if (refreshTimer) clearTimeout(refreshTimer);
+      refreshTimer = setTimeout(async () => {
+        const cloudData = await fetchAppDataFromSupabase();
+        if (cloudData) setData(previous => ({ ...previous, ...cloudData }));
+      }, 350);
+    });
   }, []);
 
   // Debounced save — prevents serializing entire state on every keystroke/click
@@ -123,9 +136,11 @@ export default function App() {
     localStorage.removeItem('nerozarb-os-v2');
   };
 
-  const handleLogin = (level: 'ceo' | 'team') => {
+  const handleLogin = async (level: 'ceo' | 'team') => {
     setAuthLevel(level);
     sessionStorage.setItem('authLevel', level);
+    const cloudData = await fetchAppDataFromSupabase();
+    if (cloudData) setData(prev => ({ ...prev, ...cloudData }));
     // Team lands on Fulfillment OS, CEO on Command Center
     setActiveView(level === 'ceo' ? 'command' : 'fulfillment');
   };

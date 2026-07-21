@@ -15,7 +15,7 @@ create table if not exists instruction_block_versions (id uuid primary key defau
 create table if not exists context_packs (
   id uuid primary key default gen_random_uuid(), client_id integer references clients(id) on delete cascade, name text not null, description text default '', pack_type text not null,
   product_name text, priority integer not null default 100, required boolean not null default false, status text not null default 'draft', version integer not null default 1,
-  asset_urls text[] not null default '{}', references text[] not null default '{}', tags text[] not null default '{}', last_validated_at timestamptz, created_at timestamptz not null default now(), updated_at timestamptz not null default now()
+  asset_urls text[] not null default '{}', reference_urls text[] not null default '{}', tags text[] not null default '{}', last_validated_at timestamptz, created_at timestamptz not null default now(), updated_at timestamptz not null default now()
 );
 create table if not exists context_pack_versions (id uuid primary key default gen_random_uuid(), context_pack_id uuid not null references context_packs(id) on delete cascade, version integer not null, snapshot jsonb not null, change_reason text, created_at timestamptz not null default now(), unique(context_pack_id, version));
 create table if not exists context_pack_blocks (context_pack_id uuid references context_packs(id) on delete cascade, instruction_block_id uuid references instruction_blocks(id) on delete restrict, position integer not null default 0, primary key (context_pack_id, instruction_block_id));

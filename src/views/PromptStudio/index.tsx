@@ -7,9 +7,10 @@ import { Input, Textarea } from '../../components/ui/Input';
 import { useAppData } from '../../contexts/AppDataContext';
 import { CompiledPrompt, ContextPack, GenerationRun, InstructionBlock, LibraryStatus, ModelProfile, PromptRecipe, PromptTemplate, QualityRubric, StructuredBrief } from '../../utils/storage';
 import { compilePrompt, recommendRecipe } from '../../features/prompt-os/compiler';
+import { supabase } from '../../lib/supabase';
 
 type Tab = 'compose' | 'library' | 'quality' | 'history';
-const newId = (prefix: string) => `${prefix}-${crypto.randomUUID()}`;
+const newId = (_prefix: string) => crypto.randomUUID();
 const variables = ['client.name', 'client.industry', 'deliverable', 'platform', 'objective', 'product', 'brief'];
 
 const applyVariables = (content: string, values: Record<string, string>) => content.replace(/\{\{([^}]+)\}\}/g, (match, key) => values[key.trim()] ?? match);
@@ -52,6 +53,8 @@ export default function PromptStudio({ onNavigate }: { onNavigate?: (view: strin
   const [modelFamily, setModelFamily] = useState<ModelProfile['family']>('text');
   const [reviewScore, setReviewScore] = useState('');
   const [reviewFeedback, setReviewFeedback] = useState('');
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generationOutput, setGenerationOutput] = useState('');
 
   const client = useMemo(() => data.clients.find(item => item.id === Number(clientId)), [clientId, data.clients]);
   const recommendation = useMemo(() => recommendRecipe(data.promptRecipes, { deliverableType, platform, objective }), [data.promptRecipes, deliverableType, platform, objective]);
@@ -124,6 +127,18 @@ export default function PromptStudio({ onNavigate }: { onNavigate?: (view: strin
     showToast('Compiled prompt copied.');
   };
 
+  const generateWithGemini = async () => {
+    if (!compiled) return;
+    setIsGenerating(true); setGenerationOutput('');
+    const selectedModel = data.modelProfiles.find(model => model.id === modelProfileId);
+    const { data: result, error } = await supabase.functions.invoke('gemini-generate', { body: { prompt: compiled.prompt, model: selectedModel?.name || 'gemini-2.5-flash' } });
+    setIsGenerating(false);
+    if (error || result?.error) { showToast(result?.error || error?.message || 'Generation failed.', 'error'); return; }
+    setGenerationOutput(result?.text || 'No text returned by the provider.');
+    setData(previous => ({ ...previous, generationRuns: previous.generationRuns.map(run => run.compiledPromptId === compiled.id ? { ...run, provider: 'gemini', model: result.model || 'gemini-2.5-flash', status: 'in-review' } : run) }));
+    showToast('Gemini output is ready for review.');
+  };
+
   const resetTemplateEditor = () => { setEditingTemplateId(null); setTemplateTitle(''); setTemplateCategory('Content'); setTemplateDescription(''); setTemplateContent(''); setTemplateStatus('draft'); };
   const saveTemplate = () => {
     if (!templateTitle.trim() || !templateContent.trim()) { showToast('Add a name and the template prompt first.', 'error'); return; }
@@ -167,7 +182,7 @@ export default function PromptStudio({ onNavigate }: { onNavigate?: (view: strin
         <Textarea label="Prohibited inclusions" value={prohibitedInclusions} onChange={event => setProhibitedInclusions(event.target.value)} placeholder="Claims, styles, messages, or facts that must never appear." />
         <Button onClick={compileBrief} className="w-full"><Sparkles size={16} />Compile production brief</Button>
       </Card>
-      <Card className="p-5 sm:p-7">{!compiled ? <EmptyState icon={<Braces size={22} />} title="Nothing compiled yet" description="Compile a brief to review the final prompt, applied context, and missing information before any AI generation." /> : <div className="space-y-5"><div><h2 className="text-lg font-semibold">2. Review the final prompt</h2><p className="mt-1 text-sm text-text-muted">This immutable snapshot stays linked to the task and generation run.</p></div><div className="rounded-lg border border-border-dark bg-onyx p-4 text-sm leading-6 text-text-secondary whitespace-pre-wrap">{compiled.prompt}</div><div className="grid gap-3 sm:grid-cols-2"><StatusList title="Applied context" items={[`${selectedTemplate ? 1 : 0} template prompt`, `${compiled.appliedPackIds.length} approved context packs`, `${compiled.appliedBlockIds.length} approved instruction blocks`]} /><StatusList title={`Audit · ${compiled.audit?.readinessScore ?? 0}% ready`} items={[...(compiled.audit?.blockingErrors || []), ...(compiled.audit?.warnings || [])]} warning /></div><div className="flex flex-wrap gap-3"><Button onClick={createTaskFromBrief} disabled={Boolean(compiled.audit?.blockingErrors.length)}>Create linked task</Button><Button variant="outline" onClick={copyCompiledPrompt}><ClipboardCopy size={16} />Copy prompt</Button><Button variant="outline" onClick={() => { setTab('history'); setCompiled(null); }}>View saved run</Button></div></div>}</Card>
+      <Card className="p-5 sm:p-7">{!compiled ? <EmptyState icon={<Braces size={22} />} title="Nothing compiled yet" description="Compile a brief to review the final prompt, applied context, and missing information before any AI generation." /> : <div className="space-y-5"><div><h2 className="text-lg font-semibold">2. Review the final prompt</h2><p className="mt-1 text-sm text-text-muted">This immutable snapshot stays linked to the task and generation run.</p></div><div className="rounded-lg border border-border-dark bg-onyx p-4 text-sm leading-6 text-text-secondary whitespace-pre-wrap">{compiled.prompt}</div><div className="grid gap-3 sm:grid-cols-2"><StatusList title="Applied context" items={[`${selectedTemplate ? 1 : 0} template prompt`, `${compiled.appliedPackIds.length} approved context packs`, `${compiled.appliedBlockIds.length} approved instruction blocks`]} /><StatusList title={`Audit · ${compiled.audit?.readinessScore ?? 0}% ready`} items={[...(compiled.audit?.blockingErrors || []), ...(compiled.audit?.warnings || [])]} warning /></div><div className="flex flex-wrap gap-3"><Button onClick={createTaskFromBrief} disabled={Boolean(compiled.audit?.blockingErrors.length)}>Create linked task</Button><Button onClick={generateWithGemini} disabled={Boolean(compiled.audit?.blockingErrors.length) || isGenerating}>{isGenerating ? 'Generating…' : 'Generate with Gemini'}</Button><Button variant="outline" onClick={copyCompiledPrompt}><ClipboardCopy size={16} />Copy prompt</Button><Button variant="outline" onClick={() => { setTab('history'); setCompiled(null); }}>View saved run</Button></div>{generationOutput && <div className="rounded-lg border border-primary/30 bg-primary/5 p-4 text-sm leading-6 text-text-secondary whitespace-pre-wrap"><p className="mb-2 font-medium text-primary">Gemini output</p>{generationOutput}</div>}</div>}</Card>
     </div>)}
 
     {tab === 'library' && <div className="space-y-6"><div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]">

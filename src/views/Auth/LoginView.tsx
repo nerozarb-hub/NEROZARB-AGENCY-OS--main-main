@@ -1,110 +1,27 @@
-import { useState, FormEvent } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { FormEvent, useState } from 'react';
+import { supabase } from '../../lib/supabase';
 
-interface LoginViewProps {
-  onLogin: (level: 'ceo' | 'team') => void;
-  onReset: () => void;
-}
+interface LoginViewProps { onLogin: (level: 'ceo' | 'team') => void; onReset: () => void; }
 
-const CEO_PASSPHRASE = 'NERO2024CEO';
-const TEAM_PASSPHRASE = 'NERO2024TEAM';
-
-export default function LoginView({ onLogin, onReset }: LoginViewProps) {
-  const [passphrase, setPassphrase] = useState('');
-  const [error, setError] = useState<string | null>(null);
+export default function LoginView({ onLogin }: LoginViewProps) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [mode, setMode] = useState<'sign-in' | 'sign-up'>('sign-in');
+  const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [resetClicks, setResetClicks] = useState(0);
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError(null);
-
-    const trimmed = passphrase.trim().toUpperCase();
-
-    if (trimmed === CEO_PASSPHRASE) {
-      onLogin('ceo');
-      return;
-    }
-
-    if (trimmed === TEAM_PASSPHRASE) {
-      onLogin('team');
-      return;
-    }
-
-    setError('Invalid passphrase. Access denied.');
+  const submit = async (event: FormEvent) => {
+    event.preventDefault();
+    setIsLoading(true); setMessage('');
+    const credentials = { email: email.trim(), password };
+    const result = mode === 'sign-in' ? await supabase.auth.signInWithPassword(credentials) : await supabase.auth.signUp(credentials);
+    if (result.error) { setMessage(result.error.message); setIsLoading(false); return; }
+    if (mode === 'sign-up' && !result.data.session) { setMessage('Check your inbox to confirm your account, then sign in.'); setIsLoading(false); return; }
+    const { error: workspaceError } = await supabase.functions.invoke('workspace-bootstrap');
+    if (workspaceError) { setMessage('Your account is ready, but its workspace could not be created yet. Please sign in again.'); setIsLoading(false); return; }
+    onLogin('ceo');
     setIsLoading(false);
-    setTimeout(() => setError(null), 4000);
   };
 
-  return (
-    <div className="min-h-screen bg-onyx flex flex-col items-center justify-center p-4">
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        className="w-full max-w-md flex flex-col items-center"
-      >
-        <div className="text-center mb-16 select-none" onClick={() => setResetClicks(prev => prev + 1)}>
-          <h1 className="font-heading text-4xl tracking-tight text-text-primary mb-3 font-semibold cursor-pointer">NEROZARB</h1>
-          <div className="text-text-muted text-sm">
-            Team workspace
-          </div>
-        </div>
-
-        <form onSubmit={handleSubmit} className="w-full max-w-xs relative flex flex-col items-center space-y-4">
-          <motion.div
-            animate={error ? {
-              x: [0, -10, 10, -10, 10, 0],
-              transition: { duration: 0.4 }
-            } : {}}
-            className="relative w-full"
-          >
-            <input
-              type="password"
-              value={passphrase}
-              onChange={(e) => setPassphrase(e.target.value)}
-              placeholder="Enter your passphrase"
-              className={`w-full rounded-lg bg-white/[0.03] border ${error ? 'border-red-500' : 'border-border-dark'} px-4 py-3 text-center text-sm text-text-primary placeholder:text-text-muted/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors`}
-              autoFocus
-              autoComplete="off"
-            />
-          </motion.div>
-
-          <button
-            type="submit"
-            disabled={isLoading || !passphrase.trim()}
-            className="mt-8 w-full bg-primary hover:bg-accent-mid disabled:opacity-50 text-text-primary font-mono text-xs py-3 tracking-[0.2em] transition-colors uppercase disabled:cursor-not-allowed"
-          >
-            {isLoading ? 'Signing in…' : 'Sign in'}
-          </button>
-
-          <AnimatePresence>
-            {error && (
-              <motion.p
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                className="absolute -bottom-10 left-0 right-0 text-center font-mono text-[10px] tracking-widest uppercase text-red-500"
-              >
-                [ {error} ]
-              </motion.p>
-            )}
-          </AnimatePresence>
-
-          {resetClicks >= 5 && (
-            <motion.button
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              type="button"
-              onClick={onReset}
-              className="mt-12 text-[10px] font-mono text-primary hover:text-white transition-colors tracking-[0.3em] uppercase underline underline-offset-4"
-            >
-              [ EMERGENCY SYSTEM RESET ]
-            </motion.button>
-          )}
-        </form>
-      </motion.div>
-    </div>
-  );
+  return <div className="min-h-screen bg-onyx flex flex-col items-center justify-center p-4"><div className="w-full max-w-md"><div className="mb-12 text-center"><h1 className="font-heading text-4xl font-semibold tracking-tight text-text-primary">NEROZARB</h1><p className="mt-3 text-sm text-text-muted">Secure agency workspace</p></div><form onSubmit={submit} className="space-y-5 rounded-xl border border-border-dark bg-card p-6 sm:p-8"><div><h2 className="text-lg font-semibold">{mode === 'sign-in' ? 'Sign in' : 'Create your workspace account'}</h2><p className="mt-1 text-sm text-text-muted">Your work saves securely and stays in sync across devices.</p></div><label className="block text-sm font-medium text-text-secondary">Email<input required type="email" value={email} onChange={event => setEmail(event.target.value)} className="mt-2 min-h-11 w-full rounded-lg border border-border-dark bg-onyx px-3 text-sm" placeholder="you@agency.com" autoComplete="email" /></label><label className="block text-sm font-medium text-text-secondary">Password<input required minLength={8} type="password" value={password} onChange={event => setPassword(event.target.value)} className="mt-2 min-h-11 w-full rounded-lg border border-border-dark bg-onyx px-3 text-sm" placeholder="At least 8 characters" autoComplete={mode === 'sign-in' ? 'current-password' : 'new-password'} /></label>{message && <p className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3 text-sm text-amber-200">{message}</p>}<button type="submit" disabled={isLoading} className="min-h-11 w-full rounded-lg bg-primary px-4 text-sm font-semibold text-onyx disabled:opacity-50">{isLoading ? 'Working…' : mode === 'sign-in' ? 'Sign in' : 'Create account'}</button><button type="button" onClick={() => { setMode(mode === 'sign-in' ? 'sign-up' : 'sign-in'); setMessage(''); }} className="w-full text-sm text-primary hover:underline">{mode === 'sign-in' ? 'Need an account? Create one' : 'Already have an account? Sign in'}</button></form></div></div>;
 }

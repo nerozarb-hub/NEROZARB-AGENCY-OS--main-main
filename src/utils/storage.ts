@@ -1,4 +1,4 @@
-import { syncPostsToSupabase, syncSettingsToSupabase, syncTasksToSupabase } from './supabaseSync';
+import { syncPostsToSupabase, syncPromptOsToSupabase, syncSettingsToSupabase, syncTasksToSupabase } from './supabaseSync';
 
 export const STORAGE_KEY = 'nerozarb-os-v2';
 
@@ -107,6 +107,7 @@ export const saveData = (data: AppData) => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
   syncTasksToSupabase(dataToSave.tasks);
   syncPostsToSupabase(dataToSave.posts);
+  syncPromptOsToSupabase(dataToSave);
   syncSettingsToSupabase(dataToSave.settings);
 };
 
