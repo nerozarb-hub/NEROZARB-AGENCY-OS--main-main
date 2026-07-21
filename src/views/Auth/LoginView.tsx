@@ -6,7 +6,7 @@ interface LoginViewProps { onLogin: (level: 'ceo' | 'team') => void; onReset: ()
 export default function LoginView({ onLogin }: LoginViewProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [mode, setMode] = useState<'sign-in' | 'sign-up'>('sign-in');
+  const [mode, setMode] = useState<'sign-in' | 'sign-up'>('sign-up');
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -23,5 +23,46 @@ export default function LoginView({ onLogin }: LoginViewProps) {
     setIsLoading(false);
   };
 
-  return <div className="min-h-screen bg-onyx flex flex-col items-center justify-center p-4"><div className="w-full max-w-md"><div className="mb-12 text-center"><h1 className="font-heading text-4xl font-semibold tracking-tight text-text-primary">NEROZARB</h1><p className="mt-3 text-sm text-text-muted">Secure agency workspace</p></div><form onSubmit={submit} className="space-y-5 rounded-xl border border-border-dark bg-card p-6 sm:p-8"><div><h2 className="text-lg font-semibold">{mode === 'sign-in' ? 'Sign in' : 'Create your workspace account'}</h2><p className="mt-1 text-sm text-text-muted">Your work saves securely and stays in sync across devices.</p></div><label className="block text-sm font-medium text-text-secondary">Email<input required type="email" value={email} onChange={event => setEmail(event.target.value)} className="mt-2 min-h-11 w-full rounded-lg border border-border-dark bg-onyx px-3 text-sm" placeholder="you@agency.com" autoComplete="email" /></label><label className="block text-sm font-medium text-text-secondary">Password<input required minLength={8} type="password" value={password} onChange={event => setPassword(event.target.value)} className="mt-2 min-h-11 w-full rounded-lg border border-border-dark bg-onyx px-3 text-sm" placeholder="At least 8 characters" autoComplete={mode === 'sign-in' ? 'current-password' : 'new-password'} /></label>{message && <p className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3 text-sm text-amber-200">{message}</p>}<button type="submit" disabled={isLoading} className="min-h-11 w-full rounded-lg bg-primary px-4 text-sm font-semibold text-onyx disabled:opacity-50">{isLoading ? 'Working…' : mode === 'sign-in' ? 'Sign in' : 'Create account'}</button><button type="button" onClick={() => { setMode(mode === 'sign-in' ? 'sign-up' : 'sign-in'); setMessage(''); }} className="w-full text-sm text-primary hover:underline">{mode === 'sign-in' ? 'Need an account? Create one' : 'Already have an account? Sign in'}</button></form></div></div>;
+  const isSignIn = mode === 'sign-in';
+
+  return (
+    <div className="flex min-h-screen flex-col items-center justify-center bg-onyx p-4">
+      <div className="w-full max-w-md">
+        <div className="mb-10 text-center sm:mb-12">
+          <h1 className="font-heading text-4xl font-semibold tracking-tight text-text-primary">NEROZARB</h1>
+          <p className="mt-3 text-sm text-text-muted">Your agency workspace, safely synced everywhere.</p>
+        </div>
+
+        <form onSubmit={submit} className="space-y-5 rounded-xl border border-border-dark bg-card p-6 sm:p-8">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">{isSignIn ? 'Welcome back' : 'First-time setup'}</p>
+            <h2 className="mt-2 text-xl font-semibold text-text-primary">{isSignIn ? 'Sign in to your workspace' : 'Set up your account'}</h2>
+            <p className="mt-2 text-sm leading-6 text-text-muted">
+              {isSignIn
+                ? 'Use the email and password you created when setting up NEROZARB.'
+                : 'Use your own email and create a password. There is no pre-set password.'}
+            </p>
+          </div>
+
+          <label className="block text-sm font-medium text-text-secondary">
+            Your email
+            <input required type="email" value={email} onChange={event => setEmail(event.target.value)} className="mt-2 min-h-11 w-full rounded-lg border border-border-dark bg-onyx px-3 text-sm" placeholder="you@agency.com" autoComplete="email" />
+          </label>
+          <label className="block text-sm font-medium text-text-secondary">
+            {isSignIn ? 'Your password' : 'Create a password'}
+            <input required minLength={8} type="password" value={password} onChange={event => setPassword(event.target.value)} className="mt-2 min-h-11 w-full rounded-lg border border-border-dark bg-onyx px-3 text-sm" placeholder="At least 8 characters" autoComplete={isSignIn ? 'current-password' : 'new-password'} />
+          </label>
+
+          {message && <p className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3 text-sm text-amber-200">{message}</p>}
+
+          <button type="submit" disabled={isLoading} className="min-h-11 w-full rounded-lg bg-primary px-4 text-sm font-semibold text-onyx disabled:opacity-50">
+            {isLoading ? 'Working…' : isSignIn ? 'Sign in' : 'Create my account'}
+          </button>
+          <button type="button" onClick={() => { setMode(isSignIn ? 'sign-up' : 'sign-in'); setMessage(''); }} className="w-full text-sm text-primary hover:underline">
+            {isSignIn ? 'New here? Set up your account' : 'Already have an account? Sign in'}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
 }
