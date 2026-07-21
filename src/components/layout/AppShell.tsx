@@ -6,7 +6,6 @@ interface AppShellProps {
   setActiveView: (view: string) => void;
   selectedClient?: string | null;
   setSelectedClient?: (client: string | null) => void;
-  authLevel: 'ceo' | 'team';
   onLogout: () => void;
   children: ReactNode;
 }
@@ -16,7 +15,6 @@ export default function AppShell({
   setActiveView,
   selectedClient,
   setSelectedClient,
-  authLevel,
   onLogout,
   children
 }: AppShellProps) {
@@ -25,7 +23,6 @@ export default function AppShell({
       <Sidebar
         activeView={activeView}
         setActiveView={setActiveView}
-        authLevel={authLevel}
         onLogout={onLogout}
       />
 

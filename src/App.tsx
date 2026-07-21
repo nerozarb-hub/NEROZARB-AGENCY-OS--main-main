@@ -28,9 +28,7 @@ function ViewLoader() {
 export default function App() {
   const [data, setData] = useState<AppData>(loadData());
   const [isLoading, setIsLoading] = useState(true);
-  const [authLevel, setAuthLevel] = useState<'ceo' | 'team' | null>(() => {
-    return (sessionStorage.getItem('authLevel') as 'ceo' | 'team') || null;
-  });
+  const [authLevel, setAuthLevel] = useState<'ceo' | null>(null);
   const [activeView, setActiveView] = useState('command');
   const [selectedGlobalClient, setSelectedGlobalClient] = useState<string | null>(null);
 
@@ -41,15 +39,10 @@ export default function App() {
       // 1. Check Supabase Session First
       const { data: { session } } = await supabase.auth.getSession();
 
-      const storedAuthLevel = sessionStorage.getItem('authLevel') as 'ceo' | 'team' | null;
-
-      if (session) {
-        // Auto-login based on session existence.
-        setAuthLevel(storedAuthLevel || 'ceo');
-      } else if (storedAuthLevel) {
-        // Passphrase-based auth: trust sessionStorage even without Supabase session
-        setAuthLevel(storedAuthLevel);
-      } else {
+      const hasWorkspaceKeySession = session?.user.email?.endsWith('@access.nerozarb.invalid');
+      if (hasWorkspaceKeySession) setAuthLevel('ceo');
+      else {
+        if (session) await supabase.auth.signOut();
         setAuthLevel(null);
       }
 
@@ -67,14 +60,13 @@ export default function App() {
 
     // 3. Listen for Auth Changes (Login / Logout across tabs)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      if (session) {
-        // Keep current auth level if set during login process
-        setAuthLevel(prev => prev || 'ceo');
+      if (session?.user.email?.endsWith('@access.nerozarb.invalid')) {
+        setAuthLevel('ceo');
         const cloudData = await fetchAppDataFromSupabase();
         if (cloudData) setData(prev => ({ ...prev, ...cloudData }));
       } else {
+        if (session) await supabase.auth.signOut();
         setAuthLevel(null);
-        sessionStorage.removeItem('authLevel');
       }
     });
 
@@ -136,13 +128,12 @@ export default function App() {
     localStorage.removeItem('nerozarb-os-v2');
   };
 
-  const handleLogin = async (level: 'ceo' | 'team') => {
-    setAuthLevel(level);
-    sessionStorage.setItem('authLevel', level);
+  const handleLogin = async () => {
+    setAuthLevel('ceo');
+    sessionStorage.setItem('authLevel', 'ceo');
     const cloudData = await fetchAppDataFromSupabase();
     if (cloudData) setData(prev => ({ ...prev, ...cloudData }));
-    // Team lands on Fulfillment OS, CEO on Command Center
-    setActiveView(level === 'ceo' ? 'command' : 'fulfillment');
+    setActiveView('command');
   };
 
   const handleLogout = async () => {
@@ -178,7 +169,6 @@ export default function App() {
       <AppDataProvider data={data} setData={setData}>
         <LoginView
           onLogin={handleLogin}
-          onReset={handleReset}
         />
       </AppDataProvider>
     );
@@ -191,12 +181,11 @@ export default function App() {
         setActiveView={setActiveView}
         selectedClient={selectedGlobalClient}
         setSelectedClient={setSelectedGlobalClient}
-        authLevel={authLevel}
         onLogout={handleLogout}
       >
         <GlobalErrorBoundary>
           <Suspense fallback={<ViewLoader />}>
-            {activeView === 'command' && authLevel === 'ceo' && <DashboardView onNavigate={(view, id) => {
+            {activeView === 'command' && <DashboardView onNavigate={(view, id) => {
               setActiveView(view);
               if (id) setSelectedGlobalClient(id);
             }} />}
@@ -214,11 +203,6 @@ export default function App() {
             }} />}
             {activeView === 'studio' && <PromptStudio onNavigate={setActiveView} />}
             {activeView === 'onboarding' && <OnboardingOS onNavigate={(view, id) => {
-              setActiveView(view);
-              if (id) setSelectedGlobalClient(id);
-            }} />}
-            {/* Fallback if team tries to access command center */}
-            {activeView === 'command' && authLevel !== 'ceo' && <FulfillmentOS onNavigate={(view, id) => {
               setActiveView(view);
               if (id) setSelectedGlobalClient(id);
             }} />}

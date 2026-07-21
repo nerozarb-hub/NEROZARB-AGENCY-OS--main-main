@@ -5,22 +5,20 @@ import { useAppData } from '../../contexts/AppDataContext';
 interface SidebarProps {
   activeView: string;
   setActiveView: (view: string) => void;
-  authLevel: 'ceo' | 'team';
   onLogout: () => void;
 }
 
 const navItems = [
-  { id: 'command', label: 'Overview', icon: LayoutDashboard, ceoOnly: true },
-  { id: 'client', label: 'Clients', icon: Users, ceoOnly: false },
-  { id: 'fulfillment', label: 'Tasks', icon: Settings, ceoOnly: false },
-  { id: 'content', label: 'Content', icon: CalendarDays, ceoOnly: false },
-  { id: 'studio', label: 'Prompt Studio', icon: BookOpen, ceoOnly: false },
-  { id: 'onboarding', label: 'Setup', icon: Rocket, ceoOnly: false },
+  { id: 'command', label: 'Overview', icon: LayoutDashboard },
+  { id: 'client', label: 'Clients', icon: Users },
+  { id: 'fulfillment', label: 'Tasks', icon: Settings },
+  { id: 'content', label: 'Content', icon: CalendarDays },
+  { id: 'studio', label: 'Prompt Studio', icon: BookOpen },
+  { id: 'onboarding', label: 'Setup', icon: Rocket },
 ];
 
-export default function Sidebar({ activeView, setActiveView, authLevel, onLogout }: SidebarProps) {
+export default function Sidebar({ activeView, setActiveView, onLogout }: SidebarProps) {
   const { data } = useAppData();
-  const filteredNavItems = navItems.filter(item => !item.ceoOnly || authLevel === 'ceo');
 
   const getBadgeCount = (id: string) => {
     const today = new Date().toISOString().split('T')[0];
@@ -57,7 +55,7 @@ export default function Sidebar({ activeView, setActiveView, authLevel, onLogout
 
         {/* Navigation */}
         <nav className="flex-1 py-4 flex flex-col overflow-y-auto custom-scrollbar no-scrollbar">
-          {filteredNavItems.map((item) => {
+          {navItems.map((item) => {
             const isActive = activeView === item.id;
             const badgeCount = getBadgeCount(item.id);
             const Icon = item.icon;
@@ -96,12 +94,6 @@ export default function Sidebar({ activeView, setActiveView, authLevel, onLogout
 
         {/* Footer */}
         <div className="mt-auto border-t border-white/[0.04] flex-shrink-0">
-          {authLevel === 'ceo' && (
-            <div className="px-6 py-2 border-b border-white/[0.04] bg-primary/5">
-              <p className="font-sans text-xs text-primary hidden lg:block">Administrator</p>
-              <p className="font-sans text-xs text-primary lg:hidden text-center">Admin</p>
-            </div>
-          )}
           <div className="p-6 space-y-4 flex flex-col items-center lg:items-start bg-onyx/50">
             <div className="flex items-center gap-3">
               <div className="relative flex h-1.5 w-1.5 shrink-0">
@@ -130,7 +122,7 @@ export default function Sidebar({ activeView, setActiveView, authLevel, onLogout
                       safe-area-inset-bottom"
         style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
       >
-        {filteredNavItems.map((item) => {
+        {navItems.map((item) => {
           const isActive = activeView === item.id;
           const badgeCount = getBadgeCount(item.id);
           const Icon = item.icon;
