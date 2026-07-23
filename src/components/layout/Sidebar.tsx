@@ -1,4 +1,5 @@
 import { motion } from 'motion/react';
+import { useMemo } from 'react';
 import { LogOut, LayoutDashboard, Users, Settings, BookOpen, Rocket, CalendarDays } from 'lucide-react';
 import { useAppData } from '../../contexts/AppDataContext';
 
@@ -20,23 +21,22 @@ const navItems = [
 export default function Sidebar({ activeView, setActiveView, onLogout }: SidebarProps) {
   const { data } = useAppData();
 
-  const getBadgeCount = (id: string) => {
+  // ⚡ Bolt Optimization: Memoized badge counts
+  // Why: Prevents running `.filter()` on multiple arrays (tasks, clients, posts)
+  // on every render (e.g., during view navigation).
+  // Impact: Reduces CPU cycles during render by caching counts until data actually changes.
+  const badgeCounts = useMemo(() => {
     const today = new Date().toISOString().split('T')[0];
-    switch (id) {
-      case 'command':
-        return data.tasks.filter(t => t.deadline && t.deadline < today && t.status !== 'Deployed').length;
-      case 'client':
-        return data.clients.filter(c => c.status === 'Active Sprint' || c.status === 'Retainer').length;
-      case 'fulfillment':
-        return data.tasks.filter(t => t.status !== 'Deployed').length;
-      case 'content':
-        return data.posts.filter(p => p.status !== 'Published').length;
-      case 'onboarding':
-        return data.onboardings.filter(o => o.status !== 'complete').length;
-      default:
-        return 0;
-    }
-  };
+    return {
+      command: data.tasks.filter(t => t.deadline && t.deadline < today && t.status !== 'Deployed').length,
+      client: data.clients.filter(c => c.status === 'Active Sprint' || c.status === 'Retainer').length,
+      fulfillment: data.tasks.filter(t => t.status !== 'Deployed').length,
+      content: data.posts.filter(p => p.status !== 'Published').length,
+      onboarding: data.onboardings.filter(o => o.status !== 'complete').length,
+    };
+  }, [data.tasks, data.clients, data.posts, data.onboardings]);
+
+  const getBadgeCount = (id: string) => badgeCounts[id as keyof typeof badgeCounts] || 0;
 
   return (
     <>
