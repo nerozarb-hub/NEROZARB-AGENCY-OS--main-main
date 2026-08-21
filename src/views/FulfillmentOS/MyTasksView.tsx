@@ -1,12 +1,17 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
-import { Task } from '../../utils/storage';
+import { Task, TeamMember } from '../../utils/storage';
 import { isToday, isPast, isThisWeek, parseISO, startOfDay } from 'date-fns';
+import { isTaskDone } from '../../utils/statusHelpers';
+import { getCurrentTeamMemberId } from '../../utils/currentTeamMember';
+import { UsersRound } from 'lucide-react';
 
 interface MyTasksViewProps {
     tasks: Task[];
+    teamMembers: TeamMember[];
     onTaskClick: (task: Task) => void;
+    onGoToTeam: () => void;
 }
 
 interface TaskCardProps {
@@ -41,45 +46,59 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, isOverdue = false, onClick })
 );
 
 
-export default function MyTasksView({ tasks, onTaskClick }: MyTasksViewProps) {
-    const currentUserRole = sessionStorage.getItem('nodeRole') || 'Art Director'; // Default for demo
+export default function MyTasksView({ tasks, teamMembers, onTaskClick, onGoToTeam }: MyTasksViewProps) {
+    const currentMemberId = getCurrentTeamMemberId();
+    const currentMember = teamMembers.find(m => m.id === currentMemberId) || null;
 
     const myTasks = useMemo(() => {
-        return tasks.filter(t => t.assignedNode === currentUserRole);
-    }, [tasks, currentUserRole]);
+        if (!currentMemberId) return [];
+        return tasks.filter(t => t.assigneeId === currentMemberId);
+    }, [tasks, currentMemberId]);
 
     const categorizedTasks = useMemo(() => {
         const today = startOfDay(new Date());
 
         const overdue = myTasks.filter(t => {
-            if (!t.deadline || t.status === 'Deployed' || t.currentStage === 'DEPLOYED') return false;
+            if (!t.deadline || isTaskDone(t)) return false;
             return isPast(startOfDay(parseISO(t.deadline))) && !isToday(parseISO(t.deadline));
         });
 
         const dueToday = myTasks.filter(t => {
-            if (!t.deadline || t.status === 'Deployed' || t.currentStage === 'DEPLOYED') return false;
+            if (!t.deadline || isTaskDone(t)) return false;
             return isToday(parseISO(t.deadline));
         });
 
         const dueThisWeek = myTasks.filter(t => {
-            if (!t.deadline || t.status === 'Deployed' || t.currentStage === 'DEPLOYED') return false;
+            if (!t.deadline || isTaskDone(t)) return false;
             const date = parseISO(t.deadline);
             return isThisWeek(date) && !isToday(date) && !isPast(startOfDay(date));
         });
 
         const upcoming = myTasks.filter(t => {
-            if (!t.deadline || t.status === 'Deployed' || t.currentStage === 'DEPLOYED') return false;
+            if (!t.deadline || isTaskDone(t)) return false;
             const date = parseISO(t.deadline);
             return !isThisWeek(date) && date > today;
         }).slice(0, 5);
 
-        const completed = myTasks.filter(t =>
-            t.status === 'Deployed' || t.currentStage === 'DEPLOYED'
-        ).sort((a, b) => new Date(b.updatedAt!).getTime() - new Date(a.updatedAt!).getTime())
+        const completed = myTasks.filter(isTaskDone)
+            .sort((a, b) => new Date(b.updatedAt!).getTime() - new Date(a.updatedAt!).getTime())
             .slice(0, 5);
 
         return { overdue, dueToday, dueThisWeek, upcoming, completed };
     }, [myTasks]);
+
+    if (!currentMember) {
+        return (
+            <div className="flex-1 flex flex-col items-center justify-center text-center p-12 gap-4">
+                <UsersRound size={28} className="text-text-muted/40" />
+                <div className="space-y-1.5 max-w-sm">
+                    <h3 className="text-sm font-semibold text-text-primary">Tell us who you are</h3>
+                    <p className="text-xs text-text-muted leading-5">This workspace is shared, so My Tasks needs to know which team member you are before it can show your work.</p>
+                </div>
+                <button onClick={onGoToTeam} className="text-xs font-semibold text-primary hover:underline">Go to Team →</button>
+            </div>
+        );
+    }
 
     return (
         <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-12 pb-12">

@@ -55,6 +55,7 @@ export default function NewPostModal({ isOpen, onClose, post, prefilledDate }: N
 
     // Section 4 & 5: Assignment & Assets
     const [assignedTo, setAssignedTo] = useState<NodeRole>('Art Director');
+    const [assigneeId, setAssigneeId] = useState<string>('');
     const [linkedTaskId, setLinkedTaskId] = useState<number | ''>('');
     const [linkedPromptId, setLinkedPromptId] = useState<number | ''>('');
     const [assetLinks, setAssetLinks] = useState('');
@@ -116,6 +117,7 @@ export default function NewPostModal({ isOpen, onClose, post, prefilledDate }: N
             status,
             priority,
             assignedTo,
+            assigneeId: assigneeId || null,
             linkedTaskId: linkedTaskId !== '' ? Number(linkedTaskId) : null,
             linkedPromptId: linkedPromptId !== '' ? Number(linkedPromptId) : null,
             assetLinks: assetLinks ? assetLinks.split(',').map(s => s.trim()) : [],
@@ -407,6 +409,19 @@ export default function NewPostModal({ isOpen, onClose, post, prefilledDate }: N
                                     <option value="Art Director">ART_DIRECTOR</option>
                                     <option value="Video Editor">VIDEO_OPERATOR</option>
                                     <option value="Social Media Manager">SYSTEM_MANAGER</option>
+                                </select>
+                            </div>
+                            <div className="space-y-4">
+                                <label className="font-sans text-[10px] font-black text-text-muted/40 uppercase tracking-[0.3em]">ASSIGNEE</label>
+                                <select
+                                    value={assigneeId}
+                                    onChange={(e) => setAssigneeId(e.target.value)}
+                                    className="w-full bg-white/[0.02] border border-white/[0.06] p-5 text-[11px] font-black font-sans text-text-primary focus:border-primary/40 outline-none transition-all uppercase tracking-[0.2em] appearance-none cursor-pointer"
+                                >
+                                    <option value="">UNASSIGNED</option>
+                                    {data.teamMembers.filter(m => m.active).map(m => (
+                                        <option key={m.id} value={m.id}>{m.name.toUpperCase()}</option>
+                                    ))}
                                 </select>
                             </div>
                             <div className="space-y-4">

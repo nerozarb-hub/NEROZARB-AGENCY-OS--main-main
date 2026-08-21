@@ -8,6 +8,13 @@ export interface OnboardingProtocol { id: string; clientId: number; steps: Onboa
 export interface ProjectPhase { id: number; clientId: number; title: string; status: 'pending' | 'in_progress' | 'completed'; orderIndex: number; createdAt?: string; updatedAt?: string; }
 export interface ClientUpdate { id: number; clientId: number; message: string; createdAt?: string; }
 
+export type TeamMemberRole = 'admin' | 'manager' | 'employee' | 'sales' | 'client';
+export interface TeamMember {
+  id: string; userId: string | null; name: string; email: string | null; avatarUrl: string | null;
+  role: TeamMemberRole; department: string | null; weeklyCapacityHours: number; active: boolean;
+  createdAt: string; updatedAt: string;
+}
+
 export type ClientStatus = 'Lead' | 'Discovery' | 'Active Sprint' | 'Retainer' | 'Closed';
 export interface Client {
   id: number; name: string; status: ClientStatus; revenueGate: '<1M PKR' | '1M–5M PKR' | '>5M PKR' | string;
@@ -26,7 +33,8 @@ export interface Task {
   id: number; clientId: number; name: string; category: TaskCategory; phase: 'phase1' | 'phase2' | 'phase3' | 'ongoing';
   stagePipeline: Stage[]; currentStage: Stage; assignedNode: NodeRole; priority: 'critical' | 'high' | 'normal'; status: 'active' | 'deployed' | 'cancelled';
   deadline: string; estimatedHours: number | null; brief: string; assetLinks: string[]; sopReference: string | null; activityLog: ActivityEntry[];
-  notes: string; deliveredOnTime: boolean | null; linkedPostId: number | null; compiledPromptId?: string | null; createdAt: string; updatedAt: string;
+  notes: string; deliveredOnTime: boolean | null; linkedPostId: number | null; compiledPromptId?: string | null;
+  assigneeId?: string | null; reviewerId?: string | null; createdAt: string; updatedAt: string;
 }
 
 export type PostStage = 'PLANNED' | 'BRIEF WRITTEN' | 'IN PRODUCTION' | 'REVIEW' | 'CEO APPROVAL' | 'CLIENT APPROVAL' | 'SCHEDULED' | 'PUBLISHED';
@@ -49,7 +57,7 @@ export interface Post {
   hook: string; triggerUsed: string | null; captionBody: string; cta: string; ctaType: CTAType; hashtags: string; visualBrief: string;
   scheduledDate: string; scheduledTime: string; publishedDate: string | null; status: PostStage; priority: 'normal' | 'high' | 'urgent'; assignedTo: NodeRole;
   linkedTaskId: number | null; linkedPromptId?: number | null; assetLinks: string[]; referencePost: string | null; performance: PerformanceLog | null;
-  activityLog: ActivityEntry[]; createdAt: string; updatedAt: string;
+  activityLog: ActivityEntry[]; assigneeId?: string | null; createdAt: string; updatedAt: string;
 }
 export type PromptScope = 'global' | 'industry' | 'client' | 'brand' | 'product' | 'campaign' | 'platform' | 'deliverable' | 'model' | 'task';
 export type LibraryStatus = 'draft' | 'testing' | 'approved' | 'needs-review' | 'deprecated' | 'archived';
@@ -67,10 +75,10 @@ export interface CompiledPrompt { id: string; briefId: string; prompt: string; a
 export interface GenerationRun { id: string; briefId: string; compiledPromptId: string; provider?: string; model?: string; status: 'ready-for-generation' | 'in-review' | 'approved' | 'failed'; qualityScore: number | null; reviewerFeedback: string; createdAt: string; }
 export interface ModelProfile { id: string; provider: string; name: string; family: 'text' | 'image' | 'video' | 'multimodal'; contextLimit: number; supportsJson: boolean; supportedAssetTypes: string[]; active: boolean; version: number; createdAt: string; updatedAt: string; }
 export interface QualityRubric { id: string; name: string; criteria: { id: string; label: string; weight: number; blocking?: boolean }[]; passThreshold: number; status: LibraryStatus; version: number; createdAt: string; updatedAt: string; }
-export interface AppData { clients: Client[]; tasks: Task[]; posts: Post[]; onboardings: OnboardingProtocol[]; protocols: Protocol[]; instructionBlocks: InstructionBlock[]; contextPacks: ContextPack[]; promptRecipes: PromptRecipe[]; promptTemplates: PromptTemplate[]; modelProfiles: ModelProfile[]; qualityRubrics: QualityRubric[]; briefs: StructuredBrief[]; compiledPrompts: CompiledPrompt[]; generationRuns: GenerationRun[]; settings: { ceoPhraseHash: string | null; teamPhraseHash: string | null; initialized: boolean; lastUpdated: string | null; }; }
+export interface AppData { clients: Client[]; tasks: Task[]; posts: Post[]; onboardings: OnboardingProtocol[]; protocols: Protocol[]; teamMembers: TeamMember[]; instructionBlocks: InstructionBlock[]; contextPacks: ContextPack[]; promptRecipes: PromptRecipe[]; promptTemplates: PromptTemplate[]; modelProfiles: ModelProfile[]; qualityRubrics: QualityRubric[]; briefs: StructuredBrief[]; compiledPrompts: CompiledPrompt[]; generationRuns: GenerationRun[]; settings: { ceoPhraseHash: string | null; teamPhraseHash: string | null; initialized: boolean; lastUpdated: string | null; }; }
 
 export const INITIAL_DATA: AppData = {
-  clients: [], tasks: [], posts: [], onboardings: [], protocols: [], instructionBlocks: [], contextPacks: [], promptRecipes: [], promptTemplates: [], modelProfiles: [], qualityRubrics: [], briefs: [], compiledPrompts: [], generationRuns: [],
+  clients: [], tasks: [], posts: [], onboardings: [], protocols: [], teamMembers: [], instructionBlocks: [], contextPacks: [], promptRecipes: [], promptTemplates: [], modelProfiles: [], qualityRubrics: [], briefs: [], compiledPrompts: [], generationRuns: [],
   settings: { ceoPhraseHash: null, teamPhraseHash: null, initialized: false, lastUpdated: null },
 };
 
@@ -96,7 +104,7 @@ export const loadData = (): AppData => {
   try {
     const parsed = JSON.parse(stored) as AppData;
     const isLegacyDemo = parsed.clients?.length === 2 && parsed.clients.every(client => ['Mozart House', 'YZ Corp'].includes(client.name));
-    return isLegacyDemo ? INITIAL_DATA : { ...INITIAL_DATA, ...parsed, instructionBlocks: parsed.instructionBlocks || [], contextPacks: parsed.contextPacks || [], promptRecipes: parsed.promptRecipes || [], promptTemplates: parsed.promptTemplates || [], modelProfiles: parsed.modelProfiles || [], qualityRubrics: parsed.qualityRubrics || [], briefs: parsed.briefs || [], compiledPrompts: parsed.compiledPrompts || [], generationRuns: parsed.generationRuns || [] };
+    return isLegacyDemo ? INITIAL_DATA : { ...INITIAL_DATA, ...parsed, teamMembers: parsed.teamMembers || [], instructionBlocks: parsed.instructionBlocks || [], contextPacks: parsed.contextPacks || [], promptRecipes: parsed.promptRecipes || [], promptTemplates: parsed.promptTemplates || [], modelProfiles: parsed.modelProfiles || [], qualityRubrics: parsed.qualityRubrics || [], briefs: parsed.briefs || [], compiledPrompts: parsed.compiledPrompts || [], generationRuns: parsed.generationRuns || [] };
   } catch {
     return INITIAL_DATA;
   }

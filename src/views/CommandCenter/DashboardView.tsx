@@ -6,6 +6,7 @@ import { Activity, AlertTriangle, DollarSign, Target, ChevronRight, Users } from
 import { useAppData } from '../../contexts/AppDataContext';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { EmptyState } from '../../components/ui/EmptyState';
+import { isTaskOpen, isPostOpen, taskPriorityRank } from '../../utils/statusHelpers';
 
 export default function DashboardView({ onNavigate }: { onNavigate?: (view: string, id?: string) => void }) {
   const { data } = useAppData();
@@ -43,8 +44,7 @@ export default function DashboardView({ onNavigate }: { onNavigate?: (view: stri
   const frictionAlerts = useMemo(() => {
     const now = new Date();
     return data.tasks.filter(t =>
-      t.status !== 'Deployed' &&
-      t.status !== 'Completed' &&
+      isTaskOpen(t) &&
       t.deadline &&
       new Date(t.deadline) < now
     ).length;
@@ -73,12 +73,11 @@ export default function DashboardView({ onNavigate }: { onNavigate?: (view: stri
 
   const liveOperations = useMemo(() => {
     return data.tasks
-      .filter(t => t.status !== 'Deployed' && t.status !== 'Completed')
+      .filter(isTaskOpen)
       .sort((a, b) => {
         // Sort by priority first, then deadline
-        const priorityOrder: Record<string, number> = { 'high': 0, 'medium': 1, 'low': 2 };
-        const pA = priorityOrder[a.priority as string] ?? 1;
-        const pB = priorityOrder[b.priority as string] ?? 1;
+        const pA = taskPriorityRank(a);
+        const pB = taskPriorityRank(b);
         if (pA !== pB) return pA - pB;
 
         if (!a.deadline) return 1;
@@ -248,13 +247,13 @@ export default function DashboardView({ onNavigate }: { onNavigate?: (view: stri
           <Card className="p-8 flex gap-8 border-border-dark">
             <div className="flex-1">
               <p className="font-sans text-[10px] text-[#555] font-bold uppercase tracking-widest mb-3">Content in progress</p>
-              <p className="editorial-title text-5xl text-text-primary italic">{data.posts.filter(p => p.status !== 'Published').length}</p>
+              <p className="editorial-title text-5xl text-text-primary italic">{data.posts.filter(isPostOpen).length}</p>
               <p className="text-[10px] font-semibold text-text-muted uppercase tracking-widest mt-4">Posts not yet published</p>
             </div>
             <div className="w-px bg-border-dark" />
             <div className="flex-1">
               <p className="font-sans text-[10px] text-[#555] font-bold uppercase tracking-widest mb-3">Open tasks</p>
-              <p className="editorial-title text-5xl text-text-primary italic">{data.tasks.filter(t => t.status !== 'Deployed').length}</p>
+              <p className="editorial-title text-5xl text-text-primary italic">{data.tasks.filter(isTaskOpen).length}</p>
               <p className="text-[10px] font-semibold text-text-muted uppercase tracking-widest mt-4">Not yet completed</p>
             </div>
           </Card>

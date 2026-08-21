@@ -14,6 +14,7 @@ const FulfillmentOS = lazy(() => import('./views/FulfillmentOS'));
 const ContentOS = lazy(() => import('./views/ContentOS'));
 const PromptStudio = lazy(() => import('./views/PromptStudio'));
 const OnboardingOS = lazy(() => import('./views/OnboardingOS'));
+const TeamView = lazy(() => import('./views/Team'));
 const ClientPortalView = lazy(() => import('./views/PortalOS/ClientPortalView'));
 
 // Suspense fallback for lazy-loaded views
@@ -206,6 +207,7 @@ export default function App() {
               setActiveView(view);
               if (id) setSelectedGlobalClient(id);
             }} />}
+            {activeView === 'team' && <TeamView />}
           </Suspense>
         </GlobalErrorBoundary>
       </AppShell>

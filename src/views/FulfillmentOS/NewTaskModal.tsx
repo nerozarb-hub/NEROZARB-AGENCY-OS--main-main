@@ -20,6 +20,7 @@ export default function NewTaskModal({ isOpen, onClose }: NewTaskModalProps) {
   const [phase, setPhase] = useState<'phase1' | 'phase2' | 'phase3' | 'ongoing'>('ongoing');
   const [priority, setPriority] = useState<'normal' | 'high' | 'critical'>('normal');
   const [assignedNode, setAssignedNode] = useState<NodeRole>('CEO');
+  const [assigneeId, setAssigneeId] = useState<string>('');
   const [deadline, setDeadline] = useState('');
   const [estimatedHours, setEstimatedHours] = useState('');
   const [brief, setBrief] = useState('');
@@ -38,6 +39,7 @@ export default function NewTaskModal({ isOpen, onClose }: NewTaskModalProps) {
       stagePipeline: pipeline,
       currentStage: 'BRIEFED',
       assignedNode,
+      assigneeId: assigneeId || null,
       priority,
       status: 'active',
       deadline: deadline || new Date().toISOString().split('T')[0],
@@ -57,6 +59,7 @@ export default function NewTaskModal({ isOpen, onClose }: NewTaskModalProps) {
     setPhase('ongoing');
     setPriority('normal');
     setAssignedNode('CEO');
+    setAssigneeId('');
     setDeadline('');
     setEstimatedHours('');
     setBrief('');
@@ -156,6 +159,20 @@ export default function NewTaskModal({ isOpen, onClose }: NewTaskModalProps) {
               >
                 {['CEO', 'Art Director', 'Video Editor', 'Operations Builder', 'Social Media Manager', 'Documentation Manager'].map(n => (
                   <option key={n} value={n} className="bg-sidebar">{n.toUpperCase()}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <label className="font-sans text-[11px] font-bold text-text-muted/60 uppercase tracking-widest pl-1">Assignee</label>
+              <select
+                value={assigneeId}
+                onChange={e => setAssigneeId(e.target.value)}
+                className="w-full bg-white/[0.02] border border-white/[0.06] rounded-none px-4 h-10 text-[11px] font-bold font-sans text-text-primary focus:outline-none focus:ring-1 focus:ring-primary/20 transition-all appearance-none uppercase tracking-widest"
+              >
+                <option value="" className="bg-sidebar">UNASSIGNED</option>
+                {data.teamMembers.filter(m => m.active).map(m => (
+                  <option key={m.id} value={m.id} className="bg-sidebar">{m.name.toUpperCase()}</option>
                 ))}
               </select>
             </div>

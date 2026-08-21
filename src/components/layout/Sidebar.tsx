@@ -1,6 +1,7 @@
 import { motion } from 'motion/react';
-import { LogOut, LayoutDashboard, Users, Settings, BookOpen, Rocket, CalendarDays } from 'lucide-react';
+import { LogOut, LayoutDashboard, Users, Settings, BookOpen, Rocket, CalendarDays, UsersRound } from 'lucide-react';
 import { useAppData } from '../../contexts/AppDataContext';
+import { isTaskOpen, isPostOpen } from '../../utils/statusHelpers';
 
 interface SidebarProps {
   activeView: string;
@@ -13,6 +14,7 @@ const navItems = [
   { id: 'client', label: 'Clients', icon: Users },
   { id: 'fulfillment', label: 'Tasks', icon: Settings },
   { id: 'content', label: 'Content', icon: CalendarDays },
+  { id: 'team', label: 'Team', icon: UsersRound },
   { id: 'studio', label: 'Prompt Studio', icon: BookOpen },
   { id: 'onboarding', label: 'Setup', icon: Rocket },
 ];
@@ -24,13 +26,13 @@ export default function Sidebar({ activeView, setActiveView, onLogout }: Sidebar
     const today = new Date().toISOString().split('T')[0];
     switch (id) {
       case 'command':
-        return data.tasks.filter(t => t.deadline && t.deadline < today && t.status !== 'Deployed').length;
+        return data.tasks.filter(t => t.deadline && t.deadline < today && isTaskOpen(t)).length;
       case 'client':
         return data.clients.filter(c => c.status === 'Active Sprint' || c.status === 'Retainer').length;
       case 'fulfillment':
-        return data.tasks.filter(t => t.status !== 'Deployed').length;
+        return data.tasks.filter(isTaskOpen).length;
       case 'content':
-        return data.posts.filter(p => p.status !== 'Published').length;
+        return data.posts.filter(isPostOpen).length;
       case 'onboarding':
         return data.onboardings.filter(o => o.status !== 'complete').length;
       default:

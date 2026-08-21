@@ -1,5 +1,5 @@
 import { supabase } from './supabase';
-import { AppData, Client, Task, Post, Protocol, OnboardingProtocol, ActivityEntry, TimelineEvent, OnboardingStep, PromptTemplate, InstructionBlock, ContextPack, PromptRecipe, StructuredBrief, CompiledPrompt, GenerationRun, ModelProfile, QualityRubric } from './storage';
+import { AppData, Client, Task, Post, Protocol, OnboardingProtocol, ActivityEntry, TimelineEvent, OnboardingStep, PromptTemplate, InstructionBlock, ContextPack, PromptRecipe, StructuredBrief, CompiledPrompt, GenerationRun, ModelProfile, QualityRubric, TeamMember } from './storage';
 
 // Helper to check if Supabase is actually configured
 const isSupabaseConfigured = () => {
@@ -81,6 +81,8 @@ const mapTask = (row: any): Task => ({
     stagePipeline: row.stage_pipeline ?? row.stagePipeline ?? ['BRIEFED', 'IN PRODUCTION', 'REVIEW', 'CEO APPROVAL', 'CLIENT APPROVAL', 'DEPLOYED'],
     currentStage: row.current_stage ?? row.currentStage ?? 'BRIEFED',
     assignedNode: row.assigned_node ?? row.assignedNode ?? 'CEO',
+    assigneeId: row.assignee_id ?? row.assigneeId ?? null,
+    reviewerId: row.reviewer_id ?? row.reviewerId ?? null,
     priority: row.priority ?? 'normal',
     status: row.status ?? 'active',
     deadline: row.deadline ?? '',
@@ -124,6 +126,7 @@ const mapPost = (row: any): Post => ({
     status: row.status ?? 'PLANNED',
     priority: row.priority ?? 'normal',
     assignedTo: row.assigned_to ?? row.assignedTo ?? 'Art Director',
+    assigneeId: row.assignee_id ?? row.assigneeId ?? null,
     linkedTaskId: row.linked_task_id ?? row.linkedTaskId ?? null,
     assetLinks: row.asset_links ?? row.assetLinks ?? [],
     referencePost: row.reference_post ?? row.referencePost ?? null,
@@ -180,6 +183,21 @@ const mapOnboarding = (row: any): OnboardingProtocol => ({
 });
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
+const mapTeamMember = (row: any): TeamMember => ({
+    id: row.id,
+    userId: row.user_id ?? row.userId ?? null,
+    name: row.name ?? '',
+    email: row.email ?? null,
+    avatarUrl: row.avatar_url ?? row.avatarUrl ?? null,
+    role: row.role ?? 'employee',
+    department: row.department ?? null,
+    weeklyCapacityHours: row.weekly_capacity_hours ?? row.weeklyCapacityHours ?? 40,
+    active: row.active ?? true,
+    createdAt: row.created_at ?? row.createdAt ?? new Date().toISOString(),
+    updatedAt: row.updated_at ?? row.updatedAt ?? new Date().toISOString(),
+});
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mapSettings = (row: any): AppData['settings'] => ({
     ceoPhraseHash: row.ceoPhraseHash ?? row.ceo_phrase_hash ?? null,
     teamPhraseHash: row.teamPhraseHash ?? row.team_phrase_hash ?? null,
@@ -207,12 +225,13 @@ export const fetchAppDataFromSupabase = async (): Promise<Partial<AppData> | nul
     if (!isSupabaseConfigured()) return null;
 
     try {
-        const [clientsRes, tasksRes, postsRes, protocolsRes, onboardingsRes, settingsRes, templatesRes, blocksRes, packsRes, recipesRes, rubricsRes, modelsRes, briefsRes, compiledRes, runsRes] = await Promise.all([
+        const [clientsRes, tasksRes, postsRes, protocolsRes, onboardingsRes, teamMembersRes, settingsRes, templatesRes, blocksRes, packsRes, recipesRes, rubricsRes, modelsRes, briefsRes, compiledRes, runsRes] = await Promise.all([
             supabase.from('clients').select('*'),
             supabase.from('tasks').select('*'),
             supabase.from('posts').select('*'),
             supabase.from('protocols').select('*'),
             supabase.from('onboarding_protocols').select('*'),
+            supabase.from('team_members').select('*'),
             supabase.from('settings').select('*').eq('id', 'global').maybeSingle(),
             supabase.from('prompt_templates').select('*'),
             supabase.from('instruction_blocks').select('*'),
@@ -230,6 +249,7 @@ export const fetchAppDataFromSupabase = async (): Promise<Partial<AppData> | nul
         if (postsRes.error) throw postsRes.error;
         if (protocolsRes.error) throw protocolsRes.error;
         if (onboardingsRes.error) throw onboardingsRes.error;
+        if (teamMembersRes.error) throw teamMembersRes.error;
         if (templatesRes.error || blocksRes.error || packsRes.error || recipesRes.error || rubricsRes.error || modelsRes.error || briefsRes.error || compiledRes.error || runsRes.error) throw templatesRes.error || blocksRes.error || packsRes.error || recipesRes.error || rubricsRes.error || modelsRes.error || briefsRes.error || compiledRes.error || runsRes.error;
 
         const result: Partial<AppData> = {
@@ -238,6 +258,7 @@ export const fetchAppDataFromSupabase = async (): Promise<Partial<AppData> | nul
             posts: (postsRes.data ?? []).map(mapPost),
             protocols: (protocolsRes.data ?? []).map(mapProtocol),
             onboardings: (onboardingsRes.data ?? []).map(mapOnboarding),
+            teamMembers: (teamMembersRes.data ?? []).map(mapTeamMember),
             promptTemplates: (templatesRes.data ?? []).map(mapTemplate),
             instructionBlocks: (blocksRes.data ?? []).map(mapBlock),
             contextPacks: (packsRes.data ?? []).map(mapPack),
@@ -395,6 +416,31 @@ export const syncOnboardingToSupabase = async (onboarding: OnboardingProtocol, i
     }
 };
 
+export const syncTeamMemberToSupabase = async (member: TeamMember, isNew: boolean = false) => {
+    if (!isSupabaseConfigured()) return;
+    debouncedSync(`team-member-${member.id}`, () => {
+        withRetry(async () => {
+            const dbMember = toDB(member);
+            if (isNew) {
+                const { error } = await supabase.from('team_members').insert([dbMember]);
+                if (error) throw error;
+            } else {
+                const { error } = await supabase.from('team_members').update(dbMember).eq('id', member.id);
+                if (error) throw error;
+            }
+        }, `sync team member ${member.id}`);
+    });
+};
+
+export const deleteTeamMemberFromSupabase = async (id: string) => {
+    if (!isSupabaseConfigured()) return;
+    try {
+        await supabase.from('team_members').delete().eq('id', id);
+    } catch (e) {
+        console.error('Failed to delete team member from Supabase', e);
+    }
+};
+
 export const syncSettingsToSupabase = async (settings: AppData['settings']) => {
     if (!isSupabaseConfigured()) return;
     try {
@@ -434,7 +480,7 @@ export const syncPromptOsToSupabase = async (data: AppData) => {
 
 export const subscribeToRealtimeSync = (onChange: () => void) => {
     if (!isSupabaseConfigured()) return () => undefined;
-    const tables = ['clients', 'tasks', 'posts', 'protocols', 'onboarding_protocols', 'prompt_templates', 'instruction_blocks', 'context_packs', 'prompt_recipes', 'quality_rubrics', 'model_profiles', 'prompt_briefs', 'compiled_prompts', 'prompt_generation_runs'];
+    const tables = ['clients', 'tasks', 'posts', 'protocols', 'onboarding_protocols', 'team_members', 'prompt_templates', 'instruction_blocks', 'context_packs', 'prompt_recipes', 'quality_rubrics', 'model_profiles', 'prompt_briefs', 'compiled_prompts', 'prompt_generation_runs'];
     const channel = tables.reduce((current, table) => current.on('postgres_changes', { event: '*', schema: 'public', table }, onChange), supabase.channel('nerozarb-agency-sync'));
     channel.subscribe();
     return () => { supabase.removeChannel(channel); };

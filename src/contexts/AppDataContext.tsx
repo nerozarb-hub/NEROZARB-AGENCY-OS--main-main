@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useCallback, useMemo, ReactNode } from 'react';
-import { AppData, Client, generateOnboardingProtocol, Task, Stage, ActivityEntry, Post, PostStage, Protocol, TimelineEvent } from '../utils/storage';
+import { AppData, Client, generateOnboardingProtocol, Task, Stage, ActivityEntry, Post, PostStage, Protocol, TimelineEvent, TeamMember } from '../utils/storage';
 import * as sync from '../utils/supabaseSync';
 import { Toast, ToastContainer } from '../components/ui/Toast';
 
@@ -28,6 +28,9 @@ interface AppDataContextType {
     addProtocol: (protocol: Omit<Protocol, 'id' | 'createdAt' | 'updatedAt' | 'copyCount'>) => number;
     updateProtocol: (id: number, updates: Partial<Protocol>) => void;
     deleteProtocol: (id: number) => void;
+    addTeamMember: (member: Omit<TeamMember, 'id' | 'createdAt' | 'updatedAt'>) => string;
+    updateTeamMember: (id: string, updates: Partial<TeamMember>) => void;
+    deleteTeamMember: (id: string) => void;
     recordPromptUsage: (id: number) => void;
     showToast: (message: string, type?: 'success' | 'error' | 'info') => void;
     toasts: Toast[];
@@ -612,6 +615,36 @@ export function AppDataProvider({
         sync.deleteProtocolFromSupabase(id);
     };
 
+    const addTeamMember = (member: Omit<TeamMember, 'id' | 'createdAt' | 'updatedAt'>) => {
+        const now = new Date().toISOString();
+        const newMember: TeamMember = { ...member, id: crypto.randomUUID(), createdAt: now, updatedAt: now };
+        setData(prev => ({ ...prev, teamMembers: [...prev.teamMembers, newMember] }));
+        sync.syncTeamMemberToSupabase(newMember, true);
+        return newMember.id;
+    };
+
+    const updateTeamMember = (id: string, updates: Partial<TeamMember>) => {
+        setData(prev => {
+            const nextTeamMembers = prev.teamMembers.map(m => {
+                if (m.id !== id) return m;
+                const updatedMember = { ...m, ...updates, updatedAt: new Date().toISOString() };
+                sync.syncTeamMemberToSupabase(updatedMember);
+                return updatedMember;
+            });
+            return { ...prev, teamMembers: nextTeamMembers };
+        });
+    };
+
+    const deleteTeamMember = (id: string) => {
+        setData(prev => ({
+            ...prev,
+            teamMembers: prev.teamMembers.filter(m => m.id !== id),
+            tasks: prev.tasks.map(t => t.assigneeId === id ? { ...t, assigneeId: null } : t),
+            posts: prev.posts.map(p => p.assigneeId === id ? { ...p, assigneeId: null } : p),
+        }));
+        sync.deleteTeamMemberFromSupabase(id);
+    };
+
     const recordPromptUsage = (id: number) => {
         setData(prev => {
             const nextProtocols = prev.protocols.map(p => {
@@ -725,7 +758,8 @@ export function AppDataProvider({
         updateOnboardingStep, addTask, updateTask, advanceTaskStage, generateSprintTasks,
         addPost, updatePost, advancePostStage, generateMonthlyPosts, addProtocol, updateProtocol,
         deleteProtocol, recordPromptUsage, showToast, toasts,
-        generateMagicLink, addProjectPhase, updateProjectPhase, addClientUpdate
+        generateMagicLink, addProjectPhase, updateProjectPhase, addClientUpdate,
+        addTeamMember, updateTeamMember, deleteTeamMember
     }), [data, setData, showToast, toasts]);
 
     return (

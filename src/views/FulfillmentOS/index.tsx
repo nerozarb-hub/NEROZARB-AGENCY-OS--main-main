@@ -177,7 +177,7 @@ export default function FulfillmentOS({ onNavigate }: { onNavigate?: (view: stri
         {viewMode === 'kanban' && <KanbanView tasks={viewTasks} onTaskClick={setSelectedTask} />}
         {viewMode === 'list' && <ListView tasks={viewTasks} onTaskClick={setSelectedTask} />}
         {viewMode === 'timeline' && <TimelineView tasks={viewTasks} />}
-        {viewMode === 'my-tasks' && <MyTasksView tasks={data.tasks} onTaskClick={setSelectedTask} />}
+        {viewMode === 'my-tasks' && <MyTasksView tasks={data.tasks} teamMembers={data.teamMembers} onTaskClick={setSelectedTask} onGoToTeam={() => onNavigate?.('team')} />}
       </motion.div>
 
       {/* Task Detail Modal */}

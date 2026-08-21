@@ -49,8 +49,8 @@ export default function ListView({ tasks, onTaskClick }: { tasks: any[], onTaskC
                   <td className="p-5"><Badge status="review" className="text-[10px] font-bold tracking-widest">{task.status}</Badge></td>
                   <td className="p-5">
                     <div className="flex items-center gap-2">
-                      <div className={`w-1.5 h-1.5 rotate-45 ${task.priority === 'high' ? 'bg-red-500' :
-                          task.priority === 'medium' ? 'bg-yellow-500' : 'bg-primary'
+                      <div className={`w-1.5 h-1.5 rotate-45 ${task.priority === 'critical' ? 'bg-red-500' :
+                          task.priority === 'high' ? 'bg-yellow-500' : 'bg-primary'
                         }`} />
                       <span className="font-sans text-[11px] font-bold text-text-muted/60 uppercase tracking-widest">{task.priority}</span>
                     </div>

@@ -13,6 +13,7 @@ import { formatCurrency } from '../../utils/formatCurrency';
 import RevenueGateModal from './RevenueGateModal';
 import ClientEditModal from './ClientEditModal';
 import { EmptyState } from '../../components/ui/EmptyState';
+import { isTaskOpen } from '../../utils/statusHelpers';
 
 const LIFECYCLE_STATUSES = ['Lead', 'Discovery', 'Active Sprint', 'Retainer', 'Closed'] as const;
 
@@ -36,7 +37,7 @@ export default function RosterView({ onSelectClient }: { onSelectClient: (id: st
       const clientTasks = data.tasks.filter(t => t.clientId === client.id);
       const now = new Date();
       const overdueTasks = clientTasks.filter(t =>
-        t.status !== 'Deployed' && t.deadline && new Date(t.deadline) < now
+        isTaskOpen(t) && t.deadline && new Date(t.deadline) < now
       );
       const daysSinceActivity = clientTasks.length > 0
         ? Math.floor((Date.now() - Math.max(...clientTasks.map(t => new Date(t.updatedAt).getTime()))) / 86400000)

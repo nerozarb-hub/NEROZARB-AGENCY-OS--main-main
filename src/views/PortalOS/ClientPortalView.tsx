@@ -34,18 +34,21 @@ export default function ClientPortalView({ token }: { token: string }) {
                     return; // Found locally, done!
                 }
 
-                // --- Strategy 2: Fall back to Supabase if configured ---
+                // --- Strategy 2: Fall back to the client-portal-data Edge Function if configured ---
+                // Portal data is never read from the `clients`/`project_phases`/`client_updates`
+                // tables directly with the anon key — that previously required a table-wide
+                // SELECT policy any caller could exploit. The Edge Function validates the token
+                // server-side (service_role) and returns only the matching client's data.
                 if (isSupabaseConfigured()) {
-                    const { data: clientData, error: clientErr } = await supabase
-                        .from('clients')
-                        .select('*')
-                        .eq('magic_link_token', token)
-                        .single();
+                    const { data: result, error: fnErr } = await supabase.functions.invoke('client-portal-data', {
+                        body: { token },
+                    });
 
-                    if (clientErr || !clientData) {
+                    if (fnErr || !result?.client) {
                         throw new Error('Invalid or expired magic link.');
                     }
 
+                    const clientData = result.client;
                     setClient({
                         id: clientData.id,
                         name: clientData.name,
@@ -54,14 +57,7 @@ export default function ClientPortalView({ token }: { token: string }) {
                         magicLinkToken: clientData.magic_link_token,
                     } as Partial<Client>);
 
-                    // Fetch project phases
-                    const { data: phasesData } = await supabase
-                        .from('project_phases')
-                        .select('*')
-                        .eq('client_id', clientData.id)
-                        .order('order_index', { ascending: true });
-
-                    if (phasesData) setPhases(phasesData.map(p => ({
+                    setPhases((result.phases || []).map((p: any) => ({
                         ...p,
                         clientId: p.client_id,
                         orderIndex: p.order_index,
@@ -69,14 +65,7 @@ export default function ClientPortalView({ token }: { token: string }) {
                         updatedAt: p.updated_at
                     })) as ProjectPhase[]);
 
-                    // Fetch client updates
-                    const { data: updatesData } = await supabase
-                        .from('client_updates')
-                        .select('*')
-                        .eq('client_id', clientData.id)
-                        .order('created_at', { ascending: false });
-
-                    if (updatesData) setUpdates(updatesData.map(u => ({
+                    setUpdates((result.updates || []).map((u: any) => ({
                         ...u,
                         clientId: u.client_id,
                         createdAt: u.created_at

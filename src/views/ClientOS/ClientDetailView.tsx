@@ -7,6 +7,7 @@ import { useAppData } from '../../contexts/AppDataContext';
 import React, { useState, useMemo, memo } from 'react';
 import ClientEditModal from './ClientEditModal';
 import ClientPortalManager from './ClientPortalManager';
+import { isTaskOpen } from '../../utils/statusHelpers';
 
 export default function ClientDetailView({ clientId, onBack, onNavigate }: { clientId: string, onBack: () => void, onNavigate?: (view: string, clientId?: string) => void }) {
   const { data, updateOnboardingStep } = useAppData();
@@ -28,7 +29,7 @@ export default function ClientDetailView({ clientId, onBack, onNavigate }: { cli
 
   const healthScore = useMemo(() => {
     let score = 100;
-    const overdueTasks = clientTasks.filter(t => t.deadline && new Date(t.deadline) < new Date() && t.status !== 'done');
+    const overdueTasks = clientTasks.filter(t => t.deadline && new Date(t.deadline) < new Date() && isTaskOpen(t));
     score -= overdueTasks.length * 5;
 
     const lastActivity = clientTasks.length > 0
