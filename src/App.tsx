@@ -1,6 +1,7 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
 import LoginView from './views/Auth/LoginView';
 import AppShell from './components/layout/AppShell';
+import SystemSyncModal from './components/modals/SystemSyncModal';
 import { loadData, saveData, AppData } from './utils/storage';
 import { AppDataProvider } from './contexts/AppDataContext';
 import { fetchAppDataFromSupabase, subscribeToRealtimeSync, syncSettingsToSupabase } from './utils/supabaseSync';
@@ -20,8 +21,10 @@ const ClientPortalView = lazy(() => import('./views/PortalOS/ClientPortalView'))
 // Suspense fallback for lazy-loaded views
 function ViewLoader() {
   return (
-    <div className="flex-1 flex items-center justify-center">
-      <div className="text-text-muted text-sm font-mono animate-pulse tracking-wider">LOADING MODULE...</div>
+    <div className="flex-1 flex items-center justify-center min-h-[50vh]">
+      <div className="text-text-muted text-xs font-mono animate-pulse tracking-widest uppercase">
+        LOADING MODULE...
+      </div>
     </div>
   );
 }
@@ -29,51 +32,43 @@ function ViewLoader() {
 export default function App() {
   const [data, setData] = useState<AppData>(loadData());
   const [isLoading, setIsLoading] = useState(true);
-  const [authLevel, setAuthLevel] = useState<'ceo' | null>(null);
+  const [authLevel, setAuthLevel] = useState<'ceo' | 'team' | null>(() => {
+    const saved = sessionStorage.getItem('authLevel') || localStorage.getItem('nerozarb_auth_level');
+    return (saved === 'ceo' || saved === 'team') ? saved : null;
+  });
   const [activeView, setActiveView] = useState('command');
   const [selectedGlobalClient, setSelectedGlobalClient] = useState<string | null>(null);
+  const [isSyncModalOpen, setIsSyncModalOpen] = useState(false);
 
   useEffect(() => {
     async function hydrate() {
       setIsLoading(true);
 
-      // 1. Check Supabase Session First
-      const { data: { session } } = await supabase.auth.getSession();
-
-      const hasWorkspaceKeySession = session?.user.email?.endsWith('@access.nerozarb.invalid');
-      if (hasWorkspaceKeySession) setAuthLevel('ceo');
-      else {
-        if (session) await supabase.auth.signOut();
-        setAuthLevel(null);
+      // 1. Check existing session / stored auth level
+      const savedAuth = sessionStorage.getItem('authLevel') || localStorage.getItem('nerozarb_auth_level');
+      if (savedAuth === 'ceo' || savedAuth === 'team') {
+        setAuthLevel(savedAuth);
+        sessionStorage.setItem('authLevel', savedAuth);
       }
 
-      // 2. Fetch App Data
+      // 2. Fetch App Data from Cloud
       const cloudData = await fetchAppDataFromSupabase();
       if (cloudData) {
         setData(prev => ({
           ...prev,
-          ...cloudData
+          ...cloudData,
+          settings: {
+            ...prev.settings,
+            ...(cloudData.settings || {})
+          }
         }));
       }
       setIsLoading(false);
     }
     hydrate();
-
-    // 3. Listen for Auth Changes (Login / Logout across tabs)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      if (session?.user.email?.endsWith('@access.nerozarb.invalid')) {
-        setAuthLevel('ceo');
-        const cloudData = await fetchAppDataFromSupabase();
-        if (cloudData) setData(prev => ({ ...prev, ...cloudData }));
-      } else {
-        if (session) await supabase.auth.signOut();
-        setAuthLevel(null);
-      }
-    });
-
-    return () => subscription.unsubscribe();
   }, []);
 
+  // Realtime subscription for Supabase changes
   useEffect(() => {
     let refreshTimer: ReturnType<typeof setTimeout> | undefined;
     return subscribeToRealtimeSync(() => {
@@ -92,61 +87,39 @@ export default function App() {
     return () => clearTimeout(timeout);
   }, [data, isLoading]);
 
-  const handleInitialize = (ceoHash: string, teamHash: string) => {
-    const newSettings = {
-      ceoPhraseHash: ceoHash,
-      teamPhraseHash: teamHash,
-      initialized: true,
-      lastUpdated: new Date().toISOString(),
-    };
+  const handleLogin = async (level: 'ceo' | 'team') => {
+    setAuthLevel(level);
+    sessionStorage.setItem('authLevel', level);
+    localStorage.setItem('nerozarb_auth_level', level);
 
-    setData((prev) => ({
-      ...prev,
-      settings: newSettings,
-    }));
-
-    // Sync to Supabase
-    syncSettingsToSupabase(newSettings);
-  };
-
-  const handleReset = () => {
-    const resetSettings = {
-      ceoPhraseHash: null,
-      teamPhraseHash: null,
-      initialized: false,
-      lastUpdated: new Date().toISOString(),
-    };
-
-    setData((prev) => ({
-      ...prev,
-      settings: resetSettings,
-    }));
-
-    // Sync to Supabase
-    syncSettingsToSupabase(resetSettings);
-
-    // Clear local storage to be sure
-    localStorage.removeItem('nerozarb-os-v2');
-  };
-
-  const handleLogin = async () => {
-    setAuthLevel('ceo');
-    sessionStorage.setItem('authLevel', 'ceo');
+    // Refresh cloud data on successful login
     const cloudData = await fetchAppDataFromSupabase();
     if (cloudData) setData(prev => ({ ...prev, ...cloudData }));
     setActiveView('command');
   };
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    try {
+      await supabase.auth.signOut();
+    } catch {
+      // ignore
+    }
     setAuthLevel(null);
     sessionStorage.removeItem('authLevel');
+    localStorage.removeItem('nerozarb_auth_level');
+  };
+
+  const handleForceRefresh = async () => {
+    const cloudData = await fetchAppDataFromSupabase();
+    if (cloudData) setData(prev => ({ ...prev, ...cloudData }));
   };
 
   if (isLoading) {
     return (
       <div className="min-h-screen bg-[#09090B] flex items-center justify-center">
-        <div className="text-white/50 text-sm font-space animate-pulse">Establishing secure connection...</div>
+        <div className="text-white/50 text-xs font-mono tracking-widest uppercase animate-pulse">
+          INITIALIZING NEROZARB OS...
+        </div>
       </div>
     );
   }
@@ -161,20 +134,16 @@ export default function App() {
     );
   }
 
-  // 1. Initial Setup Mode
-  // Setup view removed because we are using hardcoded global passphrases.
-
-  // 2. Login Screen
+  // 1. Passphrase Login Screen (CEO & Team)
   if (!authLevel) {
     return (
       <AppDataProvider data={data} setData={setData}>
-        <LoginView
-          onLogin={handleLogin}
-        />
+        <LoginView onLogin={handleLogin} />
       </AppDataProvider>
     );
   }
 
+  // 2. Authenticated App Shell with Role Panel
   return (
     <AppDataProvider data={data} setData={setData}>
       <AppShell
@@ -183,34 +152,68 @@ export default function App() {
         selectedClient={selectedGlobalClient}
         setSelectedClient={setSelectedGlobalClient}
         onLogout={handleLogout}
+        authLevel={authLevel}
+        onOpenSyncModal={() => setIsSyncModalOpen(true)}
       >
         <GlobalErrorBoundary>
           <Suspense fallback={<ViewLoader />}>
-            {activeView === 'command' && <DashboardView onNavigate={(view, id) => {
-              setActiveView(view);
-              if (id) setSelectedGlobalClient(id);
-            }} />}
-            {activeView === 'client' && <ClientOS onNavigate={(view, id) => {
-              setActiveView(view);
-              if (id) setSelectedGlobalClient(id);
-            }} />}
-            {activeView === 'fulfillment' && <FulfillmentOS onNavigate={(view, id) => {
-              setActiveView(view);
-              if (id) setSelectedGlobalClient(id);
-            }} />}
-            {activeView === 'content' && <ContentOS onNavigate={(view, id) => {
-              setActiveView(view);
-              if (id) setSelectedGlobalClient(id);
-            }} />}
-            {activeView === 'studio' && <PromptStudio onNavigate={setActiveView} />}
-            {activeView === 'onboarding' && <OnboardingOS onNavigate={(view, id) => {
-              setActiveView(view);
-              if (id) setSelectedGlobalClient(id);
-            }} />}
-            {activeView === 'team' && <TeamView />}
+            {activeView === 'command' && (
+              <DashboardView
+                onNavigate={(view, id) => {
+                  setActiveView(view);
+                  if (id) setSelectedGlobalClient(id);
+                }}
+              />
+            )}
+            {activeView === 'client' && (
+              <ClientOS
+                onNavigate={(view, id) => {
+                  setActiveView(view);
+                  if (id) setSelectedGlobalClient(id);
+                }}
+              />
+            )}
+            {activeView === 'fulfillment' && (
+              <FulfillmentOS
+                onNavigate={(view, id) => {
+                  setActiveView(view);
+                  if (id) setSelectedGlobalClient(id);
+                }}
+              />
+            )}
+            {activeView === 'content' && (
+              <ContentOS
+                onNavigate={(view, id) => {
+                  setActiveView(view);
+                  if (id) setSelectedGlobalClient(id);
+                }}
+              />
+            )}
+            {activeView === 'studio' && (
+              <PromptStudio onNavigate={setActiveView} />
+            )}
+            {activeView === 'onboarding' && (
+              <OnboardingOS
+                onNavigate={(view, id) => {
+                  setActiveView(view);
+                  if (id) setSelectedGlobalClient(id);
+                }}
+              />
+            )}
+            {activeView === 'team' && (
+              <TeamView />
+            )}
           </Suspense>
         </GlobalErrorBoundary>
       </AppShell>
+
+      {/* Built-in System & Sync Governance Modal */}
+      <SystemSyncModal
+        isOpen={isSyncModalOpen}
+        onClose={() => setIsSyncModalOpen(false)}
+        authLevel={authLevel}
+        onForceRefresh={handleForceRefresh}
+      />
     </AppDataProvider>
   );
 }

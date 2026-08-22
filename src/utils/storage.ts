@@ -124,3 +124,37 @@ export const hashPassphrase = (phrase: string): string => {
   for (let index = 0; index < phrase.length; index += 1) hash = ((hash << 5) - hash) + phrase.charCodeAt(index) | 0;
   return hash.toString();
 };
+
+export const DEFAULT_CEO_PASSPHRASES = ['NERO2024CEO', 'NEROCEO16'];
+export const DEFAULT_TEAM_PASSPHRASES = ['NERO2024TEAM', 'NEROTEAM2025'];
+
+export const validatePassphrase = (
+  input: string,
+  settings?: AppData['settings'] | null
+): 'ceo' | 'team' | null => {
+  const normalized = input.trim().toUpperCase();
+  if (!normalized) return null;
+
+  const hashed = hashPassphrase(normalized);
+
+  // 1. Check against custom CEO hash if configured
+  if (settings?.ceoPhraseHash && hashed === settings.ceoPhraseHash) {
+    return 'ceo';
+  }
+  // 2. Check against default CEO passphrases
+  if (DEFAULT_CEO_PASSPHRASES.map(p => p.toUpperCase()).includes(normalized)) {
+    return 'ceo';
+  }
+
+  // 3. Check against custom Team hash if configured
+  if (settings?.teamPhraseHash && hashed === settings.teamPhraseHash) {
+    return 'team';
+  }
+  // 4. Check against default Team passphrases
+  if (DEFAULT_TEAM_PASSPHRASES.map(p => p.toUpperCase()).includes(normalized)) {
+    return 'team';
+  }
+
+  return null;
+};
+
