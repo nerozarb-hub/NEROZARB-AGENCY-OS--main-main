@@ -1,39 +1,102 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Modal } from '../../components/ui/Modal';
-import { Input } from '../../components/ui/Input';
+import { Input, Textarea } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
 import { useAppData } from '../../contexts/AppDataContext';
 import { TaskCategory, NodeRole, Stage } from '../../utils/storage';
-import { ClipboardList, Users, Target, Clock, AlertCircle } from 'lucide-react';
+import { resolvePromptContent } from '../../features/prompt-os/promptVault';
+import { BookOpen, Wand2 } from 'lucide-react';
 
 interface NewTaskModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
+const TASK_CATEGORIES: TaskCategory[] = [
+  'Content Production',
+  'Ad Creative',
+  'Website',
+  'Strategy',
+  'Video Production',
+  'Brand Design',
+  'Analytics',
+  'Automation',
+  'Client Communication',
+  'Other',
+];
+
+const NODE_ROLES: NodeRole[] = [
+  'CEO',
+  'Art Director',
+  'Video Editor',
+  'Operations Builder',
+  'Social Media Manager',
+  'Documentation Manager',
+];
+
 export default function NewTaskModal({ isOpen, onClose }: NewTaskModalProps) {
-  const { data, addTask } = useAppData();
+  const { data, addTask, showToast } = useAppData();
 
   const [name, setName] = useState('');
   const [clientId, setClientId] = useState<number | ''>('');
-  const [category, setCategory] = useState<TaskCategory>('Other');
+  const [category, setCategory] = useState<TaskCategory>('Content Production');
   const [phase, setPhase] = useState<'phase1' | 'phase2' | 'phase3' | 'ongoing'>('ongoing');
   const [priority, setPriority] = useState<'normal' | 'high' | 'critical'>('normal');
-  const [assignedNode, setAssignedNode] = useState<NodeRole>('CEO');
+  const [assignedNode, setAssignedNode] = useState<NodeRole>('Art Director');
   const [assigneeId, setAssigneeId] = useState<string>('');
   const [deadline, setDeadline] = useState('');
   const [estimatedHours, setEstimatedHours] = useState('');
+  const [linkedPromptId, setLinkedPromptId] = useState<string>('');
   const [brief, setBrief] = useState('');
 
-  const handleSubmit = () => {
-    if (!name || clientId === '') return;
+  const selectedClient = useMemo(
+    () => (clientId !== '' ? data.clients.find(c => c.id === Number(clientId)) || null : null),
+    [clientId, data.clients]
+  );
 
-    // Default standard pipeline
-    const pipeline: Stage[] = ['BRIEFED', 'IN PRODUCTION', 'REVIEW', 'CEO APPROVAL', 'CLIENT APPROVAL', 'DEPLOYED'];
+  const availablePrompts = useMemo(
+    () =>
+      data.promptTemplates.filter(
+        p => p.status !== 'archived' && (!p.clientId || (clientId !== '' && p.clientId === Number(clientId)))
+      ),
+    [data.promptTemplates, clientId]
+  );
+
+  const selectedPrompt = useMemo(
+    () => data.promptTemplates.find(p => p.id === linkedPromptId) || null,
+    [data.promptTemplates, linkedPromptId]
+  );
+
+  const handleInsertPromptIntoBrief = () => {
+    if (!selectedPrompt) return;
+    const resolved = resolvePromptContent(selectedPrompt.content, {
+      client: selectedClient,
+      includeClientContext: Boolean(selectedClient),
+    });
+    setBrief(prev => (prev.trim() ? `${prev.trim()}\n\n---\n\n${resolved}` : resolved));
+    if (!name.trim()) {
+      setName(
+        selectedClient ? `${selectedPrompt.title} — ${selectedClient.name}` : selectedPrompt.title
+      );
+    }
+    showToast('Prompt inserted into task brief');
+  };
+
+  const handleSubmit = () => {
+    if (!name.trim() || clientId === '') return;
+
+    const pipeline: Stage[] = [
+      'BRIEFED',
+      'IN PRODUCTION',
+      'REVIEW',
+      'CEO APPROVAL',
+      'CLIENT APPROVAL',
+      'DEPLOYED',
+    ];
 
     addTask({
       clientId: Number(clientId),
-      name,
+      name: name.trim(),
       category,
       phase,
       stagePipeline: pipeline,
@@ -44,24 +107,26 @@ export default function NewTaskModal({ isOpen, onClose }: NewTaskModalProps) {
       status: 'active',
       deadline: deadline || new Date().toISOString().split('T')[0],
       estimatedHours: estimatedHours ? Number(estimatedHours) : null,
-      brief,
+      brief: brief.trim(),
       assetLinks: [],
       sopReference: null,
       notes: '',
       deliveredOnTime: null,
-      linkedPostId: null
+      linkedPostId: null,
+      linkedPromptId: linkedPromptId || null,
+      compiledPromptId: linkedPromptId || null,
     });
 
-    // Reset form
     setName('');
     setClientId('');
-    setCategory('Other');
+    setCategory('Content Production');
     setPhase('ongoing');
     setPriority('normal');
-    setAssignedNode('CEO');
+    setAssignedNode('Art Director');
     setAssigneeId('');
     setDeadline('');
     setEstimatedHours('');
+    setLinkedPromptId('');
     setBrief('');
     onClose();
   };
@@ -71,192 +136,193 @@ export default function NewTaskModal({ isOpen, onClose }: NewTaskModalProps) {
       isOpen={isOpen}
       onClose={onClose}
       title={
-        <div className="space-y-2">
-          <p className="font-sans text-[11px] font-bold uppercase tracking-[0.3em] text-primary/80">Operational Proxy</p>
-          <h2 className="font-heading text-4xl text-text-primary uppercase tracking-tighter leading-none">Initialize Objective</h2>
+        <div>
+          <h2 className="text-xl font-semibold text-text-primary">New Task</h2>
+          <p className="text-xs text-text-muted mt-1">
+            Assign a deliverable, attach a saved prompt from the Prompt Vault, and set a deadline.
+          </p>
         </div>
       }
-
       footer={
-        <div className="flex flex-col sm:flex-row justify-end gap-4 w-full">
-          <Button variant="ghost" onClick={onClose} className="px-8">
-            Abort
+        <div className="flex justify-end gap-3 w-full">
+          <Button variant="ghost" onClick={onClose}>
+            Cancel
           </Button>
-          <Button
-            onClick={handleSubmit}
-            disabled={!name || clientId === ''}
-            className="bg-primary hover:bg-accent-mid text-text-primary px-10"
-          >
-            Deploy Objective
+          <Button onClick={handleSubmit} disabled={!name.trim() || clientId === ''}>
+            Create Task
           </Button>
         </div>
       }
-
     >
-      <div className="space-y-8 py-2">
-        {/* Section 1: Core Details */}
-        <div className="space-y-6">
-          <h3 className="font-sans text-[11px] font-bold tracking-[0.3em] text-text-muted/40 uppercase border-b border-white/[0.04] pb-5">
-            Objective Identification
-          </h3>
+      <div className="space-y-5">
+        <Input
+          label="Task Title"
+          placeholder="e.g. Write 60-Day Content Strategy or Edit Product Launch Reel"
+          value={name}
+          onChange={e => setName(e.target.value)}
+          required
+        />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="md:col-span-2">
-              <Input
-                label="Objective Designation"
-                placeholder="e.g. Q4 STRAT"
-                value={name}
-                onChange={e => setName(e.target.value)}
-                required
-                className="text-lg"
-              />
-            </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="new-task-client" className="mb-2 block text-sm font-medium text-text-secondary">
+              Client *
+            </label>
+            <select
+              id="new-task-client"
+              value={clientId}
+              onChange={e => setClientId(e.target.value ? Number(e.target.value) : '')}
+              className="min-h-11 w-full rounded-lg border border-border-dark bg-onyx px-3.5 py-2.5 text-sm text-text-primary focus:border-primary focus:outline-none"
+            >
+              <option value="">Select client</option>
+              {data.clients.map(c => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+          </div>
 
-
-            <div className="space-y-2">
-              <label className="font-sans text-[11px] font-bold text-text-muted/60 uppercase tracking-widest pl-1">Entity Allocation *</label>
-              <select
-                value={clientId}
-                onChange={e => setClientId(Number(e.target.value))}
-                className="w-full bg-white/[0.02] border border-white/[0.06] rounded-none px-4 h-10 text-[11px] font-bold font-sans text-text-primary focus:outline-none focus:ring-1 focus:ring-primary/20 transition-all appearance-none uppercase tracking-widest"
-              >
-                <option value="" disabled className="bg-sidebar">SELECT ENTITY</option>
-                {data.clients.map(c => (
-                  <option key={c.id} value={c.id} className="bg-sidebar">{c.name.toUpperCase()}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="space-y-2">
-              <label className="font-sans text-[11px] font-bold text-text-muted/60 uppercase tracking-widest pl-1">Vector Category</label>
-              <select
-                value={category}
-                onChange={e => setCategory(e.target.value as TaskCategory)}
-                className="w-full bg-white/[0.02] border border-white/[0.06] rounded-none px-4 h-10 text-[11px] font-bold font-sans text-text-primary focus:outline-none focus:ring-1 focus:ring-primary/20 transition-all appearance-none uppercase tracking-widest"
-              >
-                {['Content Production', 'Ad Creative', 'Website', 'Strategy', 'Video Production', 'Brand Design', 'Analytics', 'Automation', 'Client Communication', 'Other'].map(c => (
-                  <option key={c} value={c} className="bg-sidebar">{c.toUpperCase()}</option>
-                ))}
-              </select>
-            </div>
-
+          <div>
+            <label htmlFor="new-task-category" className="mb-2 block text-sm font-medium text-text-secondary">
+              Category
+            </label>
+            <select
+              id="new-task-category"
+              value={category}
+              onChange={e => setCategory(e.target.value as TaskCategory)}
+              className="min-h-11 w-full rounded-lg border border-border-dark bg-onyx px-3.5 py-2.5 text-sm text-text-primary focus:border-primary focus:outline-none"
+            >
+              {TASK_CATEGORIES.map(c => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 
-        {/* Section 2: Resource Assignment */}
-        <div className="space-y-6">
-          <h3 className="font-sans text-[11px] font-bold tracking-[0.3em] text-text-muted/40 uppercase border-b border-white/[0.04] pb-5">
-            Resource Stream
-          </h3>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <label className="font-sans text-[11px] font-bold text-text-muted/60 uppercase tracking-widest pl-1">Deployment Node</label>
-              <select
-                value={assignedNode}
-                onChange={e => setAssignedNode(e.target.value as NodeRole)}
-                className="w-full bg-white/[0.02] border border-white/[0.06] rounded-none px-4 h-10 text-[11px] font-bold font-sans text-text-primary focus:outline-none focus:ring-1 focus:ring-primary/20 transition-all appearance-none uppercase tracking-widest"
+        {/* Prompt OS Linker */}
+        <div className="rounded-lg border border-border-dark bg-onyx/70 p-4 space-y-3">
+          <div className="flex items-center justify-between gap-2">
+            <label
+              htmlFor="new-task-prompt"
+              className="text-xs font-semibold text-text-secondary flex items-center gap-1.5"
+            >
+              <BookOpen size={14} className="text-primary" />
+              <span>Attach Prompt from Prompt OS (Optional)</span>
+            </label>
+            {selectedPrompt && (
+              <button
+                type="button"
+                onClick={handleInsertPromptIntoBrief}
+                className="inline-flex items-center gap-1.5 rounded-md bg-primary/15 border border-primary/30 px-2.5 py-1 text-xs font-medium text-primary hover:bg-primary/25 transition-colors"
               >
-                {['CEO', 'Art Director', 'Video Editor', 'Operations Builder', 'Social Media Manager', 'Documentation Manager'].map(n => (
-                  <option key={n} value={n} className="bg-sidebar">{n.toUpperCase()}</option>
-                ))}
-              </select>
-            </div>
+                <Wand2 size={13} />
+                <span>Insert into Brief</span>
+              </button>
+            )}
+          </div>
 
-            <div className="space-y-2">
-              <label className="font-sans text-[11px] font-bold text-text-muted/60 uppercase tracking-widest pl-1">Assignee</label>
-              <select
-                value={assigneeId}
-                onChange={e => setAssigneeId(e.target.value)}
-                className="w-full bg-white/[0.02] border border-white/[0.06] rounded-none px-4 h-10 text-[11px] font-bold font-sans text-text-primary focus:outline-none focus:ring-1 focus:ring-primary/20 transition-all appearance-none uppercase tracking-widest"
-              >
-                <option value="" className="bg-sidebar">UNASSIGNED</option>
-                {data.teamMembers.filter(m => m.active).map(m => (
-                  <option key={m.id} value={m.id} className="bg-sidebar">{m.name.toUpperCase()}</option>
-                ))}
-              </select>
-            </div>
+          <select
+            id="new-task-prompt"
+            value={linkedPromptId}
+            onChange={e => setLinkedPromptId(e.target.value)}
+            className="min-h-10 w-full rounded-lg border border-border-dark bg-card px-3 text-sm text-text-primary focus:border-primary focus:outline-none"
+          >
+            <option value="">No prompt attached</option>
+            {availablePrompts.map(prompt => (
+              <option key={prompt.id} value={prompt.id}>
+                [{prompt.category}] {prompt.title}
+              </option>
+            ))}
+          </select>
+        </div>
 
-            <div className="space-y-2">
-              <label className="font-sans text-[11px] font-bold text-text-muted/60 uppercase tracking-widest pl-1">Threat Level</label>
-              <div className="grid grid-cols-3">
-                {[
-                  { id: 'normal', label: 'NORMAL' },
-                  { id: 'high', label: 'HIGH' },
-                  { id: 'critical', label: 'CRITICAL' }
-                ].map(p => (
-                  <button
-                    key={p.id}
-                    type="button"
-                    onClick={() => setPriority(p.id as any)}
-                    className={`h-10 text-[10px] font-bold font-sans tracking-widest border transition-all duration-300 rounded-none ${priority === p.id 
-                      ? 'bg-primary/20 border-primary/40 text-primary' 
-                      : 'bg-white/[0.02] border-white/[0.06] text-text-muted/40 hover:border-white/20'
-                      }`}
-                  >
-                    {p.label}
-                  </button>
-                ))}
-              </div>
-            </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div>
+            <label htmlFor="new-task-role" className="mb-2 block text-sm font-medium text-text-secondary">
+              Role
+            </label>
+            <select
+              id="new-task-role"
+              value={assignedNode}
+              onChange={e => setAssignedNode(e.target.value as NodeRole)}
+              className="min-h-11 w-full rounded-lg border border-border-dark bg-onyx px-3.5 py-2.5 text-sm text-text-primary focus:border-primary focus:outline-none"
+            >
+              {NODE_ROLES.map(n => (
+                <option key={n} value={n}>
+                  {n}
+                </option>
+              ))}
+            </select>
+          </div>
 
+          <div>
+            <label htmlFor="new-task-assignee" className="mb-2 block text-sm font-medium text-text-secondary">
+              Team Member
+            </label>
+            <select
+              id="new-task-assignee"
+              value={assigneeId}
+              onChange={e => setAssigneeId(e.target.value)}
+              className="min-h-11 w-full rounded-lg border border-border-dark bg-onyx px-3.5 py-2.5 text-sm text-text-primary focus:border-primary focus:outline-none"
+            >
+              <option value="">Unassigned</option>
+              {data.teamMembers
+                .filter(m => m.active)
+                .map(m => (
+                  <option key={m.id} value={m.id}>
+                    {m.name}
+                  </option>
+                ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="mb-2 block text-sm font-medium text-text-secondary">Priority</label>
+            <div className="grid grid-cols-3 gap-1.5">
+              {(['normal', 'high', 'critical'] as const).map(p => (
+                <button
+                  key={p}
+                  type="button"
+                  onClick={() => setPriority(p)}
+                  className={`min-h-11 rounded-lg border text-xs font-medium capitalize transition-colors ${
+                    priority === p
+                      ? 'border-primary bg-primary text-onyx font-semibold'
+                      : 'border-border-dark bg-onyx text-text-secondary hover:bg-white/[0.04]'
+                  }`}
+                >
+                  {p}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* Section 3: Timeline & Scale */}
-        <div className="space-y-6">
-          <h3 className="font-sans text-[11px] font-bold tracking-[0.3em] text-text-muted/40 uppercase border-b border-white/[0.04] pb-5">
-            Temporal Parameters
-          </h3>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="sm:col-span-1 lg:col-span-1">
-              <Input
-                label="Process Phase"
-                placeholder="e.g. ALPHA"
-                value={phase}
-                onChange={e => setPhase(e.target.value as any)}
-                className="text-[11px]"
-              />
-            </div>
-            <div className="sm:col-span-1 lg:col-span-1">
-              <Input
-                label="Objective Lock"
-                type="date"
-                value={deadline}
-                onChange={e => setDeadline(e.target.value)}
-                className="text-[11px]"
-              />
-            </div>
-            <div className="sm:col-span-2 lg:col-span-1">
-              <Input
-                label="Quantum (Hours)"
-                placeholder="e.g. 12"
-                type="number"
-                value={estimatedHours}
-                onChange={e => setEstimatedHours(e.target.value)}
-                className="text-[11px]"
-              />
-            </div>
-          </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Input
+            label="Deadline"
+            type="date"
+            value={deadline}
+            onChange={e => setDeadline(e.target.value)}
+          />
+          <Input
+            label="Estimated Hours"
+            type="number"
+            placeholder="e.g. 4"
+            value={estimatedHours}
+            onChange={e => setEstimatedHours(e.target.value)}
+          />
         </div>
 
-        {/* Section 4: Brief */}
-        <div className="space-y-6">
-          <h3 className="font-sans text-[11px] font-bold tracking-[0.3em] text-text-muted/40 uppercase border-b border-white/[0.04] pb-5">
-            Objective Scope
-          </h3>
-          <div className="space-y-2">
-            <label className="font-sans text-[11px] font-bold text-text-muted/60 uppercase tracking-widest pl-1">Intelligence Briefing</label>
-            <textarea
-              value={brief}
-              onChange={e => setBrief(e.target.value)}
-              className="w-full bg-white/[0.02] border border-white/[0.06] text-text-primary px-5 py-5 text-[12px] font-sans font-medium focus:outline-none focus:ring-1 focus:ring-primary/20 transition-all hover:border-white/10 rounded-none min-h-[140px] resize-none custom-scrollbar uppercase tracking-widest leading-relaxed"
-              placeholder="ENTER SUCCESS CRITERIA AND OPERATIONAL INTENT..."
-            />
-          </div>
-        </div>
-
+        <Textarea
+          label="Task Brief & Instructions"
+          value={brief}
+          onChange={e => setBrief(e.target.value)}
+          rows={5}
+          placeholder="Describe what needs to be created, key requirements, or insert a prompt from Prompt OS above..."
+        />
       </div>
     </Modal>
   );

@@ -1,13 +1,39 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const rawUrl = import.meta.env?.VITE_SUPABASE_URL;
+const rawKey = import.meta.env?.VITE_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-    console.warn('Supabase URL or Anon Key is missing. The app will fall back to local mode. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to your environment variables if you want to use Supabase.');
-}
+export const isSupabaseConfigured = (
+  url: string | undefined = rawUrl,
+  key: string | undefined = rawKey
+): boolean => {
+  if (!url || !key) return false;
+  const normalizedUrl = url.trim().toLowerCase();
+  const normalizedKey = key.trim().toLowerCase();
+  if (!normalizedUrl.startsWith('https://')) return false;
+  if (
+    normalizedUrl.includes('placeholder-project') ||
+    normalizedUrl.includes('your-project') ||
+    normalizedUrl.includes('example.supabase.co') ||
+    normalizedKey.includes('placeholder') ||
+    normalizedKey.includes('your_key') ||
+    normalizedKey.includes('your-key')
+  ) {
+    return false;
+  }
+  return true;
+};
+
+const configured = isSupabaseConfigured(rawUrl, rawKey);
 
 export const supabase = createClient(
-    supabaseUrl || 'https://placeholder-project.supabase.co',
-    supabaseAnonKey || 'placeholder-anon-key'
+  configured ? rawUrl! : 'https://placeholder-project.supabase.co',
+  configured ? rawKey! : 'placeholder-anon-key',
+  {
+    auth: {
+      persistSession: configured,
+      autoRefreshToken: configured,
+      detectSessionInUrl: configured,
+    },
+  }
 );

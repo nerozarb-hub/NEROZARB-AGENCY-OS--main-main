@@ -1,12 +1,21 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { Card } from '../../components/ui/Card';
-import { Badge } from '../../components/ui/Badge';
-import { Calendar, Clock, MessageSquare, Paperclip, User, ChevronRight, PenLine, BookOpen, Activity, Info, CheckCircle2 } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import {
+  BookOpen,
+  Calendar,
+  CheckCircle2,
+  ChevronRight,
+  ClipboardCopy,
+  Clock,
+  ExternalLink,
+  MessageSquare,
+  Paperclip,
+  User,
+} from 'lucide-react';
 import { Modal } from '../../components/ui/Modal';
 import { Button } from '../../components/ui/Button';
 import { useAppData } from '../../contexts/AppDataContext';
 import { Task } from '../../utils/storage';
+import { resolvePromptContent } from '../../features/prompt-os/promptVault';
 
 interface TaskDetailModalProps {
   isOpen: boolean;
@@ -15,13 +24,35 @@ interface TaskDetailModalProps {
   onNavigate?: (view: string, id?: string) => void;
 }
 
-export default function TaskDetailModal({ isOpen, onClose, task: modalTask, onNavigate }: TaskDetailModalProps) {
-  const { data, advanceTaskStage } = useAppData();
+export default function TaskDetailModal({
+  isOpen,
+  onClose,
+  task: modalTask,
+  onNavigate,
+}: TaskDetailModalProps) {
+  const { data, advanceTaskStage, updateTask, showToast } = useAppData();
   const [newNote, setNewNote] = useState('');
-  const [activeTab, setActiveTab] = useState<'brief' | 'activity'>('brief');
 
-  // Use live task data from context to ensure updates reflect immediately
   const task = modalTask ? data.tasks.find(t => t.id === modalTask.id) || modalTask : null;
+
+  const client = useMemo(
+    () => (task ? data.clients.find(c => c.id === task.clientId) || null : null),
+    [data.clients, task]
+  );
+
+  const linkedPromptId = task?.linkedPromptId || task?.compiledPromptId || '';
+  const linkedPrompt = useMemo(
+    () => data.promptTemplates.find(p => p.id === linkedPromptId) || null,
+    [data.promptTemplates, linkedPromptId]
+  );
+
+  const resolvedPrompt = useMemo(() => {
+    if (!linkedPrompt) return '';
+    return resolvePromptContent(linkedPrompt.content, {
+      client,
+      includeClientContext: Boolean(client),
+    });
+  }, [linkedPrompt, client]);
 
   if (!task) return null;
 
@@ -30,7 +61,8 @@ export default function TaskDetailModal({ isOpen, onClose, task: modalTask, onNa
   const nextStage = PIPELINE_STEPS[currentStepIndex + 1];
 
   const authLevel = (sessionStorage.getItem('authLevel') as 'ceo' | 'team') || 'team';
-  const clientName = data.clients.find(c => c.id === task.clientId)?.name || 'Unknown Client';
+  const canAdvance =
+    authLevel === 'ceo' || (nextStage !== 'CEO APPROVAL' && nextStage !== 'DEPLOYED');
 
   const handleAdvanceStage = () => {
     if (nextStage && canAdvance) {
@@ -38,281 +70,260 @@ export default function TaskDetailModal({ isOpen, onClose, task: modalTask, onNa
     }
   };
 
-  const canAdvance = authLevel === 'ceo' || (nextStage !== 'CEO APPROVAL' && nextStage !== 'DEPLOYED');
-
   const handleAddNote = () => {
     if (!newNote.trim()) return;
-    advanceTaskStage(task.id, task.currentStage, authLevel, newNote);
+    advanceTaskStage(task.id, task.currentStage, authLevel, newNote.trim());
     setNewNote('');
+  };
+
+  const handleAttachPrompt = (promptId: string) => {
+    updateTask(task.id, {
+      linkedPromptId: promptId || null,
+      compiledPromptId: promptId || null,
+    });
+    showToast(promptId ? 'Prompt linked to task' : 'Prompt unlinked');
+  };
+
+  const handleCopyPrompt = async () => {
+    if (!resolvedPrompt) return;
+    try {
+      await navigator.clipboard.writeText(resolvedPrompt);
+    } catch {
+      // ignore
+    }
+    showToast('Resolved prompt copied to clipboard');
+  };
+
+  const handleOpenInPromptStudio = () => {
+    if (linkedPrompt) {
+      sessionStorage.setItem('nerozarb_active_prompt_id', linkedPrompt.id);
+    }
+    onNavigate?.('studio', String(task.clientId));
+    onClose();
   };
 
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      width={1000}
+      width={920}
       title={
-        <div className="space-y-4">
-          <div className="flex items-center gap-3">
-            <p className="font-sans text-[11px] font-bold tracking-[0.3em] text-primary uppercase">Operational ARC</p>
-            <div className="h-px w-8 bg-white/[0.06]" />
-            <span className="font-sans text-[11px] font-bold text-text-muted/40 tracking-[0.2em] uppercase">ARC-{task.id}</span>
+        <div className="space-y-1">
+          <div className="flex flex-wrap items-center gap-2 text-xs text-text-muted">
+            <span className="text-primary font-medium">{client?.name || 'Client'}</span>
+            <span aria-hidden="true">·</span>
+            <span>{task.category}</span>
+            <span aria-hidden="true">·</span>
+            <span className="capitalize">{task.priority} priority</span>
           </div>
-          <div className="flex items-end gap-6">
-            <h2 className="font-heading text-5xl text-text-primary uppercase tracking-tighter leading-none">
-              {task.name}
-            </h2>
-            <div className={`mb-1 px-3 py-1 border font-sans text-[10px] font-bold tracking-widest uppercase rounded-none ${task.priority === 'critical' ? 'border-red-500/40 text-red-500 bg-red-500/5' : 'border-white/[0.06] text-text-muted/40'}`}>
-              {task.priority.toUpperCase()}
-            </div>
-          </div>
+          <h2 className="text-xl sm:text-2xl font-semibold text-text-primary">{task.name}</h2>
         </div>
       }
-
       footer={
-        <div className="flex flex-col sm:flex-row justify-between items-center w-full gap-4">
-          <div className="flex items-center gap-4 w-full sm:w-auto">
-            {task.sopReference && (
-              <Button
-                variant="ghost"
-                onClick={() => {
-                  if (onNavigate) {
-                    onNavigate('vault', task.clientId.toString());
-                    onClose();
-                  }
-                }}
-                className="px-6"
-              >
-                <BookOpen className="w-3.5 h-3.5 mr-2" />
-                PROTOCOL REF
-              </Button>
-            )}
-            {authLevel === 'ceo' && task.currentStage !== 'DEPLOYED' && (
-              <Button variant="ghost" className="text-red-500/60 hover:text-red-500 px-6">
-                ABORT MISSION
-              </Button>
-            )}
-          </div>
+        <div className="flex flex-col sm:flex-row justify-between items-center w-full gap-3">
+          <Button variant="outline" size="sm" onClick={handleOpenInPromptStudio}>
+            <BookOpen size={15} />
+            Open Prompt Studio
+          </Button>
 
-
-          <div className="flex items-center gap-4 w-full sm:w-auto">
-            <Button variant="ghost" onClick={onClose} className="px-8">
-              DISMISS
+          <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
+            <Button variant="ghost" onClick={onClose}>
+              Close
             </Button>
             {nextStage ? (
-              <Button
-                onClick={handleAdvanceStage}
-                disabled={!canAdvance}
-                className="bg-primary hover:bg-accent-mid text-text-primary min-w-[240px] px-10"
-              >
-                DEPLOY PHASE: {nextStage}
+              <Button onClick={handleAdvanceStage} disabled={!canAdvance}>
+                Move to {nextStage}
               </Button>
             ) : (
-              <div className="flex items-center gap-3 px-8 h-10 bg-primary/20 text-primary font-sans text-[11px] font-bold uppercase tracking-[0.2em] border border-white/[0.06]">
-                <CheckCircle2 className="w-3.5 h-3.5" /> MISSION COMPLETE
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary/15 text-primary text-xs font-semibold">
+                <CheckCircle2 size={15} />
+                <span>Completed & Deployed</span>
               </div>
             )}
           </div>
-
         </div>
       }
     >
-      <div className="space-y-10 py-2">
-        {/* Pipeline Architecture */}
-        <section className="space-y-10">
-          <h3 className="font-sans text-[11px] font-bold tracking-[0.3em] text-text-muted/40 uppercase border-b border-white/[0.04] pb-5">
-            Deployment Architecture
-          </h3>
-          <div className="relative pt-2 pb-12 px-6">
-            <div className="absolute top-[calc(1.5rem-1px)] left-0 right-0 h-[1px] bg-white/[0.06] z-0 mx-10" />
-            <div className="relative z-10 flex justify-between gap-4 overflow-x-auto pb-4 scrollbar-none">
-              {PIPELINE_STEPS.map((step, index) => {
-                const isCompleted = index < currentStepIndex;
-                const isCurrent = index === currentStepIndex;
-
-                return (
-                  <div key={step} className="flex flex-col items-center gap-6 min-w-[100px] sm:min-w-0">
-                    <div className={`w-3.5 h-3.5 rotate-45 border transition-all duration-700 ${isCompleted ? 'bg-primary border-primary shadow-[0_0_20px_rgba(63,106,36,0.3)]' :
-                      isCurrent ? 'bg-sidebar border-primary ring-4 ring-primary/10 scale-125 shadow-[0_0_25px_rgba(63,106,36,0.2)]' :
-                        'bg-white/[0.04] border-white/[0.06]'
-                      }`} />
-                    <span className={`font-sans text-[10px] font-bold text-center tracking-widest uppercase transition-all duration-500 ${isCurrent ? 'text-primary' :
-                      isCompleted ? 'text-text-muted/60' :
-                        'text-text-muted/20'
-                      }`}>
-                      {step}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-
-
-        {/* Intelligence Split */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-
-          {/* Main Intelligence Cluster (Left 66%) */}
-          <div className="lg:col-span-2 space-y-8">
-
-            {/* Mobile Tab Switcher */}
-            <div className="lg:hidden flex border border-white/[0.06] rounded-none p-1 bg-white/[0.02]">
-              <button
-                onClick={() => setActiveTab('brief')}
-                className={`flex-1 py-3 font-sans text-[11px] font-bold uppercase tracking-widest flex items-center justify-center gap-3 rounded-none transition-all ${activeTab === 'brief' ? 'bg-primary/20 text-primary' : 'text-text-muted/40'}`}
-              >
-                <Paperclip className="w-3.5 h-3.5" /> BRIEF
-              </button>
-              <button
-                onClick={() => setActiveTab('activity')}
-                className={`flex-1 py-3 font-sans text-[11px] font-bold uppercase tracking-widest flex items-center justify-center gap-3 rounded-none transition-all ${activeTab === 'activity' ? 'bg-primary/20 text-primary' : 'text-text-muted/40'}`}
-              >
-                <MessageSquare className="w-3.5 h-3.5" /> ACTIVITY
-              </button>
-            </div>
-
-            <AnimatePresence mode="wait">
-              {/* Strategic Brief Segment */}
-              {(activeTab === 'brief' || window.innerWidth >= 1024) && (
-                <motion.div
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 10 }}
-                  className="space-y-6"
-                >
-                  <h4 className="font-sans text-[11px] font-bold tracking-[0.3em] text-text-muted/60 uppercase flex items-center gap-3">
-                    <Paperclip className="w-3.5 h-3.5 text-primary" />
-                    Strategic Mission Brief
-                  </h4>
-                  <div className="bg-white/[0.02] border border-white/[0.06] p-10 rounded-none whitespace-pre-wrap font-sans text-[13px] text-text-muted/80 leading-relaxed tracking-wide shadow-inner">
-                    {task.brief || 'SYSTEM ERROR: NO MISSION CONTEXT LOADED.'}
-                  </div>
-                </motion.div>
-              )}
-
-
-              {/* Activity Encryption Log */}
-              {(activeTab === 'activity' || window.innerWidth >= 1024) && (
-                <motion.div
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 10 }}
-                  className="space-y-6 pt-12 border-t border-white/[0.04] lg:border-none lg:pt-0"
-                >
-                  <h4 className="font-sans text-[11px] font-bold tracking-[0.3em] text-text-muted/60 uppercase flex items-center gap-3">
-                    <Activity className="w-3.5 h-3.5 text-primary" />
-                    Operational Flux Log
-                  </h4>
-
-
-                  <div className="space-y-6 max-h-[400px] overflow-y-auto custom-scrollbar pr-4 -mr-4">
-                    {[...task.activityLog].reverse().map((log, idx) => (
-                      <div key={idx} className="flex gap-6 group">
-                        <div className={`w-10 h-10 rotate-45 shrink-0 flex items-center justify-center border transition-all duration-300 ${log.author === 'ceo' ? 'bg-primary/20 border-primary/40' : 'bg-white/[0.04] border-white/[0.06]'
-                          }`}>
-                          <span className="font-sans text-[10px] font-bold -rotate-45 text-text-primary uppercase tracking-tighter">
-                            {log.author === 'ceo' ? 'HAM' : 'NOD'}
-                          </span>
-                        </div>
-                        <div className="flex-1 space-y-2">
-                          <div className="flex items-baseline justify-between">
-                            <span className={`font-sans text-[11px] font-bold uppercase tracking-widest ${log.author === 'ceo' ? 'text-primary' : 'text-text-muted/40'}`}>
-                              {log.author === 'ceo' ? 'DIRECTOR HAMSA' : 'OPERATIONAL NODE'}
-                            </span>
-                            <span className="font-sans text-[10px] font-bold text-text-muted/20 uppercase tracking-widest">
-                              {new Date(log.timestamp).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }).toUpperCase()}
-                            </span>
-                          </div>
-                          <div className="font-sans text-[13px] text-text-muted/60 leading-relaxed tracking-wide">
-                            {log.type === 'stage_advance' ? (
-                              <div className="flex items-center gap-3 py-2 px-4 mt-2 bg-primary/5 border border-white/[0.06] w-fit">
-                                <span className="uppercase text-[10px] font-bold text-text-muted/20">{log.from}</span>
-                                <ChevronRight className="w-3.5 h-3.5 text-primary opacity-30" />
-                                <span className="uppercase text-[10px] font-bold text-primary">{log.to}</span>
-                              </div>
-                            ) : null}
-                            {log.type === 'note' && <span className="block mt-2 text-text-muted/60 border-l-2 border-primary/20 pl-4 py-1">{log.text}</span>}
-                            {log.type === 'created' && <span className="text-text-muted/20 font-bold text-[10px] tracking-widest uppercase">Sector Initialized: {log.text}</span>}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-
-                  {/* Operational Note Input */}
-                  <div className="flex gap-4 mt-12 p-1 pl-6 bg-white/[0.02] border border-white/[0.06] focus-within:ring-1 focus-within:ring-primary/20 transition-all duration-300 rounded-none">
-                    <PenLine className="w-4 h-4 text-text-muted/20 mt-3.5 shrink-0" />
-                    <input
-                      type="text"
-                      value={newNote}
-                      onChange={e => setNewNote(e.target.value)}
-                      placeholder="ENTER OPERATIONAL UPDATE..."
-                      className="flex-1 bg-transparent border-none text-[11px] font-bold text-text-primary py-4 outline-none placeholder:text-text-muted/20 tracking-[0.2em] uppercase"
-                      onKeyDown={e => e.key === 'Enter' && handleAddNote()}
-                    />
-                    <Button variant="ghost" className="px-8 shrink-0 text-primary" onClick={handleAddNote}>
-                      POST_UPDATE
-                    </Button>
-                  </div>
-                </motion.div>
-              )}
-
-            </AnimatePresence>
-          </div>
-
-          {/* Operational Metadata (Right 33%) */}
-          <div className="space-y-12 bg-white/[0.02] p-10 border border-white/[0.06] self-start rounded-none">
-            <h4 className="font-sans text-[11px] font-bold tracking-[0.3em] text-text-muted/40 uppercase flex items-center gap-3 border-b border-white/[0.04] pb-6">
-              <Info className="w-4 h-4 text-primary" />
-              Mission Parameters
-            </h4>
-
-
-            <div className="space-y-10">
-              <div className="space-y-3">
-                <span className="font-sans text-[11px] font-bold text-text-muted/20 uppercase tracking-[0.2em] flex items-center gap-3">
-                  <User className="w-3.5 h-3.5 opacity-30" /> Tactical Node
-                </span>
-                <p className="font-sans text-[12px] font-bold text-text-primary tracking-widest pl-7 uppercase">{task.assignedNode}</p>
-              </div>
-
-              <div className="space-y-3">
-                <span className="font-sans text-[11px] font-bold text-text-muted/20 uppercase tracking-[0.2em] flex items-center gap-3">
-                  <Calendar className="w-3.5 h-3.5 opacity-30" /> Objective Deadline
-                </span>
-                <p className="font-sans text-[12px] font-bold text-text-primary tracking-widest pl-7 uppercase">{task.deadline || 'ASYNCHRONOUS'}</p>
-              </div>
-
-              <div className="space-y-3">
-                <span className="font-sans text-[11px] font-bold text-text-muted/20 uppercase tracking-[0.2em] flex items-center gap-3">
-                  <Clock className="w-3.5 h-3.5 opacity-30" /> Quantum Allocation
-                </span>
-                <p className="font-sans text-[12px] font-bold text-text-primary tracking-widest pl-7 uppercase">{task.estimatedHours ? `${task.estimatedHours} HOUR(S)` : 'STOCHASTIC'}</p>
-              </div>
-
-              <div className="space-y-4">
-                <span className="font-sans text-[11px] font-bold text-text-muted/20 uppercase tracking-[0.2em] flex items-center gap-3">
-                  <Activity className="w-3.5 h-3.5 opacity-30" /> Temporal State
-                </span>
-                <div className="pl-7 flex items-center gap-3">
-                  <div className={`w-2 h-2 rotate-45 animate-pulse ${task.status === 'active' ? 'bg-primary shadow-[0_0_15px_rgba(63,106,36,0.6)]' : 'bg-white/[0.06]'}`} />
-                  <span className="font-sans text-[12px] font-bold text-text-primary uppercase tracking-[0.2em]">{task.status}</span>
+      <div className="space-y-6">
+        {/* Stage Progress Bar */}
+        <div className="rounded-lg border border-border-dark bg-onyx p-4">
+          <p className="text-xs font-medium text-text-muted mb-3">Delivery Stage</p>
+          <div className="flex items-center justify-between gap-2 overflow-x-auto pb-1">
+            {PIPELINE_STEPS.map((step, index) => {
+              const isCompleted = index < currentStepIndex;
+              const isCurrent = index === currentStepIndex;
+              return (
+                <div key={step} className="flex items-center gap-2 shrink-0">
+                  <span
+                    className={`text-xs font-medium px-2.5 py-1 rounded ${
+                      isCurrent
+                        ? 'bg-primary text-onyx font-semibold'
+                        : isCompleted
+                        ? 'text-primary bg-primary/10'
+                        : 'text-text-muted'
+                    }`}
+                  >
+                    {step}
+                  </span>
+                  {index < PIPELINE_STEPS.length - 1 && (
+                    <ChevronRight size={14} className="text-text-muted/40" />
+                  )}
                 </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left 2 Columns: Brief, Linked Prompt, and Activity */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Task Brief */}
+            <div className="space-y-2">
+              <h3 className="text-xs font-semibold text-text-secondary flex items-center gap-2">
+                <Paperclip size={14} className="text-primary" />
+                <span>Task Brief</span>
+              </h3>
+              <div className="rounded-lg border border-border-dark bg-onyx p-4 whitespace-pre-wrap text-sm text-text-secondary leading-relaxed">
+                {task.brief || 'No brief added for this task yet.'}
               </div>
             </div>
 
-            <div className="pt-10 border-t border-white/[0.06]">
-              <div className="p-6 bg-white/[0.02] border border-dashed border-white/[0.08] uppercase rounded-none">
-                <p className="font-sans text-[10px] font-bold text-text-muted/20 leading-relaxed tracking-[0.2em]">
-                  ENCRYPTED STREAM ACTIVE. ENSURE MISSION INTEGRITY AT ALL NODES.
+            {/* Linked Prompt from Prompt OS */}
+            <div className="rounded-lg border border-border-dark bg-onyx/70 p-4 space-y-3">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <label
+                  htmlFor="task-detail-prompt-select"
+                  className="text-xs font-semibold text-text-secondary flex items-center gap-2"
+                >
+                  <BookOpen size={14} className="text-primary" />
+                  <span>Linked Prompt from Prompt OS</span>
+                </label>
+
+                {linkedPrompt && (
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={handleCopyPrompt}
+                      className="inline-flex items-center gap-1.5 rounded-md border border-border-dark bg-card px-2.5 py-1 text-xs font-medium text-text-primary hover:border-primary transition-colors"
+                    >
+                      <ClipboardCopy size={12} />
+                      <span>Copy Prompt</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleOpenInPromptStudio}
+                      className="inline-flex items-center gap-1 rounded-md bg-primary/15 border border-primary/30 px-2.5 py-1 text-xs font-medium text-primary hover:bg-primary/25 transition-colors"
+                    >
+                      <span>Customize in Studio</span>
+                      <ExternalLink size={12} />
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              <select
+                id="task-detail-prompt-select"
+                value={linkedPrompt?.id || ''}
+                onChange={e => handleAttachPrompt(e.target.value)}
+                className="min-h-10 w-full rounded-lg border border-border-dark bg-card px-3 text-sm text-text-primary focus:border-primary focus:outline-none"
+              >
+                <option value="">Select a prompt from Prompt Vault...</option>
+                {data.promptTemplates
+                  .filter(p => p.status !== 'archived')
+                  .map(p => (
+                    <option key={p.id} value={p.id}>
+                      [{p.category}] {p.title}
+                    </option>
+                  ))}
+              </select>
+
+              {linkedPrompt && (
+                <div className="rounded-lg border border-border-dark bg-onyx p-3 text-xs font-mono text-text-secondary whitespace-pre-wrap max-h-48 overflow-y-auto custom-scrollbar">
+                  {resolvedPrompt}
+                </div>
+              )}
+            </div>
+
+            {/* Activity & Notes */}
+            <div className="space-y-3">
+              <h3 className="text-xs font-semibold text-text-secondary flex items-center gap-2">
+                <MessageSquare size={14} className="text-primary" />
+                <span>Activity & Team Notes</span>
+              </h3>
+
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={newNote}
+                  onChange={e => setNewNote(e.target.value)}
+                  placeholder="Add a progress note or link..."
+                  className="flex-1 min-h-10 rounded-lg border border-border-dark bg-onyx px-3.5 text-sm text-text-primary placeholder:text-text-muted focus:border-primary focus:outline-none"
+                  onKeyDown={e => e.key === 'Enter' && handleAddNote()}
+                />
+                <Button variant="outline" size="sm" onClick={handleAddNote}>
+                  Add Note
+                </Button>
+              </div>
+
+              <div className="space-y-2 max-h-60 overflow-y-auto custom-scrollbar pt-1">
+                {[...task.activityLog].reverse().map((log, idx) => (
+                  <div
+                    key={idx}
+                    className="rounded-lg border border-border-dark bg-onyx/50 px-3.5 py-2.5 text-xs space-y-1"
+                  >
+                    <div className="flex items-center justify-between text-text-muted">
+                      <span className="font-semibold text-text-secondary uppercase">
+                        {log.author === 'ceo' ? 'CEO' : 'Team'}
+                      </span>
+                      <span className="font-mono tabular-nums">
+                        {new Date(log.timestamp).toLocaleString(undefined, {
+                          month: 'short',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </span>
+                    </div>
+                    <p className="text-text-primary">{log.text}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: Metadata */}
+          <div className="rounded-lg border border-border-dark bg-onyx p-5 space-y-4 self-start">
+            <h3 className="text-xs font-semibold text-text-secondary border-b border-border-dark pb-3">
+              Task Details
+            </h3>
+
+            <div className="space-y-3 text-sm">
+              <div>
+                <span className="text-xs text-text-muted flex items-center gap-1.5">
+                  <User size={13} /> Assigned Role
+                </span>
+                <p className="font-medium text-text-primary mt-0.5">{task.assignedNode}</p>
+              </div>
+
+              <div>
+                <span className="text-xs text-text-muted flex items-center gap-1.5">
+                  <Calendar size={13} /> Deadline
+                </span>
+                <p className="font-medium font-mono tabular-nums text-text-primary mt-0.5">
+                  {task.deadline || 'No deadline set'}
+                </p>
+              </div>
+
+              <div>
+                <span className="text-xs text-text-muted flex items-center gap-1.5">
+                  <Clock size={13} /> Estimated Effort
+                </span>
+                <p className="font-medium font-mono tabular-nums text-text-primary mt-0.5">
+                  {task.estimatedHours ? `${task.estimatedHours} hrs` : 'Not estimated'}
                 </p>
               </div>
             </div>
-
           </div>
-
         </div>
       </div>
     </Modal>

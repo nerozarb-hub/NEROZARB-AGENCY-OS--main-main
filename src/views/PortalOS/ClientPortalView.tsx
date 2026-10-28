@@ -1,14 +1,7 @@
 import { useEffect, useState } from 'react';
 import { loadData, Client, ProjectPhase, ClientUpdate } from '../../utils/storage';
-import { supabase } from '../../lib/supabase';
+import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 import { CheckCircle2, Circle, Clock, MessageSquare, Layout } from 'lucide-react';
-
-// Check if Supabase is actually configured (not placeholder)
-const isSupabaseConfigured = () => {
-    const url = import.meta.env.VITE_SUPABASE_URL;
-    const key = import.meta.env.VITE_SUPABASE_ANON_KEY;
-    return Boolean(url && key && url !== 'https://placeholder-project.supabase.co');
-};
 
 export default function ClientPortalView({ token }: { token: string }) {
     const [client, setClient] = useState<Partial<Client> | null>(null);

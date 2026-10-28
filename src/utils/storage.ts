@@ -1,4 +1,5 @@
 import { syncPostsToSupabase, syncPromptOsToSupabase, syncSettingsToSupabase, syncTasksToSupabase } from './supabaseSync';
+import { STARTER_AGENCY_PROMPTS } from '../features/prompt-os/promptVault';
 
 export const STORAGE_KEY = 'nerozarb-os-v2';
 
@@ -33,7 +34,7 @@ export interface Task {
   id: number; clientId: number; name: string; category: TaskCategory; phase: 'phase1' | 'phase2' | 'phase3' | 'ongoing';
   stagePipeline: Stage[]; currentStage: Stage; assignedNode: NodeRole; priority: 'critical' | 'high' | 'normal'; status: 'active' | 'deployed' | 'cancelled';
   deadline: string; estimatedHours: number | null; brief: string; assetLinks: string[]; sopReference: string | null; activityLog: ActivityEntry[];
-  notes: string; deliveredOnTime: boolean | null; linkedPostId: number | null; compiledPromptId?: string | null;
+  notes: string; deliveredOnTime: boolean | null; linkedPostId: number | null; compiledPromptId?: string | null; linkedPromptId?: string | null;
   assigneeId?: string | null; reviewerId?: string | null; createdAt: string; updatedAt: string;
 }
 
@@ -56,7 +57,7 @@ export interface Post {
   id: number; clientId: number; platforms: Platform[]; postType: PostType; contentPillar: string; templateType: TemplateType | null;
   hook: string; triggerUsed: string | null; captionBody: string; cta: string; ctaType: CTAType; hashtags: string; visualBrief: string;
   scheduledDate: string; scheduledTime: string; publishedDate: string | null; status: PostStage; priority: 'normal' | 'high' | 'urgent'; assignedTo: NodeRole;
-  linkedTaskId: number | null; linkedPromptId?: number | null; assetLinks: string[]; referencePost: string | null; performance: PerformanceLog | null;
+  linkedTaskId: number | null; linkedPromptId?: string | number | null; assetLinks: string[]; referencePost: string | null; performance: PerformanceLog | null;
   activityLog: ActivityEntry[]; assigneeId?: string | null; createdAt: string; updatedAt: string;
 }
 export type PromptScope = 'global' | 'industry' | 'client' | 'brand' | 'product' | 'campaign' | 'platform' | 'deliverable' | 'model' | 'task';
@@ -67,7 +68,7 @@ export interface PromptCondition { field: 'deliverable' | 'platform' | 'objectiv
 export interface InstructionBlock { id: string; title: string; description?: string; instruction: string; category?: string; scope: PromptScope; priority?: number; status: LibraryStatus; version: number; tags: string[]; compatibleTasks?: string[]; compatibleIndustries?: string[]; compatibleModels?: string[]; source?: string; lastValidatedAt?: string; clientId?: number; conditions?: PromptCondition[]; createdAt: string; updatedAt: string; }
 export interface ContextPack { id: string; name: string; description: string; packType: 'organization' | 'brand' | 'industry' | 'product' | 'campaign' | 'platform'; status: LibraryStatus; version: number; priority?: number; clientId?: number; productName?: string; required?: boolean; blockIds: string[]; assetUrls?: string[]; references?: string[]; tags?: string[]; lastValidatedAt?: string; createdAt: string; updatedAt: string; }
 export interface PromptRecipe { id: string; name: string; description: string; taskType: string; outputType: string; status: LibraryStatus; version: number; requiredInputs: string[]; optionalInputs?: string[]; variables?: PromptVariable[]; requiredPackTypes?: ContextPack['packType'][]; defaultBlockIds?: string[]; conditionalBlockIds?: string[]; outputSchema?: string; evaluationRubricId?: string; compatibleModels?: string[]; defaultModel: string; createdAt: string; updatedAt: string; }
-export interface PromptTemplate { id: string; title: string; description: string; category: string; content: string; status: LibraryStatus; version: number; tags: string[]; createdAt: string; updatedAt: string; }
+export interface PromptTemplate { id: string; title: string; description: string; category: string; content: string; status: LibraryStatus; version: number; tags: string[]; clientId?: number | null; isFavorite?: boolean; usageCount?: number; createdAt: string; updatedAt: string; }
 export interface StructuredBrief { id: string; clientId: number; product?: string; campaign?: string; deliverableType: string; platform: string; objective: string; audience?: string; contentPillar?: string; funnelStage?: string; offer?: string; cta?: string; coreMessage?: string; format?: string; dimensions?: string; tone?: string; mandatoryInclusions?: string; prohibitedInclusions?: string; assetUrls?: string[]; brief: string; recipeId?: string; contextPackIds: string[]; status: 'draft' | 'compiled' | 'in-review'; createdAt: string; updatedAt: string; }
 export interface PromptSourceSnapshot { type: 'template' | 'recipe' | 'block' | 'context-pack' | 'rubric' | 'model'; id: string; title: string; version: number; snapshot: string; }
 export interface PromptAudit { readinessScore: number; blockingErrors: string[]; warnings: string[]; missingInputs: string[]; unresolvedVariables: string[]; duplicateInstructions: string[]; conflicts: string[]; }
@@ -78,7 +79,7 @@ export interface QualityRubric { id: string; name: string; criteria: { id: strin
 export interface AppData { clients: Client[]; tasks: Task[]; posts: Post[]; onboardings: OnboardingProtocol[]; protocols: Protocol[]; teamMembers: TeamMember[]; instructionBlocks: InstructionBlock[]; contextPacks: ContextPack[]; promptRecipes: PromptRecipe[]; promptTemplates: PromptTemplate[]; modelProfiles: ModelProfile[]; qualityRubrics: QualityRubric[]; briefs: StructuredBrief[]; compiledPrompts: CompiledPrompt[]; generationRuns: GenerationRun[]; settings: { ceoPhraseHash: string | null; teamPhraseHash: string | null; initialized: boolean; lastUpdated: string | null; }; }
 
 export const INITIAL_DATA: AppData = {
-  clients: [], tasks: [], posts: [], onboardings: [], protocols: [], teamMembers: [], instructionBlocks: [], contextPacks: [], promptRecipes: [], promptTemplates: [], modelProfiles: [], qualityRubrics: [], briefs: [], compiledPrompts: [], generationRuns: [],
+  clients: [], tasks: [], posts: [], onboardings: [], protocols: [], teamMembers: [], instructionBlocks: [], contextPacks: [], promptRecipes: [], promptTemplates: STARTER_AGENCY_PROMPTS, modelProfiles: [], qualityRubrics: [], briefs: [], compiledPrompts: [], generationRuns: [],
   settings: { ceoPhraseHash: null, teamPhraseHash: null, initialized: false, lastUpdated: null },
 };
 
@@ -104,7 +105,9 @@ export const loadData = (): AppData => {
   try {
     const parsed = JSON.parse(stored) as AppData;
     const isLegacyDemo = parsed.clients?.length === 2 && parsed.clients.every(client => ['Mozart House', 'YZ Corp'].includes(client.name));
-    return isLegacyDemo ? INITIAL_DATA : { ...INITIAL_DATA, ...parsed, teamMembers: parsed.teamMembers || [], instructionBlocks: parsed.instructionBlocks || [], contextPacks: parsed.contextPacks || [], promptRecipes: parsed.promptRecipes || [], promptTemplates: parsed.promptTemplates || [], modelProfiles: parsed.modelProfiles || [], qualityRubrics: parsed.qualityRubrics || [], briefs: parsed.briefs || [], compiledPrompts: parsed.compiledPrompts || [], generationRuns: parsed.generationRuns || [] };
+    if (isLegacyDemo) return INITIAL_DATA;
+    const loadedTemplates = parsed.promptTemplates && parsed.promptTemplates.length > 0 ? parsed.promptTemplates : STARTER_AGENCY_PROMPTS;
+    return { ...INITIAL_DATA, ...parsed, teamMembers: parsed.teamMembers || [], instructionBlocks: parsed.instructionBlocks || [], contextPacks: parsed.contextPacks || [], promptRecipes: parsed.promptRecipes || [], promptTemplates: loadedTemplates, modelProfiles: parsed.modelProfiles || [], qualityRubrics: parsed.qualityRubrics || [], briefs: parsed.briefs || [], compiledPrompts: parsed.compiledPrompts || [], generationRuns: parsed.generationRuns || [] };
   } catch {
     return INITIAL_DATA;
   }

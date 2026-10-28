@@ -39,63 +39,40 @@ export function Modal({ isOpen, onClose, title, width = 560, footer, children }:
             className="fixed inset-0 bg-onyx/80 backdrop-blur-md z-50"
           />
 
-          {/* Mobile: bottom sheet that slides up */}
+          {/* Responsive Modal Container: bottom-sheet on mobile, centered dialog on md+ */}
           <motion.div
-            initial={{ y: '100%' }}
-            animate={{ y: 0 }}
-            exit={{ y: '100%' }}
-            transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-            className="md:hidden fixed inset-x-0 bottom-0 z-50 bg-onyx border-t border-border-dark
-                       flex flex-col max-h-[92vh] rounded-t-[12px] overflow-hidden"
+            role="dialog"
+            aria-modal="true"
+            initial={{ opacity: 0, scale: 0.98, y: 12 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.98, y: 12 }}
+            transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+            className="fixed inset-x-0 bottom-0 md:inset-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2
+                       bg-onyx border-t md:border border-white/[0.08]
+                       shadow-[0_0_80px_rgba(0,0,0,0.6)] z-50 overflow-hidden flex flex-col
+                       max-h-[92vh] md:max-h-[90vh] rounded-t-[12px] md:rounded-xl w-full"
+            style={{ maxWidth: `min(${width}px, 95vw)` }}
           >
-            {/* Top accent */}
             <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-primary/50 via-primary to-primary/50" />
-            {/* Drag handle */}
-            <div className="flex justify-center pt-3 pb-1 flex-shrink-0">
+            <div className="flex md:hidden justify-center pt-3 pb-1 flex-shrink-0">
               <div className="w-10 h-1 bg-border-dark rounded-full" />
             </div>
-            {/* Header */}
-            <div className="flex items-center gap-3 px-6 py-4 border-b border-white/[0.04] flex-shrink-0">
-              <button onClick={onClose} className="text-text-muted hover:text-text-primary transition-colors tap-target">
+            <div className="flex items-center justify-between gap-3 px-6 py-4 md:p-6 border-b border-white/[0.06] flex-shrink-0">
+              <button onClick={onClose} aria-label="Close modal" className="md:hidden text-text-muted hover:text-text-primary transition-colors tap-target">
                 <ArrowLeft size={20} />
               </button>
-              <div className="flex-1 min-w-0">
-                <h2 className="font-heading text-lg tracking-tighter text-text-primary capitalize truncate">{title}</h2>
+              <div className="font-heading text-lg md:text-xl font-semibold tracking-normal text-text-primary flex-1 min-w-0">
+                {title}
               </div>
-            </div>
-            <div className="p-6 overflow-y-auto custom-scrollbar scroll-touch flex-1 min-h-0 pb-safe">
-              {children}
-            </div>
-            {footer && (
-              <div className="p-6 border-t border-white/[0.04] flex-shrink-0 bg-onyx pb-safe">
-                {footer}
-              </div>
-            )}
-          </motion.div>
-
-          {/* Desktop: centered modal */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.98, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.98, y: 10 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-            className="hidden md:flex fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
-                       bg-onyx border border-white/[0.08]
-                       shadow-[0_0_80px_rgba(0,0,0,0.6)] z-50 overflow-hidden flex-col max-h-[90vh] rounded-none"
-            style={{ width: `${width}px`, maxWidth: '95vw' }}
-          >
-            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-primary/50 via-primary to-primary/50" />
-            <div className="flex items-center justify-between p-6 border-b border-white/[0.04]">
-              <h2 className="font-heading text-2xl tracking-tighter text-text-primary capitalize flex-1">{title}</h2>
-              <button onClick={onClose} className="text-text-muted hover:text-text-primary transition-colors hover:rotate-90 duration-300">
+              <button onClick={onClose} aria-label="Close modal" className="hidden md:inline-flex text-text-muted hover:text-text-primary transition-colors">
                 <X size={20} />
               </button>
             </div>
-            <div className="p-6 overflow-y-auto custom-scrollbar min-h-0">
+            <div className="p-6 overflow-y-auto custom-scrollbar scroll-touch flex-1 min-h-0">
               {children}
             </div>
             {footer && (
-              <div className="p-6 border-t border-white/[0.04] flex-shrink-0 bg-onyx">
+              <div className="p-6 border-t border-white/[0.06] flex-shrink-0 bg-onyx">
                 {footer}
               </div>
             )}

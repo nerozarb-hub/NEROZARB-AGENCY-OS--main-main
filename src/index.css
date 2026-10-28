@@ -29,7 +29,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
-  letter-spacing: -0.01em;
+  letter-spacing: normal;
   /* Mobile: prevent double-tap zoom, enable smooth scroll */
   touch-action: manipulation;
   overscroll-behavior: none;

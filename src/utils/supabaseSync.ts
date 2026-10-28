@@ -1,12 +1,5 @@
-import { supabase } from './supabase';
+import { supabase, isSupabaseConfigured } from './supabase';
 import { AppData, Client, Task, Post, Protocol, OnboardingProtocol, ActivityEntry, TimelineEvent, OnboardingStep, PromptTemplate, InstructionBlock, ContextPack, PromptRecipe, StructuredBrief, CompiledPrompt, GenerationRun, ModelProfile, QualityRubric, TeamMember } from './storage';
-
-// Helper to check if Supabase is actually configured
-const isSupabaseConfigured = () => {
-    const url = import.meta.env.VITE_SUPABASE_URL;
-    const key = import.meta.env.VITE_SUPABASE_ANON_KEY;
-    return Boolean(url && key && url !== 'https://placeholder-project.supabase.co');
-};
 
 // Retry-once wrapper for transient Supabase failures
 async function withRetry<T>(fn: () => Promise<T>, label: string): Promise<T | null> {

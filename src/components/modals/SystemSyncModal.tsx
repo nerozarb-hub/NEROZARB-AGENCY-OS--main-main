@@ -4,6 +4,7 @@ import { X, RefreshCw, KeyRound, Database, Download, Upload, Check, ShieldAlert,
 import { useAppData } from '../../contexts/AppDataContext';
 import { hashPassphrase, DEFAULT_CEO_PASSPHRASES, DEFAULT_TEAM_PASSPHRASES, AppData } from '../../utils/storage';
 import { fetchAppDataFromSupabase, syncSettingsToSupabase, syncTasksToSupabase, syncPostsToSupabase, syncPromptOsToSupabase } from '../../utils/supabaseSync';
+import { isSupabaseConfigured as checkSupabaseConfigured } from '../../lib/supabase';
 
 interface SystemSyncModalProps {
   isOpen: boolean;
@@ -35,11 +36,7 @@ export default function SystemSyncModal({
 
   if (!isOpen) return null;
 
-  const isSupabaseConfigured = Boolean(
-    import.meta.env.VITE_SUPABASE_URL &&
-    import.meta.env.VITE_SUPABASE_ANON_KEY &&
-    import.meta.env.VITE_SUPABASE_URL !== 'https://placeholder-project.supabase.co'
-  );
+  const isSupabaseConfigured = checkSupabaseConfigured();
 
   // Handle Full Manual Sync
   const handleForceSync = async () => {

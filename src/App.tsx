@@ -160,7 +160,7 @@ export default function App() {
             {activeView === 'command' && (
               <DashboardView
                 onNavigate={(view, id) => {
-                  setActiveView(view);
+                  setActiveView(view === 'vault' ? 'studio' : view);
                   if (id) setSelectedGlobalClient(id);
                 }}
               />
@@ -168,7 +168,7 @@ export default function App() {
             {activeView === 'client' && (
               <ClientOS
                 onNavigate={(view, id) => {
-                  setActiveView(view);
+                  setActiveView(view === 'vault' ? 'studio' : view);
                   if (id) setSelectedGlobalClient(id);
                 }}
               />
@@ -176,7 +176,7 @@ export default function App() {
             {activeView === 'fulfillment' && (
               <FulfillmentOS
                 onNavigate={(view, id) => {
-                  setActiveView(view);
+                  setActiveView(view === 'vault' ? 'studio' : view);
                   if (id) setSelectedGlobalClient(id);
                 }}
               />
@@ -184,18 +184,24 @@ export default function App() {
             {activeView === 'content' && (
               <ContentOS
                 onNavigate={(view, id) => {
-                  setActiveView(view);
+                  setActiveView(view === 'vault' ? 'studio' : view);
                   if (id) setSelectedGlobalClient(id);
                 }}
               />
             )}
-            {activeView === 'studio' && (
-              <PromptStudio onNavigate={setActiveView} />
+            {(activeView === 'studio' || activeView === 'vault') && (
+              <PromptStudio
+                initialClientId={selectedGlobalClient}
+                onNavigate={(view, id) => {
+                  setActiveView(view === 'vault' ? 'studio' : view);
+                  if (id) setSelectedGlobalClient(id);
+                }}
+              />
             )}
             {activeView === 'onboarding' && (
               <OnboardingOS
                 onNavigate={(view, id) => {
-                  setActiveView(view);
+                  setActiveView(view === 'vault' ? 'studio' : view);
                   if (id) setSelectedGlobalClient(id);
                 }}
               />
